@@ -25,7 +25,7 @@ export class RHSMClient {
   }
 
   /**
-   * Starts an rhsm client contianer
+   * Starts an rhsm client container
    * @param version OS and version to boot
    * @returns
    */

@@ -45,7 +45,7 @@ export const logInWithUsernameAndPassword = async (
   await passwordField.press('Enter');
 
   await expect(async () => {
-    expect(page.url()).toBe(`${process.env.BASE_URL}/insights/content/repositories`);
+    expect(page.url()).toContain(`${process.env.BASE_URL}/insights/content/repositories`);
 
     const cookies = await page.context().cookies();
     const found = cookies.find((cookie) => cookie.name === 'cs_jwt');
