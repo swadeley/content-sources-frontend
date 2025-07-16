@@ -180,6 +180,5 @@ export const failedFileUpload = (
     variant: AlertVariant.danger,
     title: 'There was an problem uploading the file.',
     description,
-    id: 'file-upload-error',
   });
 };

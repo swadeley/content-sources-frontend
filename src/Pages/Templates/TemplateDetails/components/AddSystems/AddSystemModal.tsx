@@ -183,7 +183,6 @@ export default function AddSystemModal() {
         description:
           'An error occurred when creating the environment. Cannot assign this template to a system.',
         variant: AlertVariant.danger,
-        id: 'rhsm-environment-error',
         dismissable: true,
       });
     }

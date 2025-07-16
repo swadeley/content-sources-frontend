@@ -40,7 +40,6 @@ export const useEditTemplateQuery = (queryClient: QueryClient, request: EditTemp
       notify({
         variant: AlertVariant.success,
         title: `Successfully edited template '${request.name}'`,
-        id: 'edit-template-success',
       });
 
       queryClient.invalidateQueries(GET_TEMPLATES_KEY);
@@ -219,7 +218,6 @@ export const useCreateTemplateQuery = (queryClient: QueryClient, request: Templa
       notify({
         variant: AlertVariant.success,
         title: `Content Template "${request?.name}" created`,
-        id: 'create-template-success',
       });
 
       queryClient.invalidateQueries(GET_TEMPLATES_KEY);

@@ -1,7 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Features } from 'services/Features/FeatureApi';
-import { notificationsReducer } from '@redhat-cloud-services/frontend-components-notifications/redux';
-import { getRegistry as _getRegistry } from '@redhat-cloud-services/frontend-components-utilities/Registry';
 import PackageJson from '../../package.json';
 import { useFetchFeaturesQuery } from 'services/Features/FeatureQueries';
 import { ContentOrigin } from 'services/Content/ContentApi';
@@ -11,7 +9,6 @@ import getRBAC from '@redhat-cloud-services/frontend-components-utilities/RBAC';
 import { Subscriptions } from 'services/Subscriptions/SubscriptionApi';
 import { useFetchSubscriptionsQuery } from 'services/Subscriptions/SubscriptionQueries';
 
-const getRegistry = _getRegistry as unknown as () => { register: ({ notifications }) => void };
 const { appname } = PackageJson.insights;
 
 // Add permissions here
@@ -51,10 +48,6 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const { data: subscriptions, isLoading: isFetchingSubscriptions } = useFetchSubscriptionsQuery();
 
   useEffect(() => {
-    // Get chrome and register app
-    const registry = getRegistry();
-    registry.register({ notifications: notificationsReducer });
-
     if (chrome && !rbac) {
       // Get permissions and store them in context
       chrome.auth.getUser().then(async () =>

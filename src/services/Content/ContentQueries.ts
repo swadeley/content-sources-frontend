@@ -178,7 +178,6 @@ export const useAddContentQuery = (request: CreateContentRequest) => {
                 ? 'Repository introspection in progress'
                 : 'Repository introspection data already available',
             }),
-        id: 'add-content-success',
       });
 
       queryClient.invalidateQueries(CONTENT_LIST_KEY);
@@ -211,7 +210,6 @@ export const useAddUploadsQuery = (request: AddUploadRequest) => {
             ? `${uploadCount} rpms successfully uploaded to ${data.object_name}`
             : `One rpm successfully uploaded to ${data.object_name}`,
         description: 'This repository will be snapshotted shortly',
-        id: 'add-upload-success',
       });
 
       queryClient.invalidateQueries(CONTENT_LIST_KEY);
@@ -274,7 +272,6 @@ export const useAddPopularRepositoryQuery = (
         description: hasPending
           ? 'Repository introspection in progress'
           : 'Repository introspection data already available',
-        id: 'add-popular-repo-success',
       });
 
       queryClient.invalidateQueries(CONTENT_LIST_KEY);
@@ -307,7 +304,6 @@ export const useEditContentQuery = (request: EditContentRequestItem) => {
       notify({
         variant: AlertVariant.success,
         title: `Successfully edited repository ${request.name}`,
-        id: 'edit-content-success',
       });
 
       queryClient.invalidateQueries(CONTENT_LIST_KEY);
@@ -712,7 +708,6 @@ export const useTriggerSnapshot = (queryClient: QueryClient) => {
       notify({
         variant: AlertVariant.success,
         title: 'Snapshot triggered successfully',
-        id: 'trigger-snapshot-success',
       });
       queryClient.invalidateQueries(LIST_SNAPSHOTS_KEY);
       queryClient.invalidateQueries(CONTENT_LIST_KEY);
@@ -774,7 +769,6 @@ export const useIntrospectRepositoryMutate = (
         notify({
           variant: AlertVariant.success,
           title: 'Repository introspection in progress',
-          id: 'introspect-repository-success',
         });
       }
       queryClient.invalidateQueries(CONTENT_ITEM_KEY);

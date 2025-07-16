@@ -78,7 +78,6 @@ export const useAddTemplateToSystemsQuery = (
       notify({
         variant: AlertVariant.success,
         title: `Template successfully added to ${systemUUIDs.length} system${systemUUIDs.length > 1 ? 's' : ''}`,
-        id: 'add-template-to-system-success',
       });
 
       queryClient.invalidateQueries(GET_TEMPLATE_SYSTEMS_KEY);

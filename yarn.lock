@@ -1373,14 +1373,13 @@
     webpack-dev-server "5.1.0"
     yargs "^17.6.2"
 
-"@redhat-cloud-services/frontend-components-notifications@^5.0.6":
-  version "5.0.7"
-  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-notifications/-/frontend-components-notifications-5.0.7.tgz#f15c823d4a6d7c27d9db4f92d2ff5643a2978c3f"
-  integrity sha512-CCkioaXuz/gCK4qbBOIEle14C2EM1Qj77uyEnD0m0zpF68VRAT1xDIUO6eWFpWGTbSpklLy/Iz+5iGcSDIBxuw==
+"@redhat-cloud-services/frontend-components-notifications@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-notifications/-/frontend-components-notifications-6.1.0.tgz#9f40656ea15fb4de2a9d637bd8a2eb74e1fbb540"
+  integrity sha512-8jsS5VfuZvfCHQDRqW6vKvukBt7Oral3nCO/hhNv1WxxN9fZvLZbPV8OvYFK/50ekLvK5upFoXYFRU9Lbawb8w==
   dependencies:
     "@redhat-cloud-services/frontend-components" "^6.0.0"
     "@redhat-cloud-services/frontend-components-utilities" "^6.0.0"
-    redux-promise-middleware "6.1.3"
 
 "@redhat-cloud-services/frontend-components-utilities@^6.0.0":
   version "6.0.4"
@@ -8863,11 +8862,6 @@ redent@^3.0.0:
   dependencies:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
-
-redux-promise-middleware@6.1.3:
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/redux-promise-middleware/-/redux-promise-middleware-6.1.3.tgz#315f6a9fcabe1f02a9c2f30fa615f838d7b01b66"
-  integrity sha512-B/Hi5Ct5d9y5d/KG0f6MZUXKA0nrQh5583mHCx13HY3Avte8KfpoRH/TB5QT6k/FcjT6JCxjv7jedymidy2A1A==
 
 redux@^5.0.1:
   version "5.0.1"
