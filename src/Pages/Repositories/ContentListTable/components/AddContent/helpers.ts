@@ -126,7 +126,7 @@ const mapNoMetaDataError = (response: ValidationResponse): Partial<ValidationRes
             ...url,
             error:
               !url?.error && !url?.metadata_present
-                ? `Unable to retrieve YUM Metadata, Recieved HTTP ${url?.http_code}: ${
+                ? `Unable to retrieve YUM Metadata, Received HTTP ${url?.http_code}: ${
                     url ? ERROR_CODE[url.http_code] : ''
                   }`
                 : url?.error,
@@ -178,7 +178,7 @@ export const failedFileUpload = (
   }
   notify({
     variant: AlertVariant.danger,
-    title: 'There was an problem uploading the file.',
+    title: 'There was a problem uploading the file.',
     description,
   });
 };

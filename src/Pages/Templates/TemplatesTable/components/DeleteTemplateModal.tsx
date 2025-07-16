@@ -104,8 +104,8 @@ export default function DeleteTemplateModal() {
               {systems.data.length === 1 ? 'system' : 'systems'}.
             </a>
             <span>
-              Removing this template will cause all associated systems to stop recieving custom
-              content and snapshotted Red Hat content; they will still recieve the latest Red Hat
+              Removing this template will cause all associated systems to stop receiving custom
+              content and snapshotted Red Hat content; they will still receive the latest Red Hat
               content updates.
             </span>
           </Flex>
