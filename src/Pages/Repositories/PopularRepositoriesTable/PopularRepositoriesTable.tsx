@@ -15,6 +15,7 @@ import {
   DropdownItem,
   DropdownList,
   MenuToggle,
+  Stack,
 } from '@patternfly/react-core';
 import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { useEffect, useState, useMemo } from 'react';
@@ -62,11 +63,6 @@ const useStyles = createUseStyles({
   mainContainer: {
     display: 'flex',
     flexDirection: 'column',
-  },
-  topContainer: {
-    justifyContent: 'space-between',
-    padding: '16px 24px', // This is needed
-    height: 'fit-content',
   },
   bottomContainer: {
     justifyContent: 'space-between',
@@ -306,8 +302,11 @@ const PopularRepositoriesTable = () => {
           },
         }}
       />
-      <Grid data-ouia-component-id='popular_repositories_page' className={classes.mainContainer}>
-        <Flex className={classes.topContainer}>
+      <div data-ouia-component-id='popular_repositories_page' className={classes.mainContainer}>
+        <Flex
+          justifyContent={{ default: 'justifyContentSpaceBetween' }}
+          className='pf-v6-u-py-md pf-v6-u-px-lg'
+        >
           <FlexItem>
             <InputGroup>
               <InputGroupItem isFill>
@@ -454,7 +453,7 @@ const PopularRepositoriesTable = () => {
           </Grid>
         </Hide>
         <Hide hide={isLoading || countIsZero}>
-          <>
+          <Stack className='pf-v6-u-px-lg'>
             <Table
               aria-label='Popular repositories table'
               ouiaId='popular_repos_table'
@@ -567,7 +566,7 @@ const PopularRepositoriesTable = () => {
                 </FlexItem>
               </Flex>
             </Hide>
-          </>
+          </Stack>
         </Hide>
         <Hide hide={!countIsZero}>
           <EmptyTableState
@@ -576,7 +575,7 @@ const PopularRepositoriesTable = () => {
             itemName='popular repositories'
           />
         </Hide>
-      </Grid>
+      </div>
     </>
   );
 };

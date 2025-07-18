@@ -7,9 +7,8 @@ import {
   List,
   ListItem,
   Spinner,
-  Stack,
-  StackItem,
   Content,
+  Stack,
 } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
@@ -33,6 +32,7 @@ import { ContentItem, ContentOrigin, FilterData } from 'services/Content/Content
 import { isEmpty } from 'lodash';
 import useDeepCompareEffect from 'Hooks/useDeepCompareEffect';
 import { usePopularListOutletContext } from 'Pages/Repositories/PopularRepositoriesTable/PopularRepositoriesTable';
+import { ActionButtons } from 'components/ActionButtons/ActionButtons';
 
 const useStyles = createUseStyles({
   removeButton: {
@@ -144,7 +144,7 @@ export default function DeleteContentModal() {
 
   const actionTakingPlace = isDeletingItems || isLoading;
 
-  const columnHeaders = ['Name', 'URL', 'Associated Templates'];
+  const columnHeaders = ['Name', 'URL', 'Associated templates'];
 
   useDeepCompareEffect(() => {
     if (!isEmpty(expandState)) setExpandState({});
@@ -158,36 +158,20 @@ export default function DeleteContentModal() {
       title='Delete repositories?'
       ouiaId='delete_custom_repositories'
       description={
-        <>
+        <Stack hasGutter>
           <Hide hide={templates.data.length <= 0}>
             <Alert variant='warning' isInline title='Some repositories have associated templates.'>
               Deleting these repositories will delete that content from their associated templates.
             </Alert>
           </Hide>
-          <Content component='p'>Are you sure you want to delete these repositories?</Content>
-        </>
+          <div className='pf-v6-u-px-lg'>
+            <Content component='p'>Are you sure you want to delete these repositories?</Content>
+          </div>
+        </Stack>
       }
       isOpen
       onClose={onClose}
-      footer={
-        <Stack>
-          <StackItem>
-            <Button
-              key='confirm'
-              ouiaId='delete_modal_confirm'
-              variant='danger'
-              isLoading={actionTakingPlace}
-              isDisabled={actionTakingPlace}
-              onClick={onSave}
-            >
-              Delete
-            </Button>
-            <Button key='cancel' variant='link' onClick={onClose} ouiaId='delete_modal_cancel'>
-              Cancel
-            </Button>
-          </StackItem>
-        </Stack>
-      }
+      footer={<ActionButtons isAction={actionTakingPlace} onSave={onSave} onClose={onClose} />}
     >
       <Hide hide={!isLoading}>
         <Bullseye>

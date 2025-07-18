@@ -12,7 +12,6 @@ import {
   Flex,
   FormAlert,
   Alert,
-  FormGroupLabelHelp,
   Dropdown,
   MenuToggle,
   MenuToggleAction,
@@ -544,7 +543,12 @@ const AddContent = ({ isEdit = false }: Props) => {
                 showClose={false}
                 bodyContent='Optional: Select value to restrict package architecture'
               >
-                <FormGroupLabelHelp aria-label='Add GPG Key help' />
+                <Button
+                  hasNoPadding
+                  icon={<OutlinedQuestionCircleIcon />}
+                  variant='plain'
+                  aria-label='Help'
+                />
               </Popover>
             }
             fieldId='archSelection'
@@ -602,7 +606,12 @@ const AddContent = ({ isEdit = false }: Props) => {
                 showClose={false}
                 bodyContent='Optional: Select value to restrict package OS version'
               >
-                <FormGroupLabelHelp aria-label='Add GPG Key help' />
+                <Button
+                  hasNoPadding
+                  icon={<OutlinedQuestionCircleIcon />}
+                  variant='plain'
+                  aria-label='Help'
+                />
               </Popover>
             }
             fieldId='versionSelection'
@@ -685,7 +694,12 @@ const AddContent = ({ isEdit = false }: Props) => {
                 showClose={false}
                 bodyContent='When enabled, modularity filtering prevents updates to packages contained within an enabled module'
               >
-                <FormGroupLabelHelp aria-label='Add GPG Key help' />
+                <Button
+                  hasNoPadding
+                  icon={<OutlinedQuestionCircleIcon />}
+                  variant='plain'
+                  aria-label='Help'
+                />
               </Popover>
             }
           >
@@ -708,7 +722,12 @@ const AddContent = ({ isEdit = false }: Props) => {
             label='GPG key'
             labelHelp={
               <Popover showClose={false} bodyContent='Optional: Add GPG Key file or URL'>
-                <FormGroupLabelHelp aria-label='Add GPG Key help' />
+                <Button
+                  hasNoPadding
+                  icon={<OutlinedQuestionCircleIcon />}
+                  variant='plain'
+                  aria-label='Help'
+                />
               </Popover>
             }
             fieldId='gpgKey-uploader'

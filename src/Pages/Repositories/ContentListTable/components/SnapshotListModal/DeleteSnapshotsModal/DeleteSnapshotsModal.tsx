@@ -110,7 +110,7 @@ export default function DeleteSnapshotsModal() {
 
   const actionTakingPlace = isDeletingSnapshots || isLoading;
 
-  const columnHeaders = ['Snapshots', 'Change', 'Packages', 'Advisories', 'Associated Templates'];
+  const columnHeaders = ['Snapshots', 'Change', 'Packages', 'Advisories', 'Associated templates'];
 
   return (
     <Modal
@@ -172,7 +172,7 @@ export default function DeleteSnapshotsModal() {
                 <Th
                   key={columnHeader + 'column'}
                   width={
-                    columnHeader != 'Associated Templates'
+                    columnHeader != 'Associated templates'
                       ? columnHeader != 'Snapshots'
                         ? 10
                         : 25
