@@ -152,7 +152,7 @@ export default function CustomRepositoriesStep() {
         </Button>
       </Flex>
       <Flex direction={{ default: 'row' }}>
-        <Content component={ContentVariants.h6} className={classes.reduceTrailingMargin}>
+        <Content component={ContentVariants.p} className={classes.reduceTrailingMargin}>
           Select custom repositories.
         </Content>
         <UrlWithExternalIcon

@@ -1,13 +1,4 @@
-import {
-  Alert,
-  Bullseye,
-  Button,
-  Flex,
-  Spinner,
-  Stack,
-  StackItem,
-  Content,
-} from '@patternfly/react-core';
+import { Alert, Bullseye, Flex, Spinner, Content } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 
 import { createUseStyles } from 'react-jss';
@@ -22,6 +13,7 @@ import {
 } from 'services/Templates/TemplateQueries';
 import { DETAILS_ROUTE, SYSTEMS_ROUTE, TEMPLATES_ROUTE } from 'Routes/constants';
 import { useListSystemsByTemplateId } from 'services/Systems/SystemsQueries';
+import { ActionButtons } from 'components/ActionButtons/ActionButtons';
 
 const useStyles = createUseStyles({
   description: {
@@ -74,25 +66,7 @@ export default function DeleteTemplateModal() {
       ouiaId='delete_template'
       isOpen
       onClose={onClose}
-      footer={
-        <Stack>
-          <StackItem>
-            <Button
-              key='confirm'
-              ouiaId='delete_modal_confirm'
-              variant='danger'
-              isLoading={actionTakingPlace}
-              isDisabled={actionTakingPlace}
-              onClick={onSave}
-            >
-              Delete
-            </Button>
-            <Button key='cancel' variant='link' onClick={onClose} ouiaId='delete_modal_cancel'>
-              Cancel
-            </Button>
-          </StackItem>
-        </Stack>
-      }
+      footer={<ActionButtons isAction={actionTakingPlace} onSave={onSave} onClose={onClose} />}
     >
       <Hide hide={!isLoading && !isTemplateLoading}>
         <Bullseye>

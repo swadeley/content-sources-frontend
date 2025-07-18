@@ -10,6 +10,7 @@ import {
   Content,
   ContentVariants,
   Title,
+  Flex,
 } from '@patternfly/react-core';
 import { useAddTemplateContext } from '../AddTemplateContext';
 import { useContentListQuery, useGetSnapshotsByDates } from 'services/Content/ContentQueries';
@@ -25,11 +26,6 @@ const useStyles = createUseStyles({
   },
   whatDoesItMean: {
     paddingTop: '16px',
-  },
-  radioGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
   },
 });
 
@@ -98,59 +94,61 @@ export default function SetUpDateStep() {
       <Title ouiaId='set_up_date' headingLevel='h1'>
         Set up date
       </Title>
-      <Content component={ContentVariants.h6}>
+      <Content component={ContentVariants.p}>
         This will include snapshots up to a specific date. Content of the snapshots created after
         the selected date will be displayed as applicable, not installable.
       </Content>
-      <Content component={ContentVariants.h6}>
-        <b>Select date for snapshotted repositories</b>
-      </Content>
+      <Title headingLevel='h3'>Select date for snapshotted repositories</Title>
       <Form>
-        <FormGroup className={classes.radioGroup}>
-          <Radio
-            id='use latest snapshot radio'
-            ouiaId='use-latest-snapshot-radio'
-            name='use-latest-snapshot'
-            label='Use the latest content'
-            description='Always use the latest content from repositories. Snapshots might be updated daily.'
-            isChecked={templateRequest.use_latest}
-            onChange={() => {
-              if (!templateRequest.use_latest) {
-                setTemplateRequest((prev) => ({ ...prev, use_latest: true, date: '' }));
-              }
-            }}
-          />
-          <Radio
-            id='use snapshot date radio'
-            ouiaId='use-snapshot-date-radio'
-            name='use-snapshot-date'
-            label='Use up to a specific date'
-            description='Includes repository changes up to this date.'
-            isChecked={!templateRequest.use_latest}
-            onChange={() => {
-              if (templateRequest.use_latest) {
-                setTemplateRequest((prev) => ({ ...prev, use_latest: false, date: '' }));
-              }
-            }}
-          />
-          <Hide hide={templateRequest.use_latest ?? false}>
-            <DatePicker
-              id='use-snapshot-date-picker'
-              value={templateRequest.date ?? ''}
-              required={!templateRequest.use_latest}
-              requiredDateOptions={{ isRequired: !templateRequest.use_latest }}
-              style={{ paddingLeft: '20px' }}
-              validators={dateValidators}
-              popoverProps={{
-                position: 'right',
-                enableFlip: true,
-                flipBehavior: ['right', 'right-start', 'right-end', 'top-start', 'top'],
-              }}
-              onChange={(_, val) => {
-                setTemplateRequest((prev) => ({ ...prev, date: val }));
+        <FormGroup>
+          <Flex direction={{ default: 'column' }} gap={{ default: 'gapLg' }}>
+            <Radio
+              id='use latest snapshot radio'
+              ouiaId='use-latest-snapshot-radio'
+              name='use-latest-snapshot'
+              label='Use the latest content'
+              description='Always use the latest content from repositories. Snapshots might be updated daily.'
+              isChecked={templateRequest.use_latest}
+              onChange={() => {
+                if (!templateRequest.use_latest) {
+                  setTemplateRequest((prev) => ({ ...prev, use_latest: true, date: '' }));
+                }
               }}
             />
-          </Hide>
+            <Flex direction={{ default: 'column' }} gap={{ default: 'gapSm' }}>
+              <Radio
+                id='use snapshot date radio'
+                ouiaId='use-snapshot-date-radio'
+                name='use-snapshot-date'
+                label='Use up to a specific date'
+                description='Includes repository changes up to this date.'
+                isChecked={!templateRequest.use_latest}
+                onChange={() => {
+                  if (templateRequest.use_latest) {
+                    setTemplateRequest((prev) => ({ ...prev, use_latest: false, date: '' }));
+                  }
+                }}
+              />
+              <Hide hide={templateRequest.use_latest ?? false}>
+                <DatePicker
+                  id='use-snapshot-date-picker'
+                  value={templateRequest.date ?? ''}
+                  required={!templateRequest.use_latest}
+                  requiredDateOptions={{ isRequired: !templateRequest.use_latest }}
+                  style={{ paddingLeft: '20px' }}
+                  validators={dateValidators}
+                  popoverProps={{
+                    position: 'right',
+                    enableFlip: true,
+                    flipBehavior: ['right', 'right-start', 'right-end', 'top-start', 'top'],
+                  }}
+                  onChange={(_, val) => {
+                    setTemplateRequest((prev) => ({ ...prev, date: val }));
+                  }}
+                />
+              </Hide>
+            </Flex>
+          </Flex>
         </FormGroup>
       </Form>
       <Hide hide={templateRequest.use_latest || !hasIsAfter || !dateIsValid}>

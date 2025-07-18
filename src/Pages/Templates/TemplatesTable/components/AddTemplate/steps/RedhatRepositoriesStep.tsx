@@ -143,7 +143,7 @@ export default function RedhatRepositoriesStep() {
         </Title>
       </Flex>
       <Flex direction={{ default: 'row' }}>
-        <Content component={ContentVariants.h6}>
+        <Content component={ContentVariants.p}>
           {additionalReposAvailableToSelect
             ? 'You can select additional Red Hat repositories. '
             : ''}

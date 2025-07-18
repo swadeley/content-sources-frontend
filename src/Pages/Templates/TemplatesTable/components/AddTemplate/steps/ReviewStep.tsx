@@ -69,7 +69,7 @@ export default function ReviewStep() {
       <Title ouiaId='review' headingLevel='h1'>
         Review
       </Title>
-      <Content component={ContentVariants.h6}>
+      <Content component={ContentVariants.p}>
         Review the information and then click <b>{isEdit ? 'Confirm changes' : 'Create'}</b>.
       </Content>
       {Object.keys(reviewTemplate).map((key, index) => (
