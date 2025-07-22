@@ -32,9 +32,9 @@ test.describe('Templates CRUD', () => {
     });
     await test.step('Create a template', async () => {
       await page.getByRole('button', { name: 'Add content template' }).click();
-      await page.getByRole('button', { name: 'filter arch' }).click();
+      await page.getByRole('button', { name: 'filter architecture' }).click();
       await page.getByRole('menuitem', { name: 'aarch64' }).click();
-      await page.getByRole('button', { name: 'filter version' }).click();
+      await page.getByRole('button', { name: 'filter OS version' }).click();
       await page.getByRole('menuitem', { name: 'el9' }).click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       const modalPage = page.getByTestId('add_template_modal');
@@ -45,7 +45,7 @@ test.describe('Templates CRUD', () => {
       const rowRepo = await getRowByNameOrUrl(modalPage, repoName);
       await rowRepo.getByLabel('Select row').click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await page.getByText('Use latest content', { exact: true }).click();
+      await page.getByText('Use the latest content', { exact: true }).click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await page.getByText('add template modal', { exact: true });
       await page.getByPlaceholder('Enter name').fill(`${templateName}`);

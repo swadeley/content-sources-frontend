@@ -33,7 +33,7 @@ export default function DetailStep() {
         Enter template details
       </Title>
       <Content component={ContentVariants.h6}>
-        Enter a name and description for your template.
+        Enter a name and a description for your template.
       </Content>
 
       <FormGroup label='Name' isRequired>

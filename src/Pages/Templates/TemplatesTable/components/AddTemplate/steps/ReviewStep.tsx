@@ -35,15 +35,15 @@ export default function ReviewStep() {
     const review = {
       Content: {
         Architecture: archesDisplay(arch),
-        'OS Version': versionDisplay(version),
-        'Pre-selected RH Repositories': hardcodedRedhatRepositoryUUIDS.size,
-        'Additional RH Repositories':
+        'OS version': versionDisplay(version),
+        'Pre-selected Red Hat repositories': hardcodedRedhatRepositoryUUIDS.size,
+        'Additional Red Hat repositories':
           selectedRedhatRepos.size - hardcodedRedhatRepositoryUUIDS.size,
-        'Custom Repositories': selectedCustomRepos.size,
+        'Custom repositories': selectedCustomRepos.size,
       },
       Date: {
         ...(templateRequest.use_latest
-          ? { 'Snapshot date': 'Use latest content' }
+          ? { 'Snapshot date': 'Use the latest content' }
           : { Date: formatDateDDMMMYYYY(date || '') }),
       },
       Details: {

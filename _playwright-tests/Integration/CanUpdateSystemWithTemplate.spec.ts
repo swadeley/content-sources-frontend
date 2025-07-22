@@ -21,9 +21,9 @@ test.describe('Test System With Template', async () => {
     });
     await test.step('Create a template with oldest snapshots', async () => {
       await page.getByRole('button', { name: 'Add content template' }).click();
-      await page.getByRole('button', { name: 'filter arch' }).click();
+      await page.getByRole('button', { name: 'filter architecture' }).click();
       await page.getByRole('menuitem', { name: 'x86_64' }).click();
-      await page.getByRole('button', { name: 'filter version' }).click();
+      await page.getByRole('button', { name: 'filter OS version' }).click();
       await page.getByRole('menuitem', { name: 'el9' }).click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await expect(
@@ -34,7 +34,7 @@ test.describe('Test System With Template', async () => {
         page.getByRole('heading', { name: 'Custom repositories', exact: true }),
       ).toBeVisible();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await page.getByText('Use up to specific date', { exact: true }).click();
+      await page.getByText('Use up to a specific date', { exact: true }).click();
       await page.getByPlaceholder('YYYY-MM-DD', { exact: true }).fill('2021-05-17'); // Older than any snapshot date
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await page.getByText('add template modal', { exact: true });
@@ -102,7 +102,7 @@ test.describe('Test System With Template', async () => {
         page.getByRole('heading', { name: 'Custom repositories', exact: true }),
       ).toBeVisible();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await page.getByText('Use latest content', { exact: true }).click();
+      await page.getByText('Use the latest content', { exact: true }).click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await expect(page.getByText('Enter template details')).toBeVisible();
       await expect(page.getByPlaceholder('Enter name')).toHaveValue(`${templateName}`);

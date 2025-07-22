@@ -160,9 +160,9 @@ test.describe('Snapshot Repositories', () => {
       });
       await navigateToTemplates(page);
       await page.getByRole('button', { name: 'Add content template' }).click();
-      await page.getByRole('button', { name: 'filter arch' }).click();
+      await page.getByRole('button', { name: 'filter architecture' }).click();
       await page.getByRole('menuitem', { name: 'aarch64' }).click();
-      await page.getByRole('button', { name: 'filter version' }).click();
+      await page.getByRole('button', { name: 'filter OS version' }).click();
       await page.getByRole('menuitem', { name: 'el9' }).click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       const modalPage = page.getByTestId('add_template_modal');
@@ -176,7 +176,7 @@ test.describe('Snapshot Repositories', () => {
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await expect(page.getByTestId('set_up_date')).toBeVisible();
       await page.getByTestId('use-latest-snapshot-radio').click();
-      await page.getByRole('radio', { name: 'Use latest content' }).check();
+      await page.getByRole('radio', { name: 'Use the latest content' }).check();
       await page.getByRole('button', { name: 'Next' }).click();
       await page.getByPlaceholder('Enter name').fill(`${templateName}`);
       await page.getByPlaceholder('Description').fill('Template test');

@@ -109,8 +109,8 @@ export default function SetUpDateStep() {
           id='use latest snapshot radio'
           ouiaId='use-latest-snapshot-radio'
           name='use-latest-snapshot'
-          label='Use latest content'
-          description='Always use latest content from repositories. Snapshots might be updated daily.'
+          label='Use the latest content'
+          description='Always use the latest content from repositories. Snapshots might be updated daily.'
           isChecked={templateRequest.use_latest}
           onChange={() => {
             if (!templateRequest.use_latest) {
@@ -122,7 +122,7 @@ export default function SetUpDateStep() {
           id='use snapshot date radio'
           ouiaId='use-snapshot-date-radio'
           name='use-snapshot-date'
-          label='Use up to specific date'
+          label='Use up to a specific date'
           description='Includes repository changes up to this date.'
           isChecked={!templateRequest.use_latest}
           onChange={() => {

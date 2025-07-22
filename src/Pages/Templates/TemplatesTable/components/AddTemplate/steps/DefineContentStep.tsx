@@ -49,8 +49,9 @@ export default function DefineContentStep() {
         Define template content
       </Title>
       <Content component={ContentVariants.h6}>
-        Templates provide consistent content across environments and time by enabling you to control
-        the scope of package and advisory updates to be installed on selected systems.
+        Templates provide consistent content across environments and time. They enable you to
+        control the scope of package and advisory updates that will be installed on selected
+        systems.
       </Content>
       <GridItem>
         <Content component={ContentVariants.h6}>
@@ -77,7 +78,7 @@ export default function DefineContentStep() {
                 ref={toggleRef}
                 className={classes.fullWidth}
                 isFullWidth
-                aria-label='filter arch'
+                aria-label='filter architecture'
                 id='archSelection'
                 ouiaId='restrict_to_architecture'
                 onClick={() => setArchOpen((prev) => !prev)}
@@ -107,7 +108,7 @@ export default function DefineContentStep() {
           </DropdownList>
         </Dropdown>
       </FormGroup>
-      <FormGroup label='OS Version' isRequired>
+      <FormGroup label='OS version' isRequired>
         <Dropdown
           onSelect={(_, val) => {
             setTemplateRequest((prev) => ({ ...prev, version: val as string }));
@@ -116,7 +117,7 @@ export default function DefineContentStep() {
           toggle={(toggleRef) => (
             <ConditionalTooltip
               position='top-start'
-              content='OS Version cannot be changed after creation'
+              content='OS version cannot be changed after creation.'
               show={!!isEdit}
               setDisabled
             >
@@ -124,7 +125,7 @@ export default function DefineContentStep() {
                 ref={toggleRef}
                 className={classes.fullWidth}
                 isFullWidth
-                aria-label='filter version'
+                aria-label='filter OS version'
                 id='versionSelection'
                 ouiaId='restrict_to_os_version'
                 onClick={() => setVersionOpen((prev) => !prev)}
@@ -162,9 +163,9 @@ export default function DefineContentStep() {
         <Content>
           <Content component='ul'>
             <Content component='li'>
-              Configures clients to use date-based snapshots of Red Hat and Custom repositories.
+              Clients are configured to use date-based snapshots of Red Hat and custom repositories.
             </Content>
-            <Content component='li'>Use third party tooling to update systems.</Content>
+            <Content component='li'>Third-party tooling is used to update systems.</Content>
             {/* <TextListItem>Build Images from date based repository snapshots.</TextListItem> */}
           </Content>
         </Content>

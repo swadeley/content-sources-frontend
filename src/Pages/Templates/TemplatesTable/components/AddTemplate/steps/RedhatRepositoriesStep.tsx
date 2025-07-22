@@ -256,8 +256,8 @@ export default function RedhatRepositoriesStep() {
                         }
                         tooltipProps={{
                           content: hardcodedRedhatRepositoryUUIDS.has(uuid)
-                            ? 'This item is pre-selected for your chosen arch and version'
-                            : 'Snapshot not yet available for this repository',
+                            ? 'This item is pre-selected for the chosen architecture and OS version.'
+                            : 'A snapshot is not yet available for this repository.',
                         }}
                         select={{
                           rowIndex,
