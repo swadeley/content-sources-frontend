@@ -1,5 +1,6 @@
 import {
   ExpandableSection,
+  Form,
   FormGroup,
   Grid,
   GridItem,
@@ -61,100 +62,102 @@ export default function DefineContentStep() {
           Based on your filters, the base repositories will be added to this template.
         </Content>
       </GridItem>
-      <FormGroup label='Architecture' isRequired>
-        <Dropdown
-          onSelect={(_, val) => {
-            setTemplateRequest((prev) => ({ ...prev, arch: val as string }));
-            setArchOpen(false);
-          }}
-          toggle={(toggleRef) => (
-            <ConditionalTooltip
-              position='top-start'
-              content='Architecture cannot be changed after creation'
-              show={!!isEdit}
-              setDisabled
-            >
-              <MenuToggle
-                ref={toggleRef}
-                className={classes.fullWidth}
-                isFullWidth
-                aria-label='filter architecture'
-                id='archSelection'
-                ouiaId='restrict_to_architecture'
-                onClick={() => setArchOpen((prev) => !prev)}
-                isExpanded={archOpen}
+      <Form>
+        <FormGroup label='Architecture' isRequired>
+          <Dropdown
+            onSelect={(_, val) => {
+              setTemplateRequest((prev) => ({ ...prev, arch: val as string }));
+              setArchOpen(false);
+            }}
+            toggle={(toggleRef) => (
+              <ConditionalTooltip
+                position='top-start'
+                content='Architecture cannot be changed after creation'
+                show={!!isEdit}
+                setDisabled
               >
-                {archesDisplay(templateRequest?.arch)}
-              </MenuToggle>
-            </ConditionalTooltip>
-          )}
-          onOpenChange={(isOpen) => setArchOpen(isOpen)}
-          isOpen={archOpen}
-        >
-          <DropdownList>
-            {distribution_arches
-              .filter(({ label }) => ['x86_64', 'aarch64'].includes(label))
-              .map(({ label, name }) => (
-                <DropdownItem
-                  key={label}
-                  value={label}
-                  isSelected={label === templateRequest?.arch}
-                  component='button'
-                  data-ouia-component-id={`filter_${label}`}
+                <MenuToggle
+                  ref={toggleRef}
+                  className={classes.fullWidth}
+                  isFullWidth
+                  aria-label='filter architecture'
+                  id='archSelection'
+                  ouiaId='restrict_to_architecture'
+                  onClick={() => setArchOpen((prev) => !prev)}
+                  isExpanded={archOpen}
                 >
-                  {name}
-                </DropdownItem>
-              ))}
-          </DropdownList>
-        </Dropdown>
-      </FormGroup>
-      <FormGroup label='OS version' isRequired>
-        <Dropdown
-          onSelect={(_, val) => {
-            setTemplateRequest((prev) => ({ ...prev, version: val as string }));
-            setVersionOpen(false);
-          }}
-          toggle={(toggleRef) => (
-            <ConditionalTooltip
-              position='top-start'
-              content='OS version cannot be changed after creation.'
-              show={!!isEdit}
-              setDisabled
-            >
-              <MenuToggle
-                ref={toggleRef}
-                className={classes.fullWidth}
-                isFullWidth
-                aria-label='filter OS version'
-                id='versionSelection'
-                ouiaId='restrict_to_os_version'
-                onClick={() => setVersionOpen((prev) => !prev)}
-                isExpanded={versionOpen}
+                  {archesDisplay(templateRequest?.arch)}
+                </MenuToggle>
+              </ConditionalTooltip>
+            )}
+            onOpenChange={(isOpen) => setArchOpen(isOpen)}
+            isOpen={archOpen}
+          >
+            <DropdownList>
+              {distribution_arches
+                .filter(({ label }) => ['x86_64', 'aarch64'].includes(label))
+                .map(({ label, name }) => (
+                  <DropdownItem
+                    key={label}
+                    value={label}
+                    isSelected={label === templateRequest?.arch}
+                    component='button'
+                    data-ouia-component-id={`filter_${label}`}
+                  >
+                    {name}
+                  </DropdownItem>
+                ))}
+            </DropdownList>
+          </Dropdown>
+        </FormGroup>
+        <FormGroup label='OS version' isRequired>
+          <Dropdown
+            onSelect={(_, val) => {
+              setTemplateRequest((prev) => ({ ...prev, version: val as string }));
+              setVersionOpen(false);
+            }}
+            toggle={(toggleRef) => (
+              <ConditionalTooltip
+                position='top-start'
+                content='OS version cannot be changed after creation.'
+                show={!!isEdit}
+                setDisabled
               >
-                {versionDisplay(templateRequest?.version)}
-              </MenuToggle>
-            </ConditionalTooltip>
-          )}
-          onOpenChange={(isOpen) => setVersionOpen(isOpen)}
-          isOpen={versionOpen}
-        >
-          <DropdownList>
-            {distribution_versions
-              .filter(({ label }) => ['8', '9', '10'].includes(label))
-              .map(({ label, name }) => (
-                <DropdownItem
-                  key={label}
-                  value={label}
-                  isSelected={label === templateRequest?.version}
-                  component='button'
-                  data-ouia-component-id={`filter_${label}`}
+                <MenuToggle
+                  ref={toggleRef}
+                  className={classes.fullWidth}
+                  isFullWidth
+                  aria-label='filter OS version'
+                  id='versionSelection'
+                  ouiaId='restrict_to_os_version'
+                  onClick={() => setVersionOpen((prev) => !prev)}
+                  isExpanded={versionOpen}
                 >
-                  {name}
-                </DropdownItem>
-              ))}
-          </DropdownList>
-        </Dropdown>
-      </FormGroup>
+                  {versionDisplay(templateRequest?.version)}
+                </MenuToggle>
+              </ConditionalTooltip>
+            )}
+            onOpenChange={(isOpen) => setVersionOpen(isOpen)}
+            isOpen={versionOpen}
+          >
+            <DropdownList>
+              {distribution_versions
+                .filter(({ label }) => ['8', '9', '10'].includes(label))
+                .map(({ label, name }) => (
+                  <DropdownItem
+                    key={label}
+                    value={label}
+                    isSelected={label === templateRequest?.version}
+                    component='button'
+                    data-ouia-component-id={`filter_${label}`}
+                  >
+                    {name}
+                  </DropdownItem>
+                ))}
+            </DropdownList>
+          </Dropdown>
+        </FormGroup>
+      </Form>
       <ExpandableSection
         toggleText='What does it mean?'
         aria-label='quickStart-expansion'

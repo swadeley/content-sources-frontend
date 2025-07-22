@@ -1,4 +1,5 @@
 import {
+  Form,
   FormGroup,
   Grid,
   Content,
@@ -36,35 +37,37 @@ export default function DetailStep() {
         Enter a name and a description for your template.
       </Content>
 
-      <FormGroup label='Name' isRequired>
-        <TextInput
-          isRequired
-          id='name'
-          name='name'
-          label='Name'
-          ouiaId='input_name'
-          type='text'
-          validated={errors.name ? 'error' : 'default'}
-          onChange={(_event, value) => setFieldValues(value, 'name')}
-          value={templateRequest?.name || ''}
-          placeholder='Enter name'
-        />
-        <CustomHelperText hide={!errors.name} textValue={errors.name} />
-      </FormGroup>
-      <FormGroup label='Description'>
-        <TextArea
-          id='description'
-          name='description'
-          label='Description'
-          data-ouia-component-id='input_description'
-          type='text'
-          validated={errors.description ? 'error' : 'default'}
-          onChange={(_event, value) => setFieldValues(value, 'description')}
-          value={templateRequest?.description || ''}
-          placeholder='Enter description'
-        />
-        <CustomHelperText hide={!errors.description} textValue={errors.description} />
-      </FormGroup>
+      <Form>
+        <FormGroup label='Name' isRequired>
+          <TextInput
+            isRequired
+            id='name'
+            name='name'
+            label='Name'
+            ouiaId='input_name'
+            type='text'
+            validated={errors.name ? 'error' : 'default'}
+            onChange={(_event, value) => setFieldValues(value, 'name')}
+            value={templateRequest?.name || ''}
+            placeholder='Enter name'
+          />
+          <CustomHelperText hide={!errors.name} textValue={errors.name} />
+        </FormGroup>
+        <FormGroup label='Description'>
+          <TextArea
+            id='description'
+            name='description'
+            label='Description'
+            data-ouia-component-id='input_description'
+            type='text'
+            validated={errors.description ? 'error' : 'default'}
+            onChange={(_event, value) => setFieldValues(value, 'description')}
+            value={templateRequest?.description || ''}
+            placeholder='Enter description'
+          />
+          <CustomHelperText hide={!errors.description} textValue={errors.description} />
+        </FormGroup>
+      </Form>
     </Grid>
   );
 }
