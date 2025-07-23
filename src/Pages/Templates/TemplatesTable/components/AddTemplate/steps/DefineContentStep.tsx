@@ -41,7 +41,7 @@ export default function DefineContentStep() {
   const versionDisplay = (
     version?: string,
   ): string => // arm64 aarch64
-    distribution_versions.find(({ label }) => version === label)?.name || 'Select version';
+    distribution_versions.find(({ label }) => version === label)?.name || 'Select OS version';
 
   return (
     <Grid hasGutter>

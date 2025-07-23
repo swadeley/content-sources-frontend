@@ -64,12 +64,12 @@ it('Select a filter of each type and ensure chips are present ContentListFilters
   await userEvent.click(optionMenu);
 
   // Select a Version item
-  const versionOption = getByText('Version')?.closest('button') as Element;
+  const versionOption = getByText('OS version')?.closest('button') as Element;
 
   expect(versionOption).toBeInTheDocument();
   await userEvent.click(versionOption);
 
-  const versionSelector = getByLabelText('filter version') as Element;
+  const versionSelector = getByLabelText('filter OS version') as Element;
   expect(versionSelector).toBeInTheDocument();
   await userEvent.click(versionSelector);
 

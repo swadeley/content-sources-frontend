@@ -175,7 +175,7 @@ const TemplatesTable = () => {
     { title: 'Name', width: 15 },
     { title: 'Description' },
     { title: 'Architecture', width: 10 },
-    { title: 'Version', width: 10 },
+    { title: 'OS version', width: 10 },
     { title: 'Snapshot date', width: 15 },
     { title: 'Status', width: 15 },
   ];

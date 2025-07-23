@@ -644,7 +644,7 @@ const AddContent = ({ isEdit = false }: Props) => {
                   ref={toggleRef}
                   className={classes.fullWidth}
                   isFullWidth
-                  aria-label='filter version'
+                  aria-label='filter OS version'
                   id='versionSelect'
                   ouiaId='filter_version'
                   onClick={() => setVersionOpen((prev) => !prev)}

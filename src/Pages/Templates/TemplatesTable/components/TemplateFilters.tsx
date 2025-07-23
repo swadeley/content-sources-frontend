@@ -47,7 +47,7 @@ const useStyles = createUseStyles({
   },
 });
 
-export type Filters = 'Name' | 'Version' | 'Architecture';
+export type Filters = 'Name' | 'OS version' | 'Architecture';
 
 const Filters = ({ isLoading, setFilterData, filterData }: Props) => {
   const classes = useStyles();
@@ -56,7 +56,7 @@ const Filters = ({ isLoading, setFilterData, filterData }: Props) => {
   const navigate = useNavigate();
   const [isActionOpen, setActionOpen] = useState(false);
   const [typeFilterOpen, setTypeFilterOpen] = useState(false);
-  const filters = ['Name', 'Version', 'Architecture'];
+  const filters = ['Name', 'OS version', 'Architecture'];
   const [filterType, setFilterType] = useState<Filters>('Name');
   const [versionNamesLabels, setVersionNamesLabels] = useState({});
   const [archNamesLabels, setArchNamesLabels] = useState({});
@@ -148,7 +148,7 @@ const Filters = ({ isLoading, setFilterData, filterData }: Props) => {
             />
           </InputGroupItem>
         );
-      case 'Version':
+      case 'OS version':
         return (
           <Dropdown
             onSelect={(_, val) => {
@@ -158,14 +158,14 @@ const Filters = ({ isLoading, setFilterData, filterData }: Props) => {
             toggle={(toggleRef) => (
               <MenuToggle
                 ref={toggleRef}
-                aria-label='filter version'
+                aria-label='filter OS version'
                 id='versionSelect'
                 ouiaId='filter_by_version'
                 onClick={() => setActionOpen((prev) => !prev)}
                 isDisabled={isLoading}
                 isExpanded={isActionOpen}
               >
-                {selectedVersion || 'Filter by version'}
+                {selectedVersion || 'Filter by OS version'}
               </MenuToggle>
             )}
             onOpenChange={(isOpen) => setActionOpen(isOpen)}
@@ -326,7 +326,7 @@ const Filters = ({ isLoading, setFilterData, filterData }: Props) => {
       <Hide hide={!(selectedVersion || selectedArch || searchQuery)}>
         <FlexItem className={classes.chipsContainer}>
           {selectedVersion ? (
-            <LabelGroup categoryName='Version'>
+            <LabelGroup categoryName='OS version'>
               <Label variant='outline' key={selectedVersion} onClose={() => setSelectedVersion('')}>
                 {selectedVersion}
               </Label>

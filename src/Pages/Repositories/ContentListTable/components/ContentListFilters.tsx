@@ -73,7 +73,7 @@ const statusDisplayMap = {
 };
 
 const statusDisplayValues = Object.keys(statusDisplayMap);
-export type Filters = 'Name/URL' | 'Version' | 'Architecture' | 'Status';
+export type Filters = 'Name/URL' | 'OS version' | 'Architecture' | 'Status';
 
 const ContentListFilters = ({
   isLoading,
@@ -91,7 +91,7 @@ const ContentListFilters = ({
   const navigate = useNavigate();
   const [isActionOpen, setActionOpen] = useState(false);
   const [typeFilterOpen, setTypeFilterOpen] = useState(false);
-  const filters = ['Name/URL', 'Version', 'Architecture', 'Status'];
+  const filters = ['Name/URL', 'OS version', 'Architecture', 'Status'];
   const [filterType, setFilterType] = useState<Filters>('Name/URL');
   const [versionNamesLabels, setVersionNamesLabels] = useState({});
   const [archNamesLabels, setArchNamesLabels] = useState({});
@@ -216,7 +216,7 @@ const ContentListFilters = ({
             onChange={(_event, value) => setSearchQuery(value)}
           />
         );
-      case 'Version':
+      case 'OS version':
         return (
           <Dropdown
             onSelect={(_, val) => {
@@ -229,7 +229,7 @@ const ContentListFilters = ({
             toggle={(toggleRef) => (
               <MenuToggle
                 ref={toggleRef}
-                aria-label='filter version'
+                aria-label='filter OS version'
                 id='versionSelect'
                 ouiaId='filter_version'
                 className={classes.fullWidth}
@@ -237,7 +237,7 @@ const ContentListFilters = ({
                 isDisabled={isLoading}
                 isExpanded={isActionOpen}
               >
-                Filter by version
+                Filter by OS version
               </MenuToggle>
             )}
             onOpenChange={(isOpen) => setActionOpen(isOpen)}
@@ -506,7 +506,7 @@ const ContentListFilters = ({
         }
       >
         <FlexItem className={classes.chipsContainer}>
-          <LabelGroup categoryName='Version'>
+          <LabelGroup categoryName='OS version'>
             {selectedVersions.map((version) => (
               <Label
                 variant='outline'

@@ -31,7 +31,7 @@ test.describe('Upload Repositories', () => {
       await page.getByRole('menuitem', { name: 'x86_64' }).click();
 
       // Filter by version
-      const versionFilterButton = page.getByRole('button', { name: 'filter version' });
+      const versionFilterButton = page.getByRole('button', { name: 'filter OS version' });
       await versionFilterButton.click();
       await page.getByRole('menuitem', { name: 'el9' }).click();
       await page.getByRole('menuitem', { name: 'el8' }).click();

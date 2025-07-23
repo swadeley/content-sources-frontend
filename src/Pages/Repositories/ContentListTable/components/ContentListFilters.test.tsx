@@ -77,11 +77,11 @@ it('Select a filter of each type and ensure chips are present contentlistfilters
   });
 
   // Select a Version item
-  const versionOption = queryByText('Version') as Element;
+  const versionOption = queryByText('OS version') as Element;
   expect(versionOption).toBeInTheDocument();
   fireEvent.click(versionOption);
 
-  const versionSelector = getByLabelText('filter version') as Element;
+  const versionSelector = getByLabelText('filter OS version') as Element;
   expect(versionSelector).toBeInTheDocument();
   fireEvent.click(versionSelector);
   const versionItem = queryByText('el7') as Element;
