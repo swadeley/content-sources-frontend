@@ -94,8 +94,7 @@ test.describe('Snapshot Repositories', () => {
 
       await Promise.all([
         page.waitForResponse(
-          (resp) =>
-            resp.url().includes('bulk_delete') && resp.status() >= 200 && resp.status() < 300,
+          (resp) => resp.url().includes('delete') && resp.status() >= 200 && resp.status() < 300,
         ),
         page.getByRole('button', { name: 'Remove' }).click(),
       ]);
