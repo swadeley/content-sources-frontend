@@ -45,7 +45,7 @@ const EmptyTableState = ({
       className={classes.emptyStateContainer}
     >
       <EmptyStateBody className={classes.emptyStateBody}>
-        {notFiltered ? notFilteredBody : 'Clear all filters to show more results'}
+        {notFiltered ? notFilteredBody : 'Clear all filters to show more results.'}
       </EmptyStateBody>
       <EmptyStateFooter>
         {notFiltered ? (

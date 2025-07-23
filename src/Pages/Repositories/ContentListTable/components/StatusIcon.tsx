@@ -106,7 +106,7 @@ const StatusIcon = ({
 
   const showError = (snapshotError: string | undefined, introspectError: string | undefined) => {
     if (!snapshotError && !introspectError) {
-      return 'An unknown error occurred';
+      return 'An unknown error occurred.';
     } else if (snapshotError) {
       return `A snapshot error occurred: ${snapshotError}`;
     } else if (introspectError) {

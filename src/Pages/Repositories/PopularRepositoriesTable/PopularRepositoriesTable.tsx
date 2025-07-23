@@ -342,7 +342,7 @@ const PopularRepositoriesTable = () => {
                               content={
                                 !rbac?.repoWrite
                                   ? 'You do not have the required permissions to perform this action.'
-                                  : 'Make a selection below to add multiple repositories'
+                                  : 'Make a selection below to add multiple repositories.'
                               }
                               show={!rbac?.repoWrite || !atLeastOneRepoToAddChecked}
                               setDisabled

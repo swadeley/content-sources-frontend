@@ -37,7 +37,7 @@ it('Render with notFiltered is set to "false"', () => {
   );
 
   expect(queryByText(`No ${item} match the filter criteria`)).toBeInTheDocument();
-  expect(queryByText('Clear all filters to show more results')).toBeInTheDocument();
+  expect(queryByText('Clear all filters to show more results.')).toBeInTheDocument();
   expect(queryByText('Clear all filters')).toBeInTheDocument();
 });
 

@@ -36,7 +36,7 @@ const StatusIcon = ({ uuid, last_update_snapshot_error, last_update_task }: Prop
     updateTemplateError: string | undefined,
   ) => {
     if (!snapshotError && !updateTemplateError) {
-      return 'An unknown error occurred';
+      return 'An unknown error occurred.';
     } else if (snapshotError) {
       return `An error occurred when updating the latest snapshot: ${snapshotError}`;
     } else if (updateTemplateError) {
