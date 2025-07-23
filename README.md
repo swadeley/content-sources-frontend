@@ -86,7 +86,7 @@ One can also: `yarn test` to run the unit tests directly.
 1. Ensure the correct node version is installed and in use: `nvm use`
 
 2. Copy the [example env file](playwright_example.env) and create a file named:`.env`
-   For local development only the BASE_URL:`https://stage.foo.redhat.com:1337` is required, which is already set in the example config.
+   For local development only the BASE*URL:`https://stage.foo.redhat.com:1337` and `ADMIN*\*` credentials (stage user) are required, which is already set in the example config.
 
 3. Install Playwright browsers and dependencies
    `yarn playwright install`
@@ -109,7 +109,9 @@ For tips and recommendations on how to write Playwright tests. Check out the Pla
 
 It is recommended to test using vs-code and the [Playwright Test module for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright). But other editors do have similar plugins to for ease of use, if so desired
 
-For running the integration tests you will need to run `yarn get-tests`, point playwright to stage directly (i.e.: set proxy and change URL, check `playwright_example.env`), set the `INTEGRATION` flag to true and run the tests.
+For running the integration tests you will need to point playwright to stage directly (i.e.: set proxy and change URL, check `playwright_example.env`), set the `INTEGRATION` flag to true and run the tests.
+
+For running RBAC tests locally you just need to set the RBAC environment variable to `true`. See the `playwright_example.env` file for the `RBAC` flag.
 
 ### Shared Playwright test utilities
 
@@ -132,7 +134,6 @@ _I am using the regular submodule setup. When working on new tests I thought of 
  When the BE PR merges I will update the FE PR to point to the newest changes in the BE by running `./test-utils.sh update` and committing, then make it ready for review!_
 
 </details>
-
 
 ## Running integration tests
 
