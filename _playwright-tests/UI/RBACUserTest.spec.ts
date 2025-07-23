@@ -10,6 +10,7 @@ const url = randomUrl();
 
 // Define a test group for admin user
 test.describe('Create, update, and read a repo as admin user', () => {
+  test.skip(!process.env.RBAC, `Skipping as the RBAC environment variable isn't set to true.`);
   test.use({ storageState: '.auth/admin_user.json' });
   test.describe.configure({ mode: 'serial' });
 

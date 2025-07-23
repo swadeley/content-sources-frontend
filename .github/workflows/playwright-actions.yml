@@ -68,6 +68,7 @@ jobs:
             echo "RHEL_OPERATOR_PASSWORD=$RHEL_OPERATOR_PASSWORD"
             echo "BASE_URL=https://stage.foo.redhat.com:1337"
             echo "CI=true"
+            echo "RBAC=true"
           } >> .env
 
           echo ".env file created successfully."

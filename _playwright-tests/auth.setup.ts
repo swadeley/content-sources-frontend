@@ -24,6 +24,7 @@ setup.describe('Setup Authentication States', async () => {
   });
 
   setup('Authenticate rhel-operator user and save state', async ({ page }) => {
+    setup.skip(!process.env.RBAC, `Skipping as the RBAC environment variable isn't set to true.`);
     setup.setTimeout(60_000);
 
     // Login rhel-operator user
@@ -42,6 +43,7 @@ setup.describe('Setup Authentication States', async () => {
   });
 
   setup('Authenticate read-only user and save state', async ({ page }) => {
+    setup.skip(!process.env.RBAC, `Skipping as the RBAC environment variable isn't set to true.`);
     setup.setTimeout(60_000);
 
     // Login read-only user

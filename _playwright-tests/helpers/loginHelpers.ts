@@ -97,13 +97,17 @@ export const getUserAuthToken = (name: string) => {
 
 export const throwIfMissingEnvVariables = () => {
   const MandatoryEnvVariables = [
+    'BASE_URL',
     'ADMIN_USERNAME',
     'ADMIN_PASSWORD',
-    'READONLY_USERNAME',
-    'READONLY_PASSWORD',
-    'RHEL_OPERATOR_USERNAME',
-    'RHEL_OPERATOR_PASSWORD',
-    'BASE_URL',
+    ...(process.env.RBAC
+      ? [
+          'READONLY_USERNAME',
+          'READONLY_PASSWORD',
+          'RHEL_OPERATOR_USERNAME',
+          'RHEL_OPERATOR_PASSWORD',
+        ]
+      : []),
     ...(process.env.INTEGRATION ? ['PROXY', 'ORG_ID_1', 'ACTIVATION_KEY_1'] : []),
   ];
 
