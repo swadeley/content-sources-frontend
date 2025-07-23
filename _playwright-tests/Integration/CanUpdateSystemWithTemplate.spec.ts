@@ -14,13 +14,13 @@ test.describe('Test System With Template', async () => {
       await cleanup.runAndAdd(() => cleanupTemplates(client, templateNamePrefix));
       cleanup.add(() => regClient.Destroy('rhc'));
     });
-    await test.step('Navigate to templates, ensure the Add content template button can be clicked', async () => {
+    await test.step('Navigate to templates, ensure the Create template button can be clicked', async () => {
       await navigateToTemplates(page);
       await closePopupsIfExist(page);
-      await expect(page.getByRole('button', { name: 'Add content template' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Create template' })).toBeVisible();
     });
     await test.step('Create a template with oldest snapshots', async () => {
-      await page.getByRole('button', { name: 'Add content template' }).click();
+      await page.getByRole('button', { name: 'Create template' }).click();
       await page.getByRole('button', { name: 'filter architecture' }).click();
       await page.getByRole('menuitem', { name: 'x86_64' }).click();
       await page.getByRole('button', { name: 'filter OS version' }).click();

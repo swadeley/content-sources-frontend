@@ -3,7 +3,7 @@ import { navigateToTemplates } from './helpers/navHelpers';
 import { closePopupsIfExist } from './helpers/helpers';
 
 test.describe('Templates', () => {
-  test('Navigate to templates, make sure the Add content template button can be clicked', async ({
+  test('Navigate to templates, make sure the Create template button can be clicked', async ({
     page,
   }) => {
     await navigateToTemplates(page);

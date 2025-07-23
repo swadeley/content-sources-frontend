@@ -303,7 +303,7 @@ const Filters = ({ isLoading, setFilterData, filterData }: Props) => {
               isDisabled={isLoading}
               onClick={() => navigate('add')}
             >
-              Add content template
+              Create template
             </Button>
           </ConditionalTooltip>
           {/* 

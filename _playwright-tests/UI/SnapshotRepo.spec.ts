@@ -158,7 +158,7 @@ test.describe('Snapshot Repositories', () => {
         timeout: 60000,
       });
       await navigateToTemplates(page);
-      await page.getByRole('button', { name: 'Add content template' }).click();
+      await page.getByRole('button', { name: 'Create template' }).click();
       await page.getByRole('button', { name: 'filter architecture' }).click();
       await page.getByRole('menuitem', { name: 'aarch64' }).click();
       await page.getByRole('button', { name: 'filter OS version' }).click();

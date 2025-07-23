@@ -26,12 +26,12 @@ test.describe('Templates CRUD', () => {
       const row = await getRowByNameOrUrl(page, repoName);
       await expect(row.getByText('Valid')).toBeVisible({ timeout: 60_000 });
     });
-    await test.step('Navigate to templates, ensure the Add content template button can be clicked', async () => {
+    await test.step('Navigate to templates, ensure the Create template button can be clicked', async () => {
       await navigateToTemplates(page);
-      await expect(page.getByRole('button', { name: 'Add content template' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Create template' })).toBeVisible();
     });
     await test.step('Create a template', async () => {
-      await page.getByRole('button', { name: 'Add content template' }).click();
+      await page.getByRole('button', { name: 'Create template' }).click();
       await page.getByRole('button', { name: 'filter architecture' }).click();
       await page.getByRole('menuitem', { name: 'aarch64' }).click();
       await page.getByRole('button', { name: 'filter OS version' }).click();
