@@ -59,7 +59,7 @@ it('expect PopularRepositoriesTable to render with remove one item', () => {
   (usePopularRepositoriesQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     data: {
-      data: [{ ...defaultPopularRepository, uuid: 'ifThisExistsThanButtonIsRemove' }],
+      data: [{ ...defaultPopularRepository, uuid: 'ifThisExistsThanButtonIsDelete' }],
       meta: { count: 1, limit: 20, offset: 0 },
     },
   }));
@@ -72,7 +72,7 @@ it('expect PopularRepositoriesTable to render with remove one item', () => {
 
   expect(queryByText(defaultPopularRepository.suggested_name)).toBeInTheDocument();
   expect(queryByText(defaultPopularRepository.url)).toBeInTheDocument();
-  expect(queryByText('Remove')).toBeInTheDocument();
+  expect(queryByText('Delete')).toBeInTheDocument();
 });
 
 it('Render a loading state checking search disabled', () => {

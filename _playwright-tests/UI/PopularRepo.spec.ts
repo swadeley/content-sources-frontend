@@ -42,13 +42,13 @@ test.describe('Popular Repositories', () => {
       await page.getByRole('menuitem', { name: 'Add 3 repositories without snapshotting' }).click();
     });
 
-    await test.step('Check buttons have changed from Add to Remove', async () => {
+    await test.step('Check buttons have changed from Add to Delete', async () => {
       for (const repoName of repos) {
         await expect(
           page
             .getByRole('row', { name: repoName })
             .getByTestId('remove_popular_repo')
-            .getByText('Remove'),
+            .getByText('Delete'),
         ).toBeVisible();
       }
     });
@@ -80,11 +80,11 @@ test.describe('Popular Repositories', () => {
 
         await page.getByTestId('delete-kebab').click();
       }
-      await page.getByRole('menuitem', { name: 'Remove 3 repositories' }).click();
+      await page.getByRole('menuitem', { name: 'Delete 3 repositories' }).click();
       // Confirm the removal in the pop-up
       await page
-        .getByRole('dialog', { name: 'Remove repositories?' })
-        .getByRole('button', { name: 'Remove' })
+        .getByRole('dialog', { name: 'Delete repositories?' })
+        .getByRole('button', { name: 'Delete' })
         .click();
     });
   });

@@ -15,7 +15,11 @@ import Hide from 'components/Hide/Hide';
 import { useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import useRootPath from 'Hooks/useRootPath';
-import { GET_TEMPLATES_KEY, useDeleteTemplateItemMutate } from 'services/Templates/TemplateQueries';
+import {
+  GET_TEMPLATES_KEY,
+  useDeleteTemplateItemMutate,
+  useFetchTemplate,
+} from 'services/Templates/TemplateQueries';
 import { DETAILS_ROUTE, SYSTEMS_ROUTE, TEMPLATES_ROUTE } from 'Routes/constants';
 import { useListSystemsByTemplateId } from 'services/Systems/SystemsQueries';
 
@@ -39,6 +43,8 @@ export default function DeleteTemplateModal() {
   const queryClient = useQueryClient();
 
   const { templateUUID: uuid } = useParams();
+
+  const { data: templateData, isLoading: isTemplateLoading } = useFetchTemplate(uuid!);
 
   const { mutateAsync: deleteTemplate, isLoading: isDeleting } =
     useDeleteTemplateItemMutate(queryClient);
@@ -64,7 +70,7 @@ export default function DeleteTemplateModal() {
       titleIconVariant='warning'
       position='top'
       variant={ModalVariant.medium}
-      title='Remove template?'
+      title='Delete template?'
       ouiaId='delete_template'
       isOpen
       onClose={onClose}
@@ -79,7 +85,7 @@ export default function DeleteTemplateModal() {
               isDisabled={actionTakingPlace}
               onClick={onSave}
             >
-              Remove
+              Delete
             </Button>
             <Button key='cancel' variant='link' onClick={onClose} ouiaId='delete_modal_cancel'>
               Cancel
@@ -88,7 +94,7 @@ export default function DeleteTemplateModal() {
         </Stack>
       }
     >
-      <Hide hide={!isLoading}>
+      <Hide hide={!isLoading && !isTemplateLoading}>
         <Bullseye>
           <Spinner />
         </Bullseye>
@@ -104,16 +110,19 @@ export default function DeleteTemplateModal() {
               {systems.data.length === 1 ? 'system' : 'systems'}.
             </a>
             <span>
-              Removing this template will cause all associated systems to stop receiving custom
+              Deleting this template will cause all associated systems to stop receiving custom
               content and snapshotted Red Hat content; they will still receive the latest Red Hat
               content updates.
             </span>
           </Flex>
         </Alert>
       </Hide>
-      <Content component='p' className={classes.description}>
-        Are you sure you want to remove this template?
-      </Content>
+      <Hide hide={isLoading || isTemplateLoading}>
+        <Content component='p' className={classes.description}>
+          Template <b>{templateData?.name}</b> and all its data will be deleted. This action cannot
+          be undone.
+        </Content>
+      </Hide>
     </Modal>
   );
 }

@@ -79,17 +79,17 @@ test.describe('Upload Repositories', () => {
       await row.getByRole('button', { name: 'Kebab toggle' }).click();
       await page.getByRole('menuitem', { name: 'Delete' }).click();
 
-      // Click on the 'Remove' button
+      // Click on the 'Delete' button
       await Promise.all([
-        // Verify the 'Remove repositories?' dialog is visible
-        expect(page.getByText('Remove repositories?')).toBeVisible(),
+        // Verify the 'Delete repositories?' dialog is visible
+        expect(page.getByText('Delete repositories?')).toBeVisible(),
         // Wait for the successful API call
         page.waitForResponse(
           (resp) =>
             resp.url().includes('bulk_delete') && resp.status() >= 200 && resp.status() < 300,
         ),
-        // Click the 'Remove' button
-        page.getByRole('button', { name: 'Remove' }).click(),
+        // Click the 'Delete' button
+        page.getByRole('button', { name: 'Delete' }).click(),
         await expect(row).not.toBeVisible(),
       ]);
     });

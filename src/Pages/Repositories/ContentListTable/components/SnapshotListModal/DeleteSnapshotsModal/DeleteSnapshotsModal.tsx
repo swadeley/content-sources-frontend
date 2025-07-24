@@ -117,18 +117,18 @@ export default function DeleteSnapshotsModal() {
       titleIconVariant='warning'
       position='top'
       variant={ModalVariant.large}
-      title='Remove snapshots?'
+      title='Delete snapshots?'
       ouiaId='delete_snapshots'
       description={
         <>
           <Hide hide={!affectsTemplates}>
             <Alert variant='warning' isInline title='Some snapshots have associated templates.'>
-              Removing these snapshots will change content in their associated templates. Templates
+              Deleting these snapshots will change content in their associated templates. Templates
               will switch to a snapshot taken closest to the deleted one.
             </Alert>
           </Hide>
           <Content component='p' className={classes.description}>
-            Are you sure you want to remove these snapshots?
+            Are you sure you want to delete these snapshots?
           </Content>
         </>
       }
@@ -145,7 +145,7 @@ export default function DeleteSnapshotsModal() {
               isDisabled={actionTakingPlace}
               onClick={onSave}
             >
-              Remove
+              Delete
             </Button>
             <Button
               key='cancel'

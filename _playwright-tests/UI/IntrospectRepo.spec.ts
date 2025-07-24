@@ -71,14 +71,14 @@ test.describe('Introspect Repositories', () => {
       const row = await getRowByNameOrUrl(page, repoName);
       await row.getByRole('button', { name: 'Kebab toggle' }).click();
       await page.getByRole('menuitem', { name: 'Delete' }).click();
-      await expect(page.getByText('Remove repositories?')).toBeVisible();
+      await expect(page.getByText('Delete repositories?')).toBeVisible();
 
       await Promise.all([
         page.waitForResponse(
           (resp) =>
             resp.url().includes('bulk_delete') && resp.status() >= 200 && resp.status() < 300,
         ),
-        page.getByRole('button', { name: 'Remove' }).click(),
+        page.getByRole('button', { name: 'Delete' }).click(),
       ]);
       // Ensure the specific row is removed
       await expect(row).not.toBeVisible();

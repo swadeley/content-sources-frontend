@@ -9,12 +9,20 @@ Most of the things here are in-line with the [official Playwright best practices
 
 ## Table of Contents 📜
 
-- [Best Practices ✨](#best-practices)
-- [Test Structure 🏗](#test-structure)
-- [Selectors 🎯](#selectors)
-- [Assertions 🔍](#assertions)
-- [Debugging 🐛](#debugging)
-- [Caveats, gotchas and things to be aware of ⚠](#caveats-gotchas-and-things-to-be-aware-of)
+- [Playwright Style Guide 💅](#playwright-style-guide-)
+  - [Table of Contents 📜](#table-of-contents-)
+  - [Best Practices ✨](#best-practices-)
+  - [Test Structure 🏗](#test-structure-)
+  - [Selectors 🎯](#selectors-)
+  - [Assertions 🔍](#assertions-)
+    - [Common Assertions](#common-assertions)
+    - [Non-DOM Assertions](#non-dom-assertions)
+  - [Debugging 🐛](#debugging-)
+    - [Playwright Inspector](#playwright-inspector)
+    - [Trace Viewer](#trace-viewer)
+    - [`page.pause()`](#pagepause)
+    - [VS Code Extension](#vs-code-extension)
+  - [Caveats, gotchas and things to be aware of ⚠](#caveats-gotchas-and-things-to-be-aware-of-)
 
 ## Best Practices ✨
 

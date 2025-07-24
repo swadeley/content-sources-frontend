@@ -77,8 +77,8 @@ test.describe('Custom Repositories CRUD', () => {
       const row = await getRowByNameOrUrl(page, `${repoName}-Edited`);
       await row.getByRole('button', { name: 'Kebab toggle' }).click();
       await page.getByRole('menuitem', { name: 'Delete' }).click();
-      await expect(page.getByText('Remove repositories?')).toBeVisible();
-      await page.getByRole('button', { name: 'Remove' }).click();
+      await expect(page.getByText('Delete repositories?')).toBeVisible();
+      await page.getByRole('button', { name: 'Delete' }).click();
       await expect(page.getByRole('row', { name: repoName })).not.toBeVisible();
     });
   });

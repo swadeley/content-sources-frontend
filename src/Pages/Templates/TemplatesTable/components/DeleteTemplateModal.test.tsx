@@ -3,6 +3,7 @@ import { ReactQueryTestWrapper, defaultSystemsListItem, defaultTemplateItem } fr
 
 import DeleteTemplateModal from './DeleteTemplateModal';
 import { useListSystemsByTemplateId } from 'services/Systems/SystemsQueries';
+import { useFetchTemplate } from 'services/Templates/TemplateQueries';
 
 jest.mock('react-query', () => ({
   ...jest.requireActual('react-query'),
@@ -24,6 +25,7 @@ jest.mock('services/Systems/SystemsQueries', () => ({
 
 jest.mock('services/Templates/TemplateQueries', () => ({
   useDeleteTemplateItemMutate: () => ({ mutate: () => undefined, isLoading: false }),
+  useFetchTemplate: jest.fn(),
 }));
 
 jest.mock('middleware/AppContext', () => ({ useAppContext: () => ({}) }));
@@ -36,6 +38,10 @@ it('Render delete modal where there are no systems', () => {
       count: 0,
     },
   }));
+  (useFetchTemplate as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: { name: 'test' },
+  }));
 
   const { queryByText } = render(
     <ReactQueryTestWrapper>
@@ -44,7 +50,10 @@ it('Render delete modal where there are no systems', () => {
   );
 
   expect(queryByText('This template is in use.')).toBeNull();
-  expect(queryByText('Are you sure you want to remove this template?')).toBeInTheDocument();
+  expect(
+    queryByText('Template and all its data will be deleted. This action cannot be undone.'),
+  ).toBeInTheDocument();
+  expect(queryByText('test')).toBeInTheDocument();
 });
 
 it('Render delete modal where template has one system', () => {
@@ -63,5 +72,8 @@ it('Render delete modal where template has one system', () => {
   );
 
   expect(queryByText('This template is in use.')).toBeInTheDocument();
-  expect(queryByText('Are you sure you want to remove this template?')).toBeInTheDocument();
+  expect(
+    queryByText('Template and all its data will be deleted. This action cannot be undone.'),
+  ).toBeInTheDocument();
+  expect(queryByText('test')).toBeInTheDocument();
 });

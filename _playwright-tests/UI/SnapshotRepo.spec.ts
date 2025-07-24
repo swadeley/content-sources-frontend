@@ -90,13 +90,13 @@ test.describe('Snapshot Repositories', () => {
       const edited_row = await getRowByNameOrUrl(page, repoUrl);
       await edited_row.getByLabel('Kebab toggle').click();
       await page.getByRole('menuitem', { name: 'Delete' }).click();
-      await expect(page.getByText('Remove repositories?')).toBeVisible();
+      await expect(page.getByText('Delete repositories?')).toBeVisible();
 
       await Promise.all([
         page.waitForResponse(
           (resp) => resp.url().includes('delete') && resp.status() >= 200 && resp.status() < 300,
         ),
-        page.getByRole('button', { name: 'Remove' }).click(),
+        page.getByRole('button', { name: 'Delete' }).click(),
       ]);
 
       await expect(edited_row).not.toBeVisible();
@@ -202,8 +202,8 @@ test.describe('Snapshot Repositories', () => {
         .getByLabel('Kebab toggle')
         .click();
       await page.getByRole('menuitem', { name: 'Delete' }).click();
-      await expect(page.getByText('Remove snapshots?')).toBeVisible();
-      await page.getByText('Remove', { exact: true }).click();
+      await expect(page.getByText('Delete snapshots?')).toBeVisible();
+      await page.getByText('Delete', { exact: true }).click();
       await expect(page.getByRole('button', { name: '1 - 3 of 3' }).first()).toBeVisible({
         timeout: 60000,
       });
@@ -225,8 +225,8 @@ test.describe('Snapshot Repositories', () => {
       // Therefore uncheck the first snapshot
       await page.getByRole('checkbox', { name: 'Select row 0' }).uncheck();
       await page.getByTestId('remove_snapshots_bulk').click();
-      await expect(page.getByText('Remove snapshots?')).toBeVisible();
-      await page.getByText('Remove', { exact: true }).click();
+      await expect(page.getByText('Delete snapshots?')).toBeVisible();
+      await page.getByText('Delete', { exact: true }).click();
       await expect(page.getByRole('button', { name: '1 - 1 of 1' }).first()).toBeVisible({
         timeout: 60000,
       });

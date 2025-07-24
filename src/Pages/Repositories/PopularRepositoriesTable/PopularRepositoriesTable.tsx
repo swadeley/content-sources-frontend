@@ -530,7 +530,7 @@ const PopularRepositoriesTable = () => {
                               variant='danger'
                               ouiaId='remove_popular_repo'
                             >
-                              Remove
+                              Delete
                             </Button>
                           ) : (
                             <AddRepo

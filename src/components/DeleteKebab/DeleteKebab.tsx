@@ -55,8 +55,8 @@ const DeleteKebab = ({ atLeastOneRepoChecked, numberOfReposChecked, isDisabled }
         >
           <DropdownItem onClick={() => navigate(DELETE_ROUTE)}>
             {atLeastOneRepoChecked
-              ? `Remove ${numberOfReposChecked} repositories`
-              : 'Remove selected repositories'}
+              ? `Delete ${numberOfReposChecked} repositories`
+              : 'Delete selected repositories'}
           </DropdownItem>
         </ConditionalTooltip>
       </DropdownList>

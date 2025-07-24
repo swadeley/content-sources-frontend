@@ -90,8 +90,8 @@ test.describe('Templates CRUD', () => {
       await expect(rowTemplate.getByText('Valid')).toBeVisible({ timeout: 60000 });
       await rowTemplate.getByLabel('Kebab toggle').click();
       await page.getByRole('menuitem', { name: 'Delete' }).click();
-      await expect(page.getByText('Remove template?')).toBeVisible();
-      await page.getByRole('button', { name: 'Remove' }).click();
+      await expect(page.getByText('Delete template?')).toBeVisible();
+      await page.getByRole('button', { name: 'Delete' }).click();
       await expect(rowTemplate.getByText('Valid')).not.toBeVisible();
     });
   });

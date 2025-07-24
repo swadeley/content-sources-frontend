@@ -254,10 +254,10 @@ const SnapshotListModal = () => {
                         onClick={() => navigate(DELETE_ROUTE)}
                       >
                         {!checkedSnapshots.size || !rbac?.repoWrite
-                          ? 'Remove selected snapshots'
+                          ? 'Delete selected snapshots'
                           : checkedSnapshots.size == count
-                            ? `Can't remove all snapshots`
-                            : `Remove ${checkedSnapshots.size} snapshots`}
+                            ? `Can't delete all snapshots`
+                            : `Delete ${checkedSnapshots.size} snapshots`}
                       </Button>
                     </ConditionalTooltip>
                   </FlexItem>

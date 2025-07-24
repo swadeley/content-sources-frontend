@@ -155,16 +155,16 @@ export default function DeleteContentModal() {
       titleIconVariant='warning'
       position='top'
       variant={ModalVariant.large}
-      title='Remove repositories?'
+      title='Delete repositories?'
       ouiaId='delete_custom_repositories'
       description={
         <>
           <Hide hide={templates.data.length <= 0}>
             <Alert variant='warning' isInline title='Some repositories have associated templates.'>
-              Removing these repositories will remove that content from their associated templates.
+              Deleting these repositories will delete that content from their associated templates.
             </Alert>
           </Hide>
-          <Content component='p'>Are you sure you want to remove these repositories?</Content>
+          <Content component='p'>Are you sure you want to delete these repositories?</Content>
         </>
       }
       isOpen
@@ -180,7 +180,7 @@ export default function DeleteContentModal() {
               isDisabled={actionTakingPlace}
               onClick={onSave}
             >
-              Remove
+              Delete
             </Button>
             <Button key='cancel' variant='link' onClick={onClose} ouiaId='delete_modal_cancel'>
               Cancel
