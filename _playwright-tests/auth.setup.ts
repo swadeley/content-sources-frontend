@@ -7,6 +7,8 @@ import {
   logInWithReadOnlyUser,
   logInWithAdminUser,
   logInWithRHELOperatorUser,
+  logInWithLayeredRepoUser,
+  logInWithRHELOnlyUser,
 } from './helpers/loginHelpers';
 
 import { existsSync, mkdirSync } from 'fs';
@@ -58,6 +60,42 @@ setup.describe('Setup Authentication States', async () => {
     process.env.READONLY_TOKEN = `Bearer ${readOnlyToken}`;
 
     await storeStorageStateAndToken(page, 'read-only.json');
+    await logout(page);
+  });
+
+  setup('Authenticate user with additional subscriptions and save state', async ({ page }) => {
+    setup.setTimeout(60_000);
+
+    // Login layered repo user
+    await logInWithLayeredRepoUser(page);
+
+    // Save state for layered repo user
+    const { cookies } = await page
+      .context()
+      .storageState({ path: path.join(__dirname, '../../.auth', 'layered-repo-user.json') });
+    const layeredRepoToken = cookies.find((cookie) => cookie.name === 'cs_jwt')?.value;
+
+    process.env.LAYERED_REPO_TOKEN = `Bearer ${layeredRepoToken}`;
+
+    await storeStorageStateAndToken(page, 'layered-repo-user.json');
+    await logout(page);
+  });
+
+  setup('Authenticate user with only RHEL subscription and save state', async ({ page }) => {
+    setup.setTimeout(60_000);
+
+    // Login RHEL-only user
+    await logInWithRHELOnlyUser(page);
+
+    // Save state for RHEL-only user
+    const { cookies } = await page
+      .context()
+      .storageState({ path: path.join(__dirname, '../../.auth', 'rhel-only-user.json') });
+    const rhelOnlyToken = cookies.find((cookie) => cookie.name === 'cs_jwt')?.value;
+
+    process.env.RHEL_ONLY_TOKEN = `Bearer ${rhelOnlyToken}`;
+
+    await storeStorageStateAndToken(page, 'rhel-only-user.json');
     await logout(page);
   });
 

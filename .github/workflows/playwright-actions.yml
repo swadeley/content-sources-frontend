@@ -58,6 +58,26 @@ jobs:
             exit 1
           fi
 
+          if [ -z "$LAYERED_REPO_ACCESS_USERNAME" ]; then
+            echo "Error: LAYERED_REPO_ACCESS_USERNAME secret is not set."
+            exit 1
+          fi
+
+          if [ -z "$LAYERED_REPO_ACCESS_PASSWORD" ]; then
+            echo "Error: LAYERED_REPO_ACCESS_PASSWORD secret is not set."
+            exit 1
+          fi
+
+          if [ -z "$RHEL_ONLY_ACCESS_USERNAME" ]; then
+            echo "Error: RHEL_ONLY_ACCESS_USERNAME secret is not set."
+            exit 1
+          fi
+
+          if [ -z "$RHEL_ONLY_ACCESS_PASSWORD" ]; then
+            echo "Error: RHEL_ONLY_ACCESS_PASSWORD secret is not set."
+            exit 1
+          fi
+
           # Create the .env file and write the secrets and other variables to it
           {
             echo "ADMIN_USERNAME=$ADMIN_USERNAME"
@@ -66,6 +86,10 @@ jobs:
             echo "READONLY_PASSWORD=$READONLY_PASSWORD"
             echo "RHEL_OPERATOR_USERNAME=$RHEL_OPERATOR_USERNAME"
             echo "RHEL_OPERATOR_PASSWORD=$RHEL_OPERATOR_PASSWORD"
+            echo "LAYERED_REPO_ACCESS_USERNAME=$LAYERED_REPO_ACCESS_USERNAME"
+            echo "LAYERED_REPO_ACCESS_PASSWORD=$LAYERED_REPO_ACCESS_PASSWORD"
+            echo "RHEL_ONLY_ACCESS_USERNAME=$RHEL_ONLY_ACCESS_USERNAME"
+            echo "RHEL_ONLY_ACCESS_PASSWORD=$RHEL_ONLY_ACCESS_PASSWORD"
             echo "BASE_URL=https://stage.foo.redhat.com:1337"
             echo "CI=true"
             echo "RBAC=true"

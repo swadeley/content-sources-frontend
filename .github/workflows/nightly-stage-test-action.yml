@@ -63,8 +63,14 @@ jobs:
           echo "READONLY_PASSWORD=$READONLY_PASSWORD" >> .env
           echo "RHEL_OPERATOR_USERNAME=$RHEL_OPERATOR_USERNAME" >> .env
           echo "RHEL_OPERATOR_PASSWORD=$RHEL_OPERATOR_PASSWORD" >> .env
+          echo "LAYERED_REPO_ACCESS_USERNAME=$LAYERED_REPO_ACCESS_USERNAME" >> .env
+          echo "LAYERED_REPO_ACCESS_PASSWORD=$LAYERED_REPO_ACCESS_PASSWORD" >> .env
+          echo "RHEL_ONLY_ACCESS_USERNAME=$RHEL_ONLY_ACCESS_USERNAME" >> .env
+          echo "RHEL_ONLY_ACCESS_PASSWORD=$RHEL_ONLY_ACCESS_PASSWORD" >> .env
           echo "ORG_ID_1=$STAGE_ORG_ID" >> .env
           echo "ACTIVATION_KEY_1=$STAGE_ACTIVATION_KEY" >> .env
+          echo "LAYERED_REPO_ACCESS_ORG_ID=$LAYERED_REPO_ACCESS_ORG_ID" >> .env
+          echo "LAYERED_REPO_ACCESS_ACTIVATION_KEY=$LAYERED_REPO_ACCESS_ACTIVATION_KEY" >> .env
           echo "DOCKER_SOCKET=/var/run/docker.sock" >> .env
 
       - name: Set up Node.js

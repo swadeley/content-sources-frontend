@@ -9,7 +9,15 @@ const regClient = new RHSMClient(`RHSMClientTest-${randomName()}`);
 let firstVersion;
 
 test.describe('Test System With Template', async () => {
+  test.use({
+    storageState: '.auth/layered-repo-user.json',
+    extraHTTPHeaders: process.env.LAYERED_REPO_TOKEN
+      ? { Authorization: process.env.LAYERED_REPO_TOKEN }
+      : {},
+  });
   test('Verify system updates with template', async ({ page, client, cleanup }) => {
+    const HARepo = 'Red Hat Enterprise Linux 9 for x86_64 - High Availability';
+
     await test.step('Add cleanup, delete any templates and template test repos that exist', async () => {
       await cleanup.runAndAdd(() => cleanupTemplates(client, templateNamePrefix));
       cleanup.add(() => regClient.Destroy('rhc'));
@@ -29,6 +37,10 @@ test.describe('Test System With Template', async () => {
       await expect(
         page.getByRole('heading', { name: 'Additional Red Hat repositories', exact: true }),
       ).toBeVisible();
+      const modalPage = page.getByTestId('add_template_modal');
+      await page.getByRole('searchbox', { name: 'Filter by name' }).fill(HARepo);
+      const rowHARepo = await getRowByNameOrUrl(modalPage, HARepo);
+      await rowHARepo.getByLabel('Select row').click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await expect(
         page.getByRole('heading', { name: 'Custom repositories', exact: true }),
@@ -53,8 +65,8 @@ test.describe('Test System With Template', async () => {
 
       // Register, overriding the default key and org
       const reg = await regClient.RegisterRHC(
-        process.env.ACTIVATION_KEY_1,
-        process.env.ORG_ID_1,
+        process.env.LAYERED_REPO_ACCESS_ACTIVATION_KEY,
+        process.env.LAYERED_REPO_ACCESS_ORG_ID,
         templateName,
       );
       if (reg?.exitCode != 0) {
@@ -145,6 +157,14 @@ test.describe('Test System With Template', async () => {
       // Now vim-enhanced should be installed
       const exist = await regClient.Exec(['rpm', '-q', 'vim-enhanced']);
       expect(exist?.exitCode).toBe(0);
+
+      // Install booth from the HA layered repo, expect it to finish in 60 seconds
+      const yumInstallBooth = await regClient.Exec(['yum', 'install', '-y', 'booth'], 60000);
+      expect(yumInstallBooth?.exitCode).toBe(0);
+
+      // Now booth should be installed
+      const boothExists = await regClient.Exec(['rpm', '-q', 'booth']);
+      expect(boothExists?.exitCode).toBe(0);
     });
   });
 });
