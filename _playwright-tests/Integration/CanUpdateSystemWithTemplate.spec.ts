@@ -12,7 +12,7 @@ test.describe('Test System With Template', async () => {
   test('Verify system updates with template', async ({ page, client, cleanup }) => {
     await test.step('Add cleanup, delete any templates and template test repos that exist', async () => {
       await cleanup.runAndAdd(() => cleanupTemplates(client, templateNamePrefix));
-      cleanup.add(() => regClient.Destroy(true));
+      cleanup.add(() => regClient.Destroy('rhc'));
     });
     await test.step('Navigate to templates, ensure the Add content template button can be clicked', async () => {
       await navigateToTemplates(page);

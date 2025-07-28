@@ -136,11 +136,14 @@ export class RHSMClient {
 
   /**
    * Unregister and destroy the client container
+   * @param unregisterMethod Method to use for unregistering: 'rhc', 'sm', or 'none' (default)
    */
-  async Destroy(withRhc: boolean = false) {
-    const cmd = await this.Unregister(withRhc);
-    console.log(cmd?.stdout);
-    console.log(cmd?.stderr);
+  async Destroy(unregisterMethod: 'rhc' | 'sm' | 'none' = 'none') {
+    if (unregisterMethod !== 'none') {
+      const cmd = await this.Unregister(unregisterMethod === 'rhc');
+      console.log(cmd?.stdout);
+      console.log(cmd?.stderr);
+    }
     return killContainer(this.name);
   }
 }

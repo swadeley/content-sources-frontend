@@ -20,7 +20,7 @@ test.describe('Associated Template CRUD', async () => {
   }) => {
     await test.step('Set up cleanup for templates and RHSM client', async () => {
       await cleanup.runAndAdd(() => cleanupTemplates(client, templateNamePrefix));
-      cleanup.add(() => regClient.Destroy(true));
+      cleanup.add(() => regClient.Destroy('rhc'));
     });
 
     await test.step('Navigate to templates and create a new template', async () => {
