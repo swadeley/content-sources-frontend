@@ -1350,6 +1350,11 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-6.2.2.tgz#ff6d31266ba03df9be8095f189d1399a8cc3b66d"
   integrity sha512-rncRDq66H8VnLyb9DrHHlZtPddlpNL9+W0XuQC0L7F6p78hOwSZmoGTW2Vq8/wJplDj8h/61qRpfRF9VEYPW0g==
 
+"@patternfly/react-styles@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-6.3.0.tgz#b32bf47c9688dd4e969c90bdd12eef8532616c22"
+  integrity sha512-FvuyNsY2oN8f2dvCl4Hx8CxBWCIF3BC9JE3Ay1lCuVqY1WYkvW4AQn3/0WVRINCxB9FkQxVNkSjARdwHNCEulw==
+
 "@patternfly/react-styles@^6.3.0-prerelease.1":
   version "6.3.0-prerelease.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-6.3.0-prerelease.1.tgz#df2239d53247955c667a98eb7f087d263feb34e2"

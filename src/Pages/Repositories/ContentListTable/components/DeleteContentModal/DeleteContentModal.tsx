@@ -33,6 +33,7 @@ import { isEmpty } from 'lodash';
 import useDeepCompareEffect from 'Hooks/useDeepCompareEffect';
 import { usePopularListOutletContext } from 'Pages/Repositories/PopularRepositoriesTable/PopularRepositoriesTable';
 import { ActionButtons } from 'components/ActionButtons/ActionButtons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const useStyles = createUseStyles({
   removeButton: {
@@ -164,7 +165,7 @@ export default function DeleteContentModal() {
               Deleting these repositories will delete that content from their associated templates.
             </Alert>
           </Hide>
-          <div className='pf-v6-u-px-lg'>
+          <div className={spacing.pxLg}>
             <Content component='p'>Are you sure you want to delete these repositories?</Content>
           </div>
         </Stack>

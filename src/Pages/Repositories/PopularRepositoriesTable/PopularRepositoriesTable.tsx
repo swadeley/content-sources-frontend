@@ -50,6 +50,7 @@ import { AddRepo } from './components/AddRepo';
 import { DELETE_ROUTE } from 'Routes/constants';
 import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import useArchVersion from 'Hooks/useArchVersion';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const useStyles = createUseStyles({
   chipsContainer: {
@@ -305,7 +306,7 @@ const PopularRepositoriesTable = () => {
       <div data-ouia-component-id='popular_repositories_page' className={classes.mainContainer}>
         <Flex
           justifyContent={{ default: 'justifyContentSpaceBetween' }}
-          className='pf-v6-u-py-md pf-v6-u-px-lg'
+          className={`${spacing.pyMd} ${spacing.pxLg}`}
         >
           <FlexItem>
             <InputGroup>
@@ -453,7 +454,7 @@ const PopularRepositoriesTable = () => {
           </Grid>
         </Hide>
         <Hide hide={isLoading || countIsZero}>
-          <Stack className='pf-v6-u-px-lg'>
+          <Stack className={spacing.pxLg}>
             <Table
               aria-label='Popular repositories table'
               ouiaId='popular_repos_table'

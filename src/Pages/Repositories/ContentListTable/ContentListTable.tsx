@@ -54,6 +54,7 @@ import { Outlet, useNavigate, useOutletContext, useSearchParams } from 'react-ro
 import useArchVersion from 'Hooks/useArchVersion';
 import { ADD_ROUTE, DELETE_ROUTE, EDIT_ROUTE, UPLOAD_ROUTE } from 'Routes/constants';
 import UploadRepositoryLabel from 'components/UploadRepositoryLabel/UploadRepositoryLabel';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const useStyles = createUseStyles({
   mainContainer: {
@@ -488,7 +489,7 @@ const ContentListTable = () => {
       >
         <Flex
           justifyContent={{ default: 'justifyContentSpaceBetween' }}
-          className='pf-v6-u-py-md pf-v6-u-px-lg'
+          className={`${spacing.pyMd} ${spacing.pxLg}`}
         >
           <ContentListFilters
             contentOrigin={contentOrigin}
@@ -553,7 +554,7 @@ const ContentListTable = () => {
               </Grid>
             </Hide>
             <Hide hide={countIsZero || isLoading}>
-              <Stack className='pf-v6-u-px-lg'>
+              <Stack className={spacing.pxLg}>
                 <Table
                   aria-label='Custom repositories table'
                   ouiaId='custom_repositories_table'

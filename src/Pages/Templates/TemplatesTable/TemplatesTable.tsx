@@ -40,6 +40,7 @@ import useArchVersion from 'Hooks/useArchVersion';
 import { useTemplateList } from 'services/Templates/TemplateQueries';
 import StatusIcon from './components/StatusIcon';
 import { ExclamationTriangleIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const useStyles = createUseStyles({
   topContainer: {
@@ -253,7 +254,7 @@ const TemplatesTable = () => {
           </Grid>
         </Hide>
         <Hide hide={countIsZero || isLoading}>
-          <Stack className='pf-v6-u-px-lg'>
+          <Stack className={spacing.pxLg}>
             <Table
               aria-label='Content template table'
               ouiaId='content_template_table'

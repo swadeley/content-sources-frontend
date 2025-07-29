@@ -13,6 +13,7 @@ import {
   REPOSITORIES_ROUTE,
 } from '../../Routes/constants';
 import { useAppContext } from 'middleware/AppContext';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const useStyles = createUseStyles({
   link: {
@@ -65,7 +66,7 @@ export default function RepositoryLayout() {
       />
       {(features?.admintasks?.enabled && features.admintasks?.accessible) ||
       !features?.communityrepos?.enabled ? (
-        <div className='pf-v6-u-px-lg'>
+        <div className={spacing.pxLg}>
           <Tabs ouiaId='routed-tabs' activeKey={currentRoute}>
             {tabs.map(({ title, route, key }) => (
               <Tab
