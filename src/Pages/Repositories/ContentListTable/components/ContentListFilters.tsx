@@ -64,7 +64,15 @@ const useStyles = createUseStyles({
   },
 });
 
-const statusValues = ['Invalid', 'Pending', 'Unavailable', 'Valid'];
+// Mapping from display names to backend API values
+const statusDisplayMap = {
+  Invalid: 'Invalid',
+  'In progress': 'Pending',
+  Unavailable: 'Unavailable',
+  Valid: 'Valid',
+};
+
+const statusDisplayValues = Object.keys(statusDisplayMap);
 export type Filters = 'Name/URL' | 'Version' | 'Architecture' | 'Status';
 
 const ContentListFilters = ({
@@ -148,11 +156,16 @@ const ContentListFilters = ({
   };
 
   useEffect(() => {
+    // Convert display status values to backend API values
+    const backendStatuses = debouncedSelectedStatuses.map(
+      (displayStatus) => statusDisplayMap[displayStatus] || displayStatus,
+    );
+
     setFilterData({
       searchQuery: debouncedSearchQuery,
       versions: getLabels('version', debouncedSelectedVersions),
       arches: getLabels('arch', debouncedSelectedArches),
-      statuses: debouncedSelectedStatuses,
+      statuses: backendStatuses,
     });
   }, [
     debouncedSearchQuery,
@@ -316,7 +329,7 @@ const ContentListFilters = ({
             isOpen={isActionOpen}
           >
             <DropdownList>
-              {statusValues.map((status) => (
+              {statusDisplayValues.map((status) => (
                 <DropdownItem
                   key={status}
                   value={status}
