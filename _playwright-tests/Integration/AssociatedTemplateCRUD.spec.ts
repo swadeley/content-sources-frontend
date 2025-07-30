@@ -84,12 +84,12 @@ test.describe('Associated Template CRUD', async () => {
       await page.getByRole('menuitem', { name: 'Delete' }).click();
 
       await test.step('Verify deletion warning appears for template with associated systems', async () => {
-        await expect(page.getByText('Remove template?')).toBeVisible();
+        await expect(page.getByText('Delete template?')).toBeVisible();
 
         const modal = page.getByRole('dialog');
         await expect(modal).toBeVisible();
 
-        const removeButton = modal.getByRole('button', { name: 'Remove' });
+        const removeButton = modal.getByRole('button', { name: 'Delete' });
         await expect(removeButton).toBeEnabled();
 
         const modalText = (await modal.textContent()) || '';
@@ -121,7 +121,7 @@ test.describe('Associated Template CRUD', async () => {
       await page.getByRole('menuitem', { name: 'Delete' }).click();
 
       await test.step('Verify no warning appears and deletion succeeds', async () => {
-        await expect(page.getByText('Remove template?')).toBeVisible();
+        await expect(page.getByText('Delete template?')).toBeVisible();
 
         const modal = page.getByRole('dialog');
         const modalText = (await modal.textContent()) || '';
@@ -132,9 +132,13 @@ test.describe('Associated Template CRUD', async () => {
           );
         expect(hasWarningText).toBeFalsy();
 
-        expect(modalText).toContain('Are you sure you want to remove this template?');
+        await expect(
+          modal.getByText(
+            `Template ${templateName} and all its data will be deleted. This action cannot be undone.`,
+          ),
+        ).toBeVisible();
 
-        const removeButton = modal.getByRole('button', { name: 'Remove' });
+        const removeButton = modal.getByRole('button', { name: 'Delete' });
         await expect(removeButton).toBeEnabled();
         await removeButton.click();
       });
