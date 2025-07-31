@@ -47,8 +47,9 @@ export class RHSMClient {
    */
   async ConfigureRHCForStage() {
     const command = [
-      'echo',
-      `"proxy=${process.env.PROXY}" >> /etc/insights-client/insights-client.conf`,
+      'sh',
+      '-c',
+      `echo "proxy=${process.env.PROXY}" >> /etc/insights-client/insights-client.conf`,
     ];
     return runCommand(this.name, command);
   }
