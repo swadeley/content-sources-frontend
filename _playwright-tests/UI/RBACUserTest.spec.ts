@@ -8,7 +8,6 @@ const repoNamePrefix = 'Repo-RBAC';
 const repoName = `${repoNamePrefix}-${randomName()}`;
 const url = randomUrl();
 
-// Define a test group for admin user
 test.describe('Create, update, and read a repo as admin user', () => {
   test.skip(!process.env.RBAC, `Skipping as the RBAC environment variable isn't set to true.`);
   test.use({ storageState: '.auth/admin_user.json' });
@@ -44,7 +43,6 @@ test.describe('Create, update, and read a repo as admin user', () => {
     });
   });
 
-  // Define a separate test group for read-only user
   test.describe('Check read-only user can view but not edit the repo', () => {
     test.use({
       storageState: '.auth/read-only.json',
@@ -59,16 +57,13 @@ test.describe('Create, update, and read a repo as admin user', () => {
       const row = await getRowByNameOrUrl(page, `${repoName}-Edited`);
       await expect(row.getByText('Valid')).toBeVisible({ timeout: 60000 });
       await row.getByLabel('Kebab toggle').click();
-      // This is the critical assertion for permissions
+      await expect(page.getByRole('menu')).toBeVisible();
       await expect(row.getByRole('menuitem', { name: 'Edit' })).not.toBeVisible({ timeout: 500 });
-
-      // Additionally, check if the "Add repositories" button is disabled
       const repoButton = page.getByRole('button', { name: 'Add repositories', exact: true });
       await expect(repoButton).toBeDisabled();
     });
   });
 
-  // Define a separate test group for rhel-operator user
   test.describe('Check rhel-operator user can view but not edit the repo', () => {
     test.use({
       storageState: '.auth/rhel_operator.json',
@@ -83,10 +78,8 @@ test.describe('Create, update, and read a repo as admin user', () => {
       const row = await getRowByNameOrUrl(page, `${repoName}-Edited`);
       await expect(row.getByText('Valid')).toBeVisible({ timeout: 60000 });
       await row.getByLabel('Kebab toggle').click();
-      // This is the critical assertion for permissions
+      await expect(page.getByRole('menu')).toBeVisible();
       await expect(row.getByRole('menuitem', { name: 'Edit' })).not.toBeVisible({ timeout: 500 });
-
-      // Additionally, check if the "Add repositories" button is disabled
       const repoButton = page.getByRole('button', { name: 'Add repositories', exact: true });
       await expect(repoButton).toBeDisabled();
     });
