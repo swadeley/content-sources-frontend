@@ -165,6 +165,17 @@ test.describe('Test System With Template', async () => {
       // Now booth should be installed
       const boothExists = await regClient.Exec(['rpm', '-q', 'booth']);
       expect(boothExists?.exitCode).toBe(0);
+
+      // Verify that booth was installed from the HA repo
+      const dnfVerifyRepo = await regClient.Exec([
+        'sh',
+        '-c',
+        "dnf info booth | grep '^From repo' | cut -d ':' -f2-",
+      ]);
+      expect(dnfVerifyRepo?.exitCode).toBe(0);
+      expect(dnfVerifyRepo?.stdout?.toString().trim()).toBe(
+        'rhel-9-for-x86_64-highavailability-rpms',
+      );
     });
   });
 });
