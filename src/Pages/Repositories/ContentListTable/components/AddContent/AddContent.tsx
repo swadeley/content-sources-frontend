@@ -17,6 +17,8 @@ import {
   MenuToggleAction,
   DropdownList,
   DropdownItem,
+  Stack,
+  StackItem,
 } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
@@ -335,17 +337,30 @@ const AddContent = ({ isEdit = false }: Props) => {
       onClose={onClose}
       footer={
         isEdit ? (
-          <Button
-            key='confirm'
-            ouiaId='modal_save'
-            className={classes.saveButton}
-            variant='primary'
-            isLoading={actionTakingPlace}
-            isDisabled={isDisabled}
-            onClick={() => editContent().then(onClose)}
-          >
-            {editHasNotChanged ? 'No changes' : 'Save changes'}
-          </Button>
+          <Stack>
+            <StackItem>
+              <Button
+                key='confirm'
+                ouiaId='modal_save'
+                className={classes.saveButton}
+                variant='primary'
+                isLoading={actionTakingPlace}
+                isDisabled={isDisabled}
+                onClick={() => editContent().then(onClose)}
+              >
+                {editHasNotChanged ? 'No changes' : 'Save changes'}
+              </Button>
+              <Button
+                key='cancel'
+                variant='link'
+                className={classes.cancelButton}
+                onClick={onClose}
+                ouiaId='modal_cancel'
+              >
+                Cancel
+              </Button>
+            </StackItem>
+          </Stack>
         ) : (
           <Dropdown
             isOpen={isActionOpen}
