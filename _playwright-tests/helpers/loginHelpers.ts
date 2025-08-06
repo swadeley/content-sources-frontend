@@ -114,10 +114,6 @@ export const throwIfMissingEnvVariables = () => {
     'BASE_URL',
     'ADMIN_USERNAME',
     'ADMIN_PASSWORD',
-    'LAYERED_REPO_ACCESS_USERNAME',
-    'LAYERED_REPO_ACCESS_PASSWORD',
-    'RHEL_ONLY_ACCESS_USERNAME',
-    'RHEL_ONLY_ACCESS_PASSWORD',
     ...(process.env.RBAC
       ? [
           'READONLY_USERNAME',
@@ -131,6 +127,10 @@ export const throwIfMissingEnvVariables = () => {
           'PROXY',
           'ORG_ID_1',
           'ACTIVATION_KEY_1',
+          'LAYERED_REPO_ACCESS_USERNAME',
+          'LAYERED_REPO_ACCESS_PASSWORD',
+          'RHEL_ONLY_ACCESS_USERNAME',
+          'RHEL_ONLY_ACCESS_PASSWORD',
           'LAYERED_REPO_ACCESS_ORG_ID',
           'LAYERED_REPO_ACCESS_ACTIVATION_KEY',
         ]

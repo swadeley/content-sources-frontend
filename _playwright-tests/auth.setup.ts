@@ -64,6 +64,10 @@ setup.describe('Setup Authentication States', async () => {
   });
 
   setup('Authenticate user with additional subscriptions and save state', async ({ page }) => {
+    setup.skip(
+      !process.env.INTEGRATION,
+      `Skipping as the INTEGRATION environment variable isn't set to true.`,
+    );
     setup.setTimeout(60_000);
 
     // Login layered repo user
@@ -82,6 +86,10 @@ setup.describe('Setup Authentication States', async () => {
   });
 
   setup('Authenticate user with only RHEL subscription and save state', async ({ page }) => {
+    setup.skip(
+      !process.env.INTEGRATION,
+      `Skipping as the INTEGRATION environment variable isn't set to true.`,
+    );
     setup.setTimeout(60_000);
 
     // Login RHEL-only user
