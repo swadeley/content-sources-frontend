@@ -81,6 +81,13 @@ export const logInWithReadOnlyUser = async (page: Page) =>
     process.env.READONLY_PASSWORD,
   );
 
+export const logInWithNoSubsUser = async (page: Page) =>
+  await logInWithUsernameAndPassword(
+    page,
+    process.env.NO_SUBS_USER_USERNAME,
+    process.env.NO_SUBS_USER_PASSWORD,
+  );
+
 export const getUserAuthToken = (name: string) => {
   const userPath = path.join(__dirname, `../../.auth/${name}.json`);
   const fileContent = readFileSync(userPath, { encoding: 'utf8' });
@@ -106,6 +113,8 @@ export const throwIfMissingEnvVariables = () => {
           'READONLY_PASSWORD',
           'RHEL_OPERATOR_USERNAME',
           'RHEL_OPERATOR_PASSWORD',
+          'NO_SUBS_USER_USERNAME',
+          'NO_SUBS_USER_PASSWORD',
         ]
       : []),
     ...(process.env.INTEGRATION ? ['PROXY', 'ORG_ID_1', 'ACTIVATION_KEY_1'] : []),

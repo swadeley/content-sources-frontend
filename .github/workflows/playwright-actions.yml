@@ -58,6 +58,16 @@ jobs:
             exit 1
           fi
 
+          if [ -z "$NO_SUBS_USER_USERNAME" ]; then
+            echo "Error: NO_SUBS_USER_USERNAME secret is not set."
+            exit 1
+          fi
+
+          if [ -z "$NO_SUBS_USER_PASSWORD" ]; then
+            echo "Error: NO_SUBS_USER_PASSWORD secret is not set."
+            exit 1
+          fi
+
           # Create the .env file and write the secrets and other variables to it
           {
             echo "ADMIN_USERNAME=$ADMIN_USERNAME"
@@ -66,6 +76,8 @@ jobs:
             echo "READONLY_PASSWORD=$READONLY_PASSWORD"
             echo "RHEL_OPERATOR_USERNAME=$RHEL_OPERATOR_USERNAME"
             echo "RHEL_OPERATOR_PASSWORD=$RHEL_OPERATOR_PASSWORD"
+            echo "NO_SUBS_USER_USERNAME=$NO_SUBS_USER_USERNAME"
+            echo "NO_SUBS_USER_PASSWORD=$NO_SUBS_USER_PASSWORD"
             echo "BASE_URL=https://stage.foo.redhat.com:1337"
             echo "CI=true"
             echo "RBAC=true"

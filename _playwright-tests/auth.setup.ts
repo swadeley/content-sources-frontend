@@ -7,6 +7,7 @@ import {
   logInWithReadOnlyUser,
   logInWithAdminUser,
   logInWithRHELOperatorUser,
+  logInWithNoSubsUser,
 } from './helpers/loginHelpers';
 
 import { existsSync, mkdirSync } from 'fs';
@@ -58,6 +59,25 @@ setup.describe('Setup Authentication States', async () => {
     process.env.READONLY_TOKEN = `Bearer ${readOnlyToken}`;
 
     await storeStorageStateAndToken(page, 'read-only.json');
+    await logout(page);
+  });
+
+  setup('Authenticate no-subs user and save state', async ({ page }) => {
+    setup.skip(!process.env.RBAC, `Skipping as the RBAC environment variable isn't set to true.`);
+    setup.setTimeout(60_000);
+
+    // Login no-subs user
+    await logInWithNoSubsUser(page);
+
+    // Save state for no-subs user
+    const { cookies } = await page
+      .context()
+      .storageState({ path: path.join(__dirname, '../../.auth', 'no_subs_user.json') });
+    const noSubsToken = cookies.find((cookie) => cookie.name === 'cs_jwt')?.value;
+
+    process.env.NO_SUBS_TOKEN = `Bearer ${noSubsToken}`;
+
+    await storeStorageStateAndToken(page, 'no_subs_user.json');
     await logout(page);
   });
 

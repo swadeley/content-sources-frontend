@@ -63,6 +63,8 @@ jobs:
           echo "READONLY_PASSWORD=$READONLY_PASSWORD" >> .env
           echo "RHEL_OPERATOR_USERNAME=$RHEL_OPERATOR_USERNAME" >> .env
           echo "RHEL_OPERATOR_PASSWORD=$RHEL_OPERATOR_PASSWORD" >> .env
+          echo "NO_SUBS_USER_USERNAME=$NO_SUBS_USER_USERNAME" >> .env
+          echo "NO_SUBS_USER_PASSWORD=$NO_SUBS_USER_PASSWORD" >> .env
           echo "ORG_ID_1=$STAGE_ORG_ID" >> .env
           echo "ACTIVATION_KEY_1=$STAGE_ACTIVATION_KEY" >> .env
           echo "DOCKER_SOCKET=/var/run/docker.sock" >> .env
