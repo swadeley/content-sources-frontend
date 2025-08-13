@@ -92,13 +92,9 @@ test.describe('Associated Template CRUD', async () => {
         const removeButton = modal.getByRole('button', { name: 'Delete' });
         await expect(removeButton).toBeEnabled();
 
-        const modalText = (await modal.textContent()) || '';
-        const hasWarningText =
-          /This template is in use|template is assigned to|Removing this template will cause/i.test(
-            modalText,
-          );
-
-        expect(hasWarningText).toBeTruthy();
+        await expect(
+          modal.getByRole('link', { name: /This template is assigned to \d+ system/i }),
+        ).toBeVisible();
 
         await modal.getByRole('button', { name: 'Cancel' }).click();
       });
@@ -124,13 +120,10 @@ test.describe('Associated Template CRUD', async () => {
         await expect(page.getByText('Delete template?')).toBeVisible();
 
         const modal = page.getByRole('dialog');
-        const modalText = (await modal.textContent()) || '';
 
-        const hasWarningText =
-          /This template is in use|template is assigned to|Removing this template will cause/i.test(
-            modalText,
-          );
-        expect(hasWarningText).toBeFalsy();
+        await expect(
+          modal.getByRole('link', { name: /This template is assigned to \d+ system/i }),
+        ).not.toBeVisible();
 
         await expect(
           modal.getByText(
