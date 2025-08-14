@@ -557,6 +557,7 @@ export const createUpload: (size: number, sha256: string) => Promise<UploadRespo
     size,
     sha256,
     chunk_size: MAX_CHUNK_SIZE,
+    resumable: true,
   });
   return data;
 };
