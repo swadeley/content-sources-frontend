@@ -88,19 +88,13 @@ test.describe('Test System With Template', async () => {
 
       expect(reg?.exitCode).toBe(0);
 
-      // refresh subscription-manager
-      const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh', '--force']);
+      const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh']);
       expect(subManRefresh?.exitCode).toBe(0);
 
-      // clean cached metadata
       const dnfCleanAll = await regClient.Exec(['dnf', 'clean', 'all']);
       expect(dnfCleanAll?.exitCode).toBe(0);
 
-      // List errata the system is vulnerable to
-      const exist = await regClient.Exec(
-        ['sh', '-c', 'dnf updateinfo --list --all | grep RH | sort | tail -n 1'],
-        10 * 60 * 1000,
-      );
+      const exist = await regClient.Exec(['dnf', 'updateinfo', '--list', '--quiet'], 120 * 1000);
       if (exist?.exitCode != 0) {
         console.log(exist?.stdout);
         console.log(exist?.stderr);
@@ -138,18 +132,15 @@ test.describe('Test System With Template', async () => {
     });
 
     await test.step('Refresh system', async () => {
-      // refresh subscription-manager
-      const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh', '--force']);
+      const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh']);
       expect(subManRefresh?.exitCode).toBe(0);
 
-      // clean cached metadata
       const dnfCleanAll = await regClient.Exec(['dnf', 'clean', 'all']);
       expect(dnfCleanAll?.exitCode).toBe(0);
 
-      // List errata the system is vulnerable to
       const updateInfo = await regClient.Exec(
-        ['sh', '-c', 'dnf updateinfo --list --all | grep RH | sort | tail -n 1'],
-        10 * 60 * 1000,
+        ['dnf', 'updateinfo', '--list', '--quiet'],
+        120 * 1000,
       );
       if (updateInfo?.exitCode != 0) {
         console.log(updateInfo?.stdout);
