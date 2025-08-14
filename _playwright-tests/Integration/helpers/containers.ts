@@ -35,7 +35,26 @@ const startContainer = async (containerName: string, imageName: string) => {
       Privileged: true,
     },
   });
-  return container?.start();
+
+  const started = await container?.start();
+  console.log(`Container ${containerName} started successfully`);
+
+  // Verify the container is using host system memory
+  try {
+    const containerInfo = await container?.inspect();
+    const actualMemoryLimit = containerInfo?.HostConfig?.Memory;
+    if (actualMemoryLimit === 0 || !actualMemoryLimit) {
+      console.log('Container has unlimited memory (using host system memory)');
+    } else {
+      console.log(
+        `Unexpected: Container has memory limit: ${Math.round(actualMemoryLimit / 1024 / 1024)} MB`,
+      );
+    }
+  } catch (error) {
+    console.log('Could not check memory configuration:', error);
+  }
+
+  return started;
 };
 
 /**
@@ -98,9 +117,15 @@ export const killContainer = async (containerName: string) => {
   const info = await getContainerInfo(containerName);
   const c = await getContainer(containerName);
   if (info?.State == 'running') {
+    console.log(`Killing running container ${containerName}...`);
     await c?.kill();
   }
-  await c?.remove();
+  if (c) {
+    console.log(`Removing container ${containerName}...`);
+    await c?.remove();
+  } else {
+    console.log(`No existing container ${containerName} found to remove`);
+  }
 };
 
 export interface ExecReturn {
@@ -131,9 +156,11 @@ export const runCommand = async (
   const signal = controller.signal;
 
   const timeout = setTimeout(() => {
-    console.error('Timeout reached for command (' + command + ')');
+    console.error(
+      `Timeout reached for command (${command.join(' ')}) after ${timeout_ms || 120000}ms on container ${containerName}`,
+    );
     controller.abort();
-  }, timeout_ms || 500);
+  }, timeout_ms || 120000);
 
   const c = await getContainer(containerName);
   const exec = await c?.exec({
@@ -168,9 +195,11 @@ export const runCommand = async (
   const stdout = stdoutStream.read() as Buffer | undefined;
   const execInfo = await exec.inspect();
 
-  return {
+  const result = {
     exitCode: execInfo.ExitCode,
     stderr: stderr?.toString(),
     stdout: stdout?.toString(),
   };
+
+  return result;
 };
