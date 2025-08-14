@@ -44,7 +44,7 @@ Alternatively, add these lines to your /etc/hosts file:
 2. To ensure you have the correct node version installed do: `nvm use`.
    Yarn WILL prevent you from progressing if you have not updated your node version to match the one in the .nvmrc file.
 
-3. If you haven't cloned this repo recursively with all submodules, run `./test-utils.sh setup` to get the `_playwright-tests/test-utils` submodule. (for existing setups, you will also need to update packages with `yarn install`)
+3. To run Playwright tests, you need to set up the `_playwright-tests/test-utils` submodule. If you haven't already cloned the repo with all its submodules, you can do this by running `./test-utils.sh setup`. This is a one-time setup, but if the submodule folder ever becomes empty, you'll need to run this command again. Additionally, for any existing setups, be sure to update your packages with `yarn install` to ensure everything is up to date.
 
 4. `yarn install`
 
