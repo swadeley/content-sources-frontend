@@ -63,6 +63,10 @@ test.describe('Test System With Template', async () => {
       }
       expect(reg?.exitCode).toBe(0);
 
+      // subscription-manager list
+      const subManList = await regClient.Exec(['subscription-manager', 'list']);
+      expect(subManList?.exitCode).toBe(0);
+
       // refresh subscription-manager
       const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh']);
       expect(subManRefresh?.exitCode).toBe(0);
