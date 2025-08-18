@@ -138,7 +138,8 @@ export const killContainer = async (containerName: string) => {
  * @param containerName the container name
  * @returns the UUID file path or undefined if not found
  */
-export const getContainerUuidFilePath = (containerName: string): string | undefined => uuidFiles.get(containerName);
+export const getContainerUuidFilePath = (containerName: string): string | undefined =>
+  uuidFiles.get(containerName);
 
 export interface ExecReturn {
   stdout?: string;
