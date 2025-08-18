@@ -125,7 +125,6 @@ export const killContainer = async (containerName: string) => {
   if (uuidFilePath) {
     try {
       unlinkSync(uuidFilePath);
-      console.log(`Cleaned up UUID file: ${uuidFilePath}`);
     } catch (error) {
       console.warn(`Failed to clean up UUID file ${uuidFilePath}:`, error);
     }
