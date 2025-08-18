@@ -229,8 +229,12 @@ jobs:
         working-directory: content-sources-backend
         run: go run cmd/external-repos/main.go snapshot --url https://cdn.redhat.com/content/dist/rhel9/9/aarch64/codeready-builder/os/ --force
 
-      - name: Run front-end Playwright tests
-        run: CURRENTS_PROJECT_ID=mMVOFH CURRENTS_RECORD_KEY=$CURRENTS_RECORD_KEY CURRENTS_CI_BUILD_ID="${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}" yarn playwright test
+      - name: Run CanUpdateSystemWithTemplate test 5 times
+        run: |
+          for i in {1..5}; do
+            echo "Running CanUpdateSystemWithTemplate test - Iteration $i"
+            CURRENTS_PROJECT_ID=mMVOFH CURRENTS_RECORD_KEY=$CURRENTS_RECORD_KEY CURRENTS_CI_BUILD_ID="${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}-run-$i" yarn playwright test _playwright-tests/Integration/CanUpdateSystemWithTemplate.spec.ts
+          done
 
       - name: Publish front-end Test Report
         uses: ctrf-io/github-test-reporter@v1
