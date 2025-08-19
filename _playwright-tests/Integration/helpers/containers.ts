@@ -1,15 +1,8 @@
 import Dockerode, { Container } from 'dockerode';
 import { PassThrough } from 'stream';
 import { finished } from 'stream/promises';
-import { randomUUID } from 'crypto';
-import { writeFileSync, unlinkSync, mkdtempSync } from 'fs';
-import { join } from 'path';
-import { tmpdir } from 'os';
 
 const docker = () => new Dockerode({ socketPath: process.env.DOCKER_SOCKET! });
-
-// Track temporary UUID files for cleanup
-const uuidFiles = new Map<string, string>();
 
 /**
  * starts a container, killing the existing one if its present
@@ -35,22 +28,12 @@ async function sleep(ms: number): Promise<void> {
 const startContainer = async (containerName: string, imageName: string) => {
   await pullImage(imageName);
 
-  // Generate UUID and create temporary file
-  const productUuid = randomUUID();
-  const tempDir = mkdtempSync(join(tmpdir(), 'container-uuid-'));
-  const uuidFilePath = join(tempDir, 'product_uuid');
-  writeFileSync(uuidFilePath, productUuid);
-
-  // Track the UUID file for cleanup
-  uuidFiles.set(containerName, uuidFilePath);
-
-  console.log(`starting container ${containerName} with UUID ${productUuid}`);
+  console.log(`starting container ${containerName}`);
   const container = await docker().createContainer({
     Image: imageName,
     name: containerName,
     HostConfig: {
       Privileged: true,
-      Binds: [`${uuidFilePath}:/sys/devices/virtual/dmi/id/product_uuid:Z`],
     },
   });
   return container?.start();
@@ -119,26 +102,7 @@ export const killContainer = async (containerName: string) => {
     await c?.kill();
   }
   await c?.remove();
-
-  // Clean up the UUID file if it exists
-  const uuidFilePath = uuidFiles.get(containerName);
-  if (uuidFilePath) {
-    try {
-      unlinkSync(uuidFilePath);
-    } catch (error) {
-      console.warn(`Failed to clean up UUID file ${uuidFilePath}:`, error);
-    }
-    uuidFiles.delete(containerName);
-  }
 };
-
-/**
- * Gets the product UUID file path for a given container
- * @param containerName the container name
- * @returns the UUID file path or undefined if not found
- */
-export const getContainerUuidFilePath = (containerName: string): string | undefined =>
-  uuidFiles.get(containerName);
 
 export interface ExecReturn {
   stdout?: string;

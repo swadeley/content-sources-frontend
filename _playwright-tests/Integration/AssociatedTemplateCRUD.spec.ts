@@ -10,7 +10,7 @@ import { closePopupsIfExist, getRowByNameOrUrl } from '../UI/helpers/helpers';
 
 const templateNamePrefix = 'associated_template_test';
 const templateName = `${templateNamePrefix}-${randomName()}`;
-const regClient = new RHSMClient('AssociatedTemplateCRUDTest');
+const regClient = new RHSMClient(`AssociatedTemplateCRUDTest-${randomName()}`);
 
 test.describe('Associated Template CRUD', async () => {
   test('Warn against template deletion when associated to a system and not warn after unregistration', async ({
