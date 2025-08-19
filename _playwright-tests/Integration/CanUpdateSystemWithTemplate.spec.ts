@@ -89,6 +89,13 @@ test.describe('Test System With Template', async () => {
       expect(reg?.exitCode).toBe(0);
 
       const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh']);
+      if (subManRefresh?.exitCode != 0) {
+        console.log('=== SUBSCRIPTION-MANAGER REFRESH FAILURE ===');
+        console.log('Exit code:', subManRefresh?.exitCode);
+        console.log('stdout:', subManRefresh?.stdout);
+        console.log('stderr:', subManRefresh?.stderr);
+        console.log('=== END REFRESH FAILURE ===');
+      }
       expect(subManRefresh?.exitCode).toBe(0);
 
       const dnfCleanAll = await regClient.Exec(['dnf', 'clean', 'all']);
@@ -133,6 +140,13 @@ test.describe('Test System With Template', async () => {
 
     await test.step('Refresh system', async () => {
       const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh']);
+      if (subManRefresh?.exitCode != 0) {
+        console.log('=== SECOND SUBSCRIPTION-MANAGER REFRESH FAILURE ===');
+        console.log('Exit code:', subManRefresh?.exitCode);
+        console.log('stdout:', subManRefresh?.stdout);
+        console.log('stderr:', subManRefresh?.stderr);
+        console.log('=== END SECOND REFRESH FAILURE ===');
+      }
       expect(subManRefresh?.exitCode).toBe(0);
 
       const dnfCleanAll = await regClient.Exec(['dnf', 'clean', 'all']);
