@@ -51,16 +51,41 @@ test.describe('Test System With Template', async () => {
       // Start the rhel9 container
       await regClient.Boot('rhel9');
 
-      // Register, overriding the default key and org
-      const reg = await regClient.RegisterRHC(
-        process.env.ACTIVATION_KEY_1,
-        process.env.ORG_ID_1,
-        templateName,
-      );
-      if (reg?.exitCode != 0) {
-        console.log(reg?.stdout);
-        console.log(reg?.stderr);
+      // Register, overriding the default key and org (with retry logic)
+      let reg;
+      let registrationSucceeded = false;
+      const maxRetries = 3;
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        console.log(`=== REGISTRATION ATTEMPT ${attempt}/${maxRetries} ===`);
+
+        reg = await regClient.RegisterRHC(
+          process.env.ACTIVATION_KEY_1,
+          process.env.ORG_ID_1,
+          templateName,
+        );
+
+        if (reg?.exitCode === 0) {
+          console.log(`Registration succeeded on attempt ${attempt}`);
+          registrationSucceeded = true;
+          break;
+        } else {
+          console.log(`Registration failed on attempt ${attempt}:`);
+          console.log('Exit code:', reg?.exitCode);
+          console.log('stdout:', reg?.stdout);
+          console.log('stderr:', reg?.stderr);
+
+          if (attempt < maxRetries) {
+            console.log(`Retrying in 5 seconds...`);
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+          }
+        }
       }
+
+      if (!registrationSucceeded) {
+        console.log(`=== REGISTRATION FAILED AFTER ${maxRetries} ATTEMPTS ===`);
+      }
+
       expect(reg?.exitCode).toBe(0);
 
       // refresh subscription-manager
