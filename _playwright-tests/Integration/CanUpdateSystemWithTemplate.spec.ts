@@ -5,7 +5,7 @@ import { closePopupsIfExist, getRowByNameOrUrl } from '../UI/helpers/helpers';
 
 const templateNamePrefix = 'integration_test_template';
 const templateName = `${templateNamePrefix}-${randomName()}`;
-const regClient = new RHSMClient('RHSMClientTest');
+const regClient = new RHSMClient(`RHSMClientTest-${randomName()}`);
 let firstVersion;
 
 test.describe('Test System With Template', async () => {
