@@ -72,7 +72,7 @@ test.describe('Associated Template CRUD', async () => {
       }
       expect(reg?.exitCode).toBe(0);
 
-      const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh', '--force']);
+      const subManRefresh = await regClient.Exec(['subscription-manager', 'refresh']);
       expect(subManRefresh?.exitCode).toBe(0);
     });
 
