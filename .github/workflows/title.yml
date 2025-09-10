@@ -61,10 +61,6 @@ jobs:
           echo "Authenticating GitHub CLI..."
           gh auth login --with-token <<< "$GITHUB_TOKEN"
           
-          # Verify authentication
-          echo "Verifying GitHub CLI authentication..."
-          gh auth status
-          
           # Get PR information
           echo "Fetching PR information..."
           PR_INFO=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json title,author)
@@ -116,6 +112,8 @@ jobs:
   title-validate:
     name: Title
     runs-on: ubuntu-latest
+    # Only run title validation on actual PR events, not manual dispatch
+    if: github.event_name == 'pull_request'
     steps:
       - uses: deepakputhraya/action-pr-title@master
         with:
