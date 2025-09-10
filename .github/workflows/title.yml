@@ -2,6 +2,17 @@ name: PR Validation
 on:
   pull_request:
     types: [opened, edited, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to rename (for manual testing)'
+        required: false
+        type: string
+      force_rename:
+        description: 'Force rename even if not from red-hat-konflux'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -25,23 +36,82 @@ jobs:
           && sudo apt install gh -y
 
       - name: Add "Build:" to PR title
-        if: github.event.pull_request.user.login == 'red-hat-konflux' && !startsWith(github.event.pull_request.title, 'Build:')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          echo "Checking PR from user: ${{ github.event.pull_request.user.login }}"
-          echo "Current PR title: $PR_TITLE"
-          echo "PR number: $PR_NUMBER"
-
+          # Determine PR number and get PR info
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${{ inputs.pr_number }}" ]; then
+              PR_NUMBER="${{ inputs.pr_number }}"
+              echo "Manual dispatch: Using PR #$PR_NUMBER"
+            else
+              echo "ERROR: PR number is required for manual dispatch"
+              echo "Please provide a PR number in the workflow inputs"
+              exit 1
+            fi
+          else
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            echo "Pull request event: Using PR #$PR_NUMBER"
+          fi
+          
+          echo "Repository: ${{ github.repository }}"
+          echo "Event: ${{ github.event_name }}"
+          
           # Authenticate GitHub CLI
+          echo "Authenticating GitHub CLI..."
           gh auth login --with-token <<< "$GITHUB_TOKEN"
-
-          # Edit the PR title
-          gh pr edit $PR_NUMBER --title "Build: $PR_TITLE" --repo ${{ github.repository }}
-
-          echo "Successfully updated PR title to: Build: $PR_TITLE"
+          
+          # Verify authentication
+          echo "Verifying GitHub CLI authentication..."
+          gh auth status
+          
+          # Get PR information
+          echo "Fetching PR information..."
+          PR_INFO=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json title,author)
+          PR_TITLE=$(echo "$PR_INFO" | jq -r '.title')
+          PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login')
+          
+          echo "PR Details:"
+          echo "  Number: #$PR_NUMBER"
+          echo "  Title: $PR_TITLE"
+          echo "  Author: $PR_AUTHOR"
+          
+          # Check conditions
+          SHOULD_RENAME=false
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force_rename }}" = "true" ]; then
+            echo "Manual dispatch with force_rename=true: Will rename regardless of author"
+            SHOULD_RENAME=true
+          elif [ "$PR_AUTHOR" = "red-hat-konflux" ]; then
+            echo "Author is red-hat-konflux: Checking title prefix..."
+            if [[ "$PR_TITLE" == Build:* ]]; then
+              echo "Title already starts with 'Build:' - skipping rename"
+              SHOULD_RENAME=false
+            else
+              echo "Title doesn't start with 'Build:' - will rename"
+              SHOULD_RENAME=true
+            fi
+          else
+            echo "Author is not red-hat-konflux ($PR_AUTHOR) - skipping rename"
+            SHOULD_RENAME=false
+          fi
+          
+          # Perform rename if conditions are met
+          if [ "$SHOULD_RENAME" = "true" ]; then
+            NEW_TITLE="Build: $PR_TITLE"
+            echo "Renaming PR title..."
+            echo "  Old: $PR_TITLE"
+            echo "  New: $NEW_TITLE"
+            
+            if gh pr edit $PR_NUMBER --title "$NEW_TITLE" --repo ${{ github.repository }}; then
+              echo "✅ Successfully updated PR title!"
+            else
+              echo "❌ ERROR: Failed to update PR title"
+              exit 1
+            fi
+          else
+            echo "ℹ️  Rename conditions not met - no action taken"
+          fi
 
   title-validate:
     name: Title
