@@ -3,6 +3,10 @@ on:
   pull_request:
     types: [opened, edited, reopened]
 
+permissions:
+        contents: read
+        pull-requests: write
+
 jobs:
   rename-konflux-pr:
     name: Rename Konflux PR Title
