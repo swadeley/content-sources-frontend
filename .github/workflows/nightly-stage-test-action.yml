@@ -74,6 +74,8 @@ jobs:
           echo "LAYERED_REPO_ACCESS_ORG_ID=$LAYERED_REPO_ACCESS_ORG_ID" >> .env
           echo "LAYERED_REPO_ACCESS_ACTIVATION_KEY=$LAYERED_REPO_ACCESS_ACTIVATION_KEY" >> .env
           echo "DOCKER_SOCKET=/var/run/docker.sock" >> .env
+          echo "STABLE_SAM_STAGE_USERNAME=$STABLE_SAM_STAGE_USERNAME" >> .env
+          echo "STABLE_SAM_STAGE_PASSWORD=$STABLE_SAM_STAGE_PASSWORD" >> .env
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -103,14 +105,50 @@ jobs:
           path: ./playwright-ctrf
           retention-days: 10
 
-      - name: Slack Notification
-        if: ${{ github.event_name != 'pull_request' && !cancelled() }}
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_ICON: https://jlsherrill.fedorapeople.org/nightly.png
-          SLACK_TITLE: Nightly Stage Test
-          SLACK_USERNAME: Content Sources
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOOK }}
-          SLACK_MESSAGE_ON_SUCCESS: 'Nightly stage tests successful!'
-          SLACK_MESSAGE_ON_FAILURE: 'Nightly stage tests FAILED :('
+      - name: Notify Slack on success
+        uses: slackapi/slack-github-action@v2.1.1
+        if: ${{ success() && github.event_name != 'pull_request' && !cancelled() }}
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOOK }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "#2EB67D",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/ | :stars: Nightly test run>: *SUCCESS* :partymeow:"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+
+      - name: Notify Slack on failure
+        uses: slackapi/slack-github-action@v2.1.1
+        if: ${{ failure() && github.event_name != 'pull_request' && !cancelled() }}
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOOK }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "#d72839",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/ | :stars: Nightly test run>: *FAILED* :big-sad:"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
