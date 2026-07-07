@@ -557,11 +557,9 @@ const AddContent = ({ isEdit = false }: Props) => {
                     onClick={() => setArchOpen((prev) => !prev)}
                     isExpanded={archOpen}
                   >
-                    {
-                      Object.keys(distributionArches).find(
-                        (key: string) => arch === distributionArches[key],
-                      )!
-                    }
+                    {Object.keys(distributionArches).find(
+                      (key: string) => arch === distributionArches[key],
+                    )!}
                   </MenuToggle>
                 )}
                 onOpenChange={(isOpen) => setArchOpen(isOpen)}

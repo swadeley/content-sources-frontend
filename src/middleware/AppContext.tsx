@@ -11,10 +11,10 @@ import { useKesselWorkspace, useKesselRbac, useTraditionalRbac } from './rbacHel
 
 // Add permissions here
 export enum RbacPermissions {
-  'repoRead', // If the user doesn't have this permission, they won't see the app, it is thus presumed true.
-  'repoWrite',
-  'templateWrite',
-  'templateRead',
+  repoRead, // If the user doesn't have this permission, they won't see the app, it is thus presumed true.
+  repoWrite,
+  templateWrite,
+  templateRead,
 }
 
 export interface AppContextInterface {

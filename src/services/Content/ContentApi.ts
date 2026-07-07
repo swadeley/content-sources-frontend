@@ -418,13 +418,13 @@ export const getPopularRepositories: (
 };
 
 export enum ContentOrigin {
-  'REDHAT' = 'red_hat',
-  'EXTERNAL' = 'external',
-  'UPLOAD' = 'upload',
-  'COMMUNITY' = 'community',
-  'CUSTOM' = 'external,upload',
-  'ALL' = 'red_hat,external,upload,community',
-  'LIGHTWELL' = 'lightwell',
+  REDHAT = 'red_hat',
+  EXTERNAL = 'external',
+  UPLOAD = 'upload',
+  COMMUNITY = 'community',
+  CUSTOM = 'external,upload',
+  ALL = 'red_hat,external,upload,community',
+  LIGHTWELL = 'lightwell',
 }
 
 export const getContentList: (
