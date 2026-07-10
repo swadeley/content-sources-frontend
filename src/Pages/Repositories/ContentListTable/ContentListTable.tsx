@@ -195,6 +195,9 @@ const ContentListTable = () => {
     setPage(1);
   }, [contentOrigin]);
 
+  // TODO: refactor - there is cyclical logic ( contentOrigin - URL param origin ) with the next useEffect, potential of infinite loop
+  // contentOrigin (state) and URL param origin should be set at the same time at the call sites
+  // on ContentListTable page reload, URL param should be the source of truth
   useEffect(() => {
     if (!features?.snapshots?.accessible) return;
 

@@ -11,6 +11,14 @@ import { retry } from './helpers';
 export const getZeroStateTitleLocator = (page: Page) =>
   page.getByText(new RegExp(`Start using (content templates|Content management) now`));
 
+export const getTemplatesTitleLocator = (page: Page) =>
+  page.getByText(
+    'Control content stability of your systems by combining repositories into templates.',
+  );
+
+export const goToTemplates = async (page: Page) =>
+  await page.goto('/insights/content/templates', { timeout: PAGE_NAVIGATION_QUICK_TIMEOUT_MS });
+
 const waitForListPageOrZeroState = async (
   page: Page,
   listPageLocator: Locator,
@@ -63,10 +71,10 @@ export const navigateToRepositories = async (page: Page) => {
 };
 
 const navigateToTemplatesFunc = async (page: Page) => {
-  await page.goto('/insights/content/templates', { timeout: PAGE_NAVIGATION_QUICK_TIMEOUT_MS });
+  await goToTemplates(page);
 
   const zeroState = getZeroStateTitleLocator(page);
-  const templateText = page.getByText('View all content templates within your organization.');
+  const templateText = getTemplatesTitleLocator(page);
 
   await waitForListPageOrZeroState(page, templateText, zeroState, 'templates list');
 

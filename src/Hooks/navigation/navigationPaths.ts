@@ -8,8 +8,12 @@ import {
   TEMPLATES_ROUTE,
 } from 'Routes/constants';
 
-export type DestinationKey =
+type FilterKey =
+  'allRepositories' | 'redHatRepositories' | 'partnerRepositories' | 'customRepositories';
+
+type NavigationKey =
   | 'repositories'
+  | 'nonRedHatRepositories'
   | 'templates'
   | 'packagesLatest'
   | 'root'
@@ -17,7 +21,9 @@ export type DestinationKey =
   | 'repositorySnapshots'
   | 'systems';
 
-type NavigationPaths = Record<DestinationKey, BuildDestinationPath>;
+export type DestinationKey = FilterKey | NavigationKey;
+
+type NavigationPaths = Record<NavigationKey, BuildDestinationPath>;
 type BuildDestinationPath = (params: DestinationParams) => string;
 type DestinationParams = {
   contentOrigin: ContentOrigin[];
@@ -46,6 +52,7 @@ export const navigationPaths: NavigationPaths = {
     (contentOrigin.length === 1 && contentOrigin[0] === ContentOrigin.REDHAT
       ? `?origin=${contentOrigin}`
       : ''),
+  nonRedHatRepositories: ({ rootPath }) => `${rootPath}/${REPOSITORIES_ROUTE}`,
   packagesLatest: ({ rootPath, repoUUID }) =>
     `${rootPath}/${REPOSITORIES_ROUTE}/${repoUUID}/${PACKAGES_ROUTE}`,
   adminTasks: ({ rootPath }) => `${rootPath}/${REPOSITORIES_ROUTE}/${ADMIN_TASKS_ROUTE}`,

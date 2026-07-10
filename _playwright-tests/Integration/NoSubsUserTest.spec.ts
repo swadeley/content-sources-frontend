@@ -5,7 +5,11 @@ import {
   USING_CONTENT_TEMPLATES_PAGE,
 } from 'constants/docs';
 import { closeGenericPopupsIfExist, waitForValidStatus } from '../UI/helpers/helpers';
-import { getZeroStateTitleLocator } from '../UI/helpers/navHelpers';
+import {
+  getTemplatesTitleLocator,
+  getZeroStateTitleLocator,
+  goToTemplates,
+} from '../UI/helpers/navHelpers';
 import { PAGE_NAVIGATION_TIMEOUT_MS, PAGE_READY_TIMEOUT_MS } from '../testConstants';
 
 const repoNamePrefix = 'ZeroStateTest';
@@ -44,16 +48,14 @@ test.describe('No-subs user content management', () => {
       });
 
       await test.step('Templates route shows zero state', async () => {
-        await page.goto('/insights/content/templates', { timeout: PAGE_NAVIGATION_TIMEOUT_MS });
+        await goToTemplates(page);
 
         await expect(getZeroStateTitleLocator(page)).toBeVisible({
           timeout: PAGE_READY_TIMEOUT_MS,
         });
         await expect(page.getByRole('heading', { name: 'About content templates' })).toBeVisible();
         await expect(page.getByRole('heading', { name: 'About repositories' })).toBeVisible();
-        await expect(
-          page.getByText('View all content templates within your organization.'),
-        ).toBeHidden();
+        await expect(getTemplatesTitleLocator(page)).toBeHidden();
       });
     });
 
@@ -100,7 +102,7 @@ test.describe('No-subs user content management', () => {
       });
 
       await test.step('Create template CTA shows templates list', async () => {
-        await page.goto('/insights/content/templates', { timeout: PAGE_NAVIGATION_TIMEOUT_MS });
+        await goToTemplates(page);
 
         await expect(getZeroStateTitleLocator(page)).toBeVisible({
           timeout: PAGE_READY_TIMEOUT_MS,
@@ -111,9 +113,7 @@ test.describe('No-subs user content management', () => {
           .click({ noWaitAfter: true });
 
         await expect(getZeroStateTitleLocator(page)).toBeHidden();
-        await expect(
-          page.getByText('View all content templates within your organization.'),
-        ).toBeVisible({ timeout: PAGE_READY_TIMEOUT_MS });
+        await expect(getTemplatesTitleLocator(page)).toBeVisible();
       });
     });
   });
@@ -152,12 +152,10 @@ test.describe('No-subs user content management', () => {
     });
 
     await test.step('Templates list shows the empty table state', async () => {
-      await page.goto('/insights/content/templates', { timeout: PAGE_NAVIGATION_TIMEOUT_MS });
+      await goToTemplates(page);
 
       await expect(getZeroStateTitleLocator(page)).toBeHidden();
-      await expect(
-        page.getByText('View all content templates within your organization.'),
-      ).toBeVisible({ timeout: PAGE_READY_TIMEOUT_MS });
+      await expect(getTemplatesTitleLocator(page)).toBeVisible({ timeout: PAGE_READY_TIMEOUT_MS });
       await expect(
         page.getByRole('link', { name: 'Learn more about content templates' }),
       ).toBeVisible();
@@ -221,12 +219,10 @@ test.describe('No-subs user content management', () => {
         timeout: PAGE_READY_TIMEOUT_MS,
       });
 
-      await page.goto('/insights/content/templates', { timeout: PAGE_NAVIGATION_TIMEOUT_MS });
+      await goToTemplates(page);
 
       await expect(getZeroStateTitleLocator(page)).toBeHidden();
-      await expect(
-        page.getByText('View all content templates within your organization.'),
-      ).toBeVisible({ timeout: PAGE_READY_TIMEOUT_MS });
+      await expect(getTemplatesTitleLocator(page)).toBeVisible({ timeout: PAGE_READY_TIMEOUT_MS });
     });
 
     await test.step('Create template toolbar button is disabled without a RHEL subscription', async () => {

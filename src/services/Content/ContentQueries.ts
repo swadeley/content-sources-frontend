@@ -82,6 +82,7 @@ export const LIST_SNAPSHOTS_KEY = 'LIST_SNAPSHOTS_KEY';
 export const CONTENT_ITEM_KEY = 'CONTENT_ITEM_KEY';
 export const REPO_CONFIG_FILE_KEY = 'REPO_CONFIG_FILE_KEY';
 export const LATEST_REPO_CONFIG_FILE_KEY = 'LATEST_REPO_CONFIG_FILE_KEY';
+export const REPO_COUNT_KEY = 'REPO_COUNT_KEY';
 
 const CONTENT_LIST_POLLING_TIME = 10000; // 10 seconds
 
@@ -173,6 +174,18 @@ export const useContentListQuery = (
     ...overrides,
   });
 
+export const useRepositoryCount = (contentOrigins: ContentOrigin[]) =>
+  useQuery({
+    queryKey: [REPO_COUNT_KEY, ...contentOrigins],
+    queryFn: () => getContentList(1, 1, { statuses: ['Valid'] }, '', contentOrigins),
+    select: (data) => data.meta.count,
+    staleTime: 60_000,
+    meta: {
+      title: 'Unable to get repository count',
+      id: 'repo-count-error',
+    },
+  });
+
 export const useAddContentQuery = (request: CreateContentRequest) => {
   const queryClient = useQueryClient();
   const errorNotifier = useErrorNotification();
@@ -201,6 +214,7 @@ export const useAddContentQuery = (request: CreateContentRequest) => {
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_TASK_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [POPULAR_REPOSITORIES_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -235,6 +249,7 @@ export const useAddUploadsQuery = (request: AddUploadRequest) => {
 
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_TASK_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -304,6 +319,7 @@ export const useAddPopularRepositoryQuery = (
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_TASK_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [POPULAR_REPOSITORIES_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
 
     onError: (err, _newData, context) => {
@@ -341,6 +357,7 @@ export const useEditContentQuery = (request: EditContentRequestItem) => {
       queryClient.invalidateQueries({ queryKey: [LIST_SNAPSHOTS_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_TASK_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [POPULAR_REPOSITORIES_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -412,6 +429,7 @@ export const useDeletePopularRepositoryMutate = (
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_TASK_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [POPULAR_REPOSITORIES_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
     // If the mutation fails, use the context returned from onMutate to roll back
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -489,6 +507,7 @@ export const useDeleteContentItemMutate = (
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_TASK_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [POPULAR_REPOSITORIES_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
     // If the mutation fails, use the context returned from onMutate to roll back
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -575,6 +594,7 @@ export const useBulkDeleteContentItemMutate = <T extends DeletableItem>(
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_TASK_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [POPULAR_REPOSITORIES_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
 
     // If the mutation fails, use the context returned from onMutate to roll back
@@ -829,6 +849,7 @@ export const useTriggerSnapshot = (queryClient: QueryClient) => {
       });
       queryClient.invalidateQueries({ queryKey: [LIST_SNAPSHOTS_KEY] });
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
     onError: (err) => {
       errorNotifier(
@@ -1010,6 +1031,7 @@ export const useBulkDeleteSnapshotsMutate = (
       queryClient.invalidateQueries({ queryKey: [SNAPSHOT_PACKAGES_KEY] });
       queryClient.invalidateQueries({ queryKey: [REPO_CONFIG_FILE_KEY] });
       queryClient.invalidateQueries({ queryKey: [LATEST_REPO_CONFIG_FILE_KEY] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
 
     onError: (err: { response?: { data: ErrorResponse } }, _newData, context) => {
@@ -1046,6 +1068,7 @@ export const useBulkRemoveRepositoryRpmsMutate = (queryClient: QueryClient, repo
       queryClient.invalidateQueries({ queryKey: [PACKAGES_KEY, repoUuid] });
       queryClient.invalidateQueries({ queryKey: [CONTENT_LIST_KEY] });
       queryClient.invalidateQueries({ queryKey: [CONTENT_ITEM_KEY, repoUuid] });
+      queryClient.invalidateQueries({ queryKey: [REPO_COUNT_KEY] });
     },
     onError: (err) => {
       errorNotifier(

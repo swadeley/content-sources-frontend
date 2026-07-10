@@ -53,6 +53,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFlag } from '@unleash/proxy-client-react';
 import { TEMPLATES_DOCS_URL } from 'constants/docs';
 import { abbreviateStreamName } from './helpers';
+import { RepositoriesCard } from './RepositoriesCard';
 
 const useStyles = createUseStyles({
   topContainer: {
@@ -239,7 +240,7 @@ const TemplatesTable = () => {
       <Header
         title='Templates'
         ouiaId='templates_description'
-        paragraph='View all content templates within your organization.'
+        paragraph='Control content stability of your systems by combining repositories into templates.'
         aboutData={{
           headerContent: 'About content templates',
           bodyContent:
@@ -248,6 +249,7 @@ const TemplatesTable = () => {
           linkUrl: TEMPLATES_DOCS_URL,
         }}
       />
+      <RepositoriesCard />
       {serviceUnavailable && <ServiceUnavailableAlert />}
       <Grid data-ouia-component-id='content_template_list_page'>
         <Outlet />

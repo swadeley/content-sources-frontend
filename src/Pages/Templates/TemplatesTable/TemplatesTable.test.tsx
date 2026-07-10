@@ -25,6 +25,7 @@ jest.mock('middleware/AppContext', () => ({
 
 jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
+  useParams: jest.fn().mockReturnValue({}),
   Outlet: () => <></>,
 }));
 
