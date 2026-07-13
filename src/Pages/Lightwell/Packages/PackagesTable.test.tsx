@@ -1,6 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useNavigate } from 'react-router-dom';
 
 import PackagesTable from './PackagesTable';
 import { useLightwellRepositoryPackagesQuery } from 'services/Content/ContentQueries';
@@ -17,17 +16,22 @@ import {
 } from 'testingHelpers';
 import { ContentItem, RepositoryPackageItem } from 'services/Content/ContentApi';
 import { getRepositoryPathSlug } from '../helpers';
-import useLightwellRepository from '../useLightwellRepository';
+import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
+import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 
 jest.mock('services/Content/ContentQueries', () => ({
   useLightwellRepositoryPackagesQuery: jest.fn(),
 }));
 
-jest.mock('../useLightwellRepository');
+jest.mock('Hooks/Lightwell/useLightwellRepository');
 
 jest.mock('Hooks/useDebounce', () => (value: unknown) => value);
 
-const mockNavigate = jest.fn();
+const mockNavigateTo = jest.fn();
+
+jest.mock('Hooks/Lightwell/navigation/useLightwellNavigateTo', () => ({
+  useLightwellNavigateTo: jest.fn(),
+}));
 
 const mockUseParams = jest.fn(() => ({
   repoName: getRepositoryPathSlug(
@@ -36,9 +40,15 @@ const mockUseParams = jest.fn(() => ({
   ),
 }));
 
+let searchParams = new URLSearchParams();
+const mockSetSearchParams = jest.fn((next: URLSearchParams) => {
+  searchParams = next;
+});
+
 jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
   useParams: () => mockUseParams(),
+  useSearchParams: () => [searchParams, mockSetSearchParams],
+  useNavigationType: () => 'REPLACE',
 }));
 
 jest.mock('../constants', () => ({
@@ -95,7 +105,11 @@ const clickCopyButton = async (label: string) => {
 const javaValidatedTableCopyCommand = `${defaultLightwellRepositoryPackageItem.group}:${defaultLightwellRepositoryPackageItem.name}:3.14.0`;
 
 beforeEach(() => {
-  (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+  searchParams = new URLSearchParams();
+  mockSetSearchParams.mockClear();
+  (useLightwellNavigateTo as jest.Mock).mockReturnValue({
+    navigateTo: mockNavigateTo,
+  });
   mockUseParams.mockReturnValue({
     repoName: getRepositoryPathSlug(
       defaultLightwellContentItem.content_type,
@@ -191,9 +205,23 @@ it('navigates to package details when a package name is clicked', async () => {
 
   await userEvent.click(await screen.findByRole('button', { name: 'org.json.test:json-test' }));
 
-  expect(mockNavigate).toHaveBeenCalledWith(
-    `${encodeURIComponent(defaultLightwellRepositoryPackageItem.group)}/${encodeURIComponent('json-test')}`,
-  );
+  expect(mockNavigateTo).toHaveBeenCalledWith('packageDetails', {
+    repoSlug: getRepositoryPathSlug(
+      defaultLightwellContentItem.content_type,
+      defaultLightwellContentItem.security_level,
+    ),
+    packageName: 'json-test',
+    groupId: defaultLightwellRepositoryPackageItem.group,
+    packagesParams: { search: '', page: 1 },
+  });
+});
+
+it('navigates to repositories when Lightwell breadcrumb is clicked', async () => {
+  renderPackagesTable();
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Lightwell' }));
+
+  expect(mockNavigateTo).toHaveBeenCalledWith('repositories');
 });
 
 it('copies the maven coordinate when a validated version label is clicked', async () => {

@@ -27,14 +27,15 @@ import {
   otherJavaRemediatedCopyCommand,
 } from 'testingHelpers';
 import { getRepositoryPathSlug } from '../helpers';
-import useLightwellRepository from '../useLightwellRepository';
+import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
+import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 
 jest.mock('services/Content/ContentQueries', () => ({
   useMavenPackageVersionsListQuery: jest.fn(),
   usePythonPackageVersionsQuery: jest.fn(),
 }));
 
-jest.mock('../useLightwellRepository');
+jest.mock('Hooks/Lightwell/useLightwellRepository');
 
 const defaultRepoSlug = getRepositoryPathSlug(
   defaultLightwellContentItem.content_type,
@@ -48,16 +49,17 @@ const mockUseParams = jest.fn<
   []
 >();
 
+let searchParams = new URLSearchParams();
+
 jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
   useParams: () => mockUseParams(),
+  useSearchParams: () => [searchParams],
 }));
 
-jest.mock('../../../Hooks/useLightwellNavigate', () => ({
-  useLightwellNavigate: () => ({
-    goToRepositories: jest.fn(),
-    goToRepositoryPackages: jest.fn(),
-  }),
+const mockNavigateTo = jest.fn();
+
+jest.mock('Hooks/Lightwell/navigation/useLightwellNavigateTo', () => ({
+  useLightwellNavigateTo: jest.fn(),
 }));
 
 const defaultBuilds = [
@@ -100,6 +102,10 @@ const renderPackageDetails = () =>
   );
 
 beforeEach(() => {
+  searchParams = new URLSearchParams();
+  (useLightwellNavigateTo as jest.Mock).mockReturnValue({
+    navigateTo: mockNavigateTo,
+  });
   mockUseParams.mockReturnValue({
     repoName: defaultRepoSlug,
     group: defaultLightwellRepositoryPackageItem.group,
@@ -549,4 +555,36 @@ it('copies maven coordinate to clipboard for validated java package', async () =
     },
     gradleValidatedDependencySnippet,
   );
+});
+
+it('navigates to repository packages when repository breadcrumb is clicked', async () => {
+  renderPackageDetails();
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Java Validated' }));
+
+  expect(mockNavigateTo).toHaveBeenCalledWith('repositoryPackages', {
+    repoSlug: defaultRepoSlug,
+    packagesParams: { search: '', page: 1 },
+  });
+});
+
+it('preserves list search params when navigating back to repository packages', async () => {
+  searchParams = new URLSearchParams('search=requests&page=2');
+
+  renderPackageDetails();
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Java Validated' }));
+
+  expect(mockNavigateTo).toHaveBeenCalledWith('repositoryPackages', {
+    repoSlug: defaultRepoSlug,
+    packagesParams: { search: 'requests', page: 2 },
+  });
+});
+
+it('navigates to repositories when Lightwell breadcrumb is clicked', async () => {
+  renderPackageDetails();
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Lightwell' }));
+
+  expect(mockNavigateTo).toHaveBeenCalledWith('repositories');
 });

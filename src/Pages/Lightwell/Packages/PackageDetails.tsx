@@ -27,7 +27,7 @@ import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { createUseStyles } from 'react-jss';
 import { createRef, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
 import Loader from 'components/Loader';
@@ -50,11 +50,13 @@ import {
 } from '../mockPackages';
 import RemediatedDataWarning from '../RemediatedDataWarning';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
-import useLightwellRepository from '../useLightwellRepository';
+import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
 import PackageOverviewTab from './components/PackageOverviewTab';
 import PackageReleasesTab, { buildVersionFromRelease } from './components/PackageReleasesTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './components/PackageVersionsTab';
+import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
+import { parseSearchParams } from '../../../Hooks/Lightwell/lightwellPackagesParams';
 
 const useStyles = createUseStyles({
   topContainer: {
@@ -70,7 +72,9 @@ const useStyles = createUseStyles({
 
 const PackageDetails = () => {
   const classes = useStyles();
-  const navigate = useNavigate();
+  const { navigateTo } = useLightwellNavigateTo();
+  const [searchParams] = useSearchParams();
+  const packagesParams = parseSearchParams(searchParams); // preserve the params when navigating back to packages table
 
   const {
     repoName: repoSlug = '',
@@ -281,15 +285,12 @@ const PackageDetails = () => {
         <Stack>
           <StackItem>
             <Breadcrumb ouiaId='lightwell-package-details-breadcrumb'>
-              <BreadcrumbItem
-                component='button'
-                onClick={() => navigate(groupParam ? '../../..' : '../..', { relative: 'path' })}
-              >
+              <BreadcrumbItem component='button' onClick={() => navigateTo('repositories')}>
                 Lightwell
               </BreadcrumbItem>
               <BreadcrumbItem
                 component='button'
-                onClick={() => navigate(groupParam ? '../..' : '..', { relative: 'path' })}
+                onClick={() => navigateTo('repositoryPackages', { repoSlug, packagesParams })}
               >
                 {repositoryName}
               </BreadcrumbItem>

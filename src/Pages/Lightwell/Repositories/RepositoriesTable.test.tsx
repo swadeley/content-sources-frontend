@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useNavigate } from 'react-router-dom';
 
 import RepositoriesTable from './RepositoriesTable';
 import { useContentListQuery } from 'services/Content/ContentQueries';
@@ -12,23 +11,17 @@ import {
 } from 'testingHelpers';
 import { ContentItem } from 'services/Content/ContentApi';
 import { getRepositoryPathSlug } from '../helpers';
+import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 
 jest.mock('services/Content/ContentQueries', () => ({
   useContentListQuery: jest.fn(),
   useLightwellRepositoryPackageCountsQuery: jest.fn(),
 }));
 
-const mockNavigate = jest.fn();
+const mockNavigateTo = jest.fn();
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
-  useMatch: () => ({ pathnameBase: '/lightwell' }),
-}));
-
-jest.mock('../../../Hooks/useLightwellNavigate', () => ({
-  useLightwellNavigate: () => ({
-    goToRepositoryPackages: jest.fn(),
-  }),
+jest.mock('Hooks/Lightwell/navigation/useLightwellNavigateTo', () => ({
+  useLightwellNavigateTo: jest.fn(),
 }));
 
 jest.mock('../constants', () => ({
@@ -55,7 +48,9 @@ const renderRepositoriesTable = () =>
   );
 
 beforeEach(() => {
-  (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+  (useLightwellNavigateTo as jest.Mock).mockReturnValue({
+    navigateTo: mockNavigateTo,
+  });
 });
 
 it('shows empty state when there are no repositories', async () => {
@@ -114,12 +109,12 @@ it('navigates to repository packages when a repository name is clicked', async (
 
   await userEvent.click(await screen.findByRole('button', { name: 'Java Validated' }));
 
-  expect(mockNavigate).toHaveBeenCalledWith(
-    getRepositoryPathSlug(
+  expect(mockNavigateTo).toHaveBeenCalledWith('repositoryPackages', {
+    repoSlug: getRepositoryPathSlug(
       defaultLightwellContentItem.content_type,
       defaultLightwellContentItem.security_level,
     ),
-  );
+  });
 });
 
 it('renders java remediated repository with remediated description', async () => {

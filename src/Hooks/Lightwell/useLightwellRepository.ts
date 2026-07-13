@@ -4,10 +4,10 @@ import {
   LIGHTWELL_DEMO_FEATURE_NAME,
   LIGHTWELL_FEATURE_NAME,
   LIGHTWELL_USE_MOCK,
-} from './constants';
-import { getRepositoryNameFromPathSlug } from './helpers';
-import { useLightwellDemo } from './LightwellDemoContext';
-import { getMockLightwellRepositoryBySlug } from './mockRepositories';
+} from '../../Pages/Lightwell/constants';
+import { useLightwellDemo } from '../../Pages/Lightwell/LightwellDemoContext';
+import { getMockLightwellRepositoryBySlug } from '../../Pages/Lightwell/mockRepositories';
+import { getRepositoryNameFromPathSlug } from '../../Pages/Lightwell/helpers';
 
 interface UseLightwellRepositoryResult {
   repository: ContentItem | undefined;
