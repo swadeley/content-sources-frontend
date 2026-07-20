@@ -14,6 +14,7 @@ import { useContentListQuery } from './services/Content/ContentQueries';
 import { perPageKey } from './Pages/Repositories/ContentListTable/ContentListTable';
 import { CONTENT_ROUTE, REPOSITORIES_ROUTE, TEMPLATES_ROUTE } from './Routes/constants';
 import usePageSafe from 'Hooks/usePageSafe';
+import useContentNavDivider from 'Hooks/useContentNavDivider';
 import { TemplateFilterData } from './services/Templates/TemplateApi';
 import { useTemplateList } from './services/Templates/TemplateQueries';
 
@@ -23,6 +24,7 @@ export default function App() {
   const { pathname } = useLocation();
   const pageSafe = usePageSafe();
   const { hideGlobalFilter } = useChrome();
+  useContentNavDivider();
 
   const isDefaultRoute = useMemo(
     () =>

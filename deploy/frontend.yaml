@@ -40,18 +40,21 @@ objects:
               title: Content
               expandable: true
               routes:
-                - segmentRef:
-                    frontendName: patch
-                    segmentId: patch-advisories-packages
-                - id: repositories
-                  title: Repositories
-                  href: /insights/content/repositories
                 - id: templates
                   title: Templates
                   href: /insights/content/templates
-                - segmentRef:
-                    frontendName: patch
-                    segmentId: patch-systems
+                - id: advisories
+                  title: Advisories
+                  href: /insights/patch/advisories
+                - id: packages
+                  title: Packages
+                  href: /insights/patch/packages
+                - id: repositories
+                  title: Repositories
+                  href: /insights/content/repositories
+                - id: patchSystems
+                  title: Systems
+                  href: /insights/patch/systems
       serviceTiles:
         - section: systemConfiguration
           group: rhel
