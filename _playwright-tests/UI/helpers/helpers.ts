@@ -39,7 +39,7 @@ export async function waitForValidStatus(
   rowName?: string,
   timeout = 60000,
   message?: string,
-  exact?: true,
+  exact: boolean = true,
 ): Promise<Locator> {
   const locator = await getRowByNameOrUrl(pageOrLocator, rowName!);
   try {
