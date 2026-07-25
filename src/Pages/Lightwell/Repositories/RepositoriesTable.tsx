@@ -12,7 +12,7 @@ import {
   PaginationVariant,
   Stack,
 } from '@patternfly/react-core';
-import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
+import { CodeIcon, JavaIcon, PythonIcon, BellIcon } from '@patternfly/react-icons';
 import { SkeletonTable } from '@patternfly/react-component-groups';
 import {
   Table,
@@ -56,6 +56,7 @@ import ConnectRepositoryModal from './components/ConnectRepositoryModal';
 import { capitalize } from 'lodash';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellNavigateTo';
+import NotificationPreferencesModal from './components/NotificationPreferencesModal';
 
 const useStyles = createUseStyles({
   topContainer: {
@@ -152,12 +153,29 @@ const RepositoriesTable = () => {
 
   return (
     <>
-      <Header
-        title='Repositories'
-        ouiaId='lightwell-header'
-        paragraph='Browse Lightwell repositories by ecosystem and security level.'
-        showOpenSourceBadge={false}
-      />
+      <Flex className={classes.topContainer}>
+        <FlexItem>
+          <Header
+            title='Repositories'
+            ouiaId='lightwell-header'
+            paragraph='Browse Lightwell repositories by ecosystem and security level.'
+            showOpenSourceBadge={false}
+          />
+        </FlexItem>
+        <FlexItem>
+          <NotificationPreferencesModal>
+            <Button
+              size='sm'
+              variant='secondary'
+              aria-label='Notification preferences'
+              ouiaId='lightwell-notification-preferences-button'
+              icon={<BellIcon />}
+            >
+              Notifications
+            </Button>
+          </NotificationPreferencesModal>
+        </FlexItem>
+      </Flex>
       <PageSection hasBodyWrapper={false} className={`${spacing.pt_0} ${spacing.pbLg}`}>
         <Grid data-ouia-component-id='lightwell-repositories-page'>
           <Hide hide={countIsZero || count < 10}>

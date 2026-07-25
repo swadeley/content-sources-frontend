@@ -1,3 +1,17 @@
+import {
+  LIGHTWELL_NOTIFICATION_ENABLED_LABEL,
+  LIGHTWELL_NOTIFICATION_MINIMUM_LABEL,
+  LIGHTWELL_NOTIFICATION_SEVERITIES,
+  type LightwellNotificationSeverity,
+} from 'services/Lightwell/UserPreferencesApi';
+
+export {
+  LIGHTWELL_NOTIFICATION_ENABLED_LABEL,
+  LIGHTWELL_NOTIFICATION_MINIMUM_LABEL,
+  LIGHTWELL_NOTIFICATION_SEVERITIES,
+  type LightwellNotificationSeverity,
+};
+
 export const LIGHTWELL_FEATURE_NAME = 'lightwell-network';
 export const LIGHTWELL_DEMO_FEATURE_NAME = 'lightwell-network-demo';
 export const LIGHTWELL_ROUTE = '/lightwell';
@@ -28,3 +42,23 @@ export const REPOSITORY_DESCRIPTIONS: Record<string, Record<string, string>> = {
 };
 
 export const LIGHTWELL_PROJECT_URL = 'https://www.redhat.com/en/lightwell';
+
+export type LightwellNotificationPrefs = {
+  enabled: boolean;
+  minimumSeverity: LightwellNotificationSeverity;
+};
+
+export const LIGHTWELL_VULNERABILITY_SEVERITY_OPTIONS: {
+  value: LightwellNotificationSeverity;
+  label: string;
+}[] = [
+  { value: 'critical', label: 'Critical' },
+  { value: 'high', label: 'Important and above' },
+  { value: 'medium', label: 'Moderate and above' },
+  { value: 'low', label: 'All severities' },
+];
+
+export const DEFAULT_LIGHTWELL_NOTIFICATION_PREFS: LightwellNotificationPrefs = {
+  enabled: false,
+  minimumSeverity: 'high',
+};
