@@ -30,7 +30,6 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 
 import EmptyTableState from './components/EmptyTableState';
-import Header from 'components/Header/Header';
 import Hide from 'components/Hide/Hide';
 import { FilterData } from 'services/Content/ContentApi';
 import { useContentListQuery } from 'services/Content/ContentQueries';
@@ -57,6 +56,7 @@ import { capitalize } from 'lodash';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import NotificationPreferencesModal from './components/NotificationPreferencesModal';
+import LightwellPageHeader from '../components/LightwellPageHeader';
 
 const useStyles = createUseStyles({
   topContainer: {
@@ -153,16 +153,11 @@ const RepositoriesTable = () => {
 
   return (
     <>
-      <Flex className={classes.topContainer}>
-        <FlexItem>
-          <Header
-            title='Repositories'
-            ouiaId='lightwell-header'
-            paragraph='Browse Lightwell repositories by ecosystem and security level.'
-            showOpenSourceBadge={false}
-          />
-        </FlexItem>
-        <FlexItem>
+      <LightwellPageHeader
+        title='Repositories'
+        ouiaId='lightwell-header'
+        description='Browse Lightwell repositories by ecosystem and security level.'
+        actions={
           <NotificationPreferencesModal>
             <Button
               size='sm'
@@ -174,8 +169,8 @@ const RepositoriesTable = () => {
               Notifications
             </Button>
           </NotificationPreferencesModal>
-        </FlexItem>
-      </Flex>
+        }
+      />
       <PageSection hasBodyWrapper={false} className={`${spacing.pt_0} ${spacing.pbLg}`}>
         <Grid data-ouia-component-id='lightwell-repositories-page'>
           <Hide hide={countIsZero || count < 10}>
