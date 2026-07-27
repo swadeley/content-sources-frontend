@@ -134,7 +134,7 @@ export default function TemplateDetails() {
             >
               <DetailItem title='Description:' value={template?.description} />
               <DetailItem
-                title='Snapshot date'
+                title='Snapshot date:'
                 value={
                   template?.use_latest
                     ? 'Using latest content from repositories'

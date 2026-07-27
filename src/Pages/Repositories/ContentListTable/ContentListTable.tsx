@@ -89,7 +89,7 @@ const ContentListTable = () => {
     { name: 'Architecture', sortAttribute: 'distribution_arch' },
     { name: 'OS', sortAttribute: 'distribution_versions' },
     { name: 'Packages', sortAttribute: 'package_count' },
-    { name: 'Last Introspection', sortAttribute: 'last_introspection_time' },
+    { name: 'Last introspection', sortAttribute: 'last_introspection_time' },
     { name: 'Status', sortAttribute: null }, // Non-sortable column
   ];
 
