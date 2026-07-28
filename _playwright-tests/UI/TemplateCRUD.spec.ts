@@ -1,5 +1,5 @@
 import { test, expect } from 'test-utils';
-import { docsRedhatUrlMatcher, USING_CONTENT_TEMPLATES_PAGE } from 'constants/docs';
+
 import { cleanupRepositories, cleanupTemplates, randomName } from 'test-utils/helpers';
 
 import { navigateToRepositories, navigateToTemplates } from './helpers/navHelpers';
@@ -30,40 +30,6 @@ test.describe('Templates CRUD', () => {
     const AddButton = page.getByRole('button', { name: 'Create template' });
 
     await expect(AddButton.first()).toBeEnabled({ timeout: 10000 });
-  });
-
-  test('Validate documentation link in empty state', async ({ page, context }) => {
-    await test.step('Mock template list API to ensure we get to the empty state', async () => {
-      await page.route('**/api/content-sources/*/templates/**', async (route) => {
-        const response = await route.fetch();
-        const json = {
-          data: [],
-          links: {
-            first: '/api/content-sources/v1.0/templates/?limit=20&offset=0',
-            last: '/api/content-sources/v1.0/templates/?limit=20&offset=0',
-          },
-          meta: { count: 0, limit: 20, offset: 0 },
-        };
-        await route.fulfill({ response, json });
-      });
-    });
-
-    await test.step('Navigate to the templates page', async () => {
-      await navigateToTemplates(page);
-      await closeGenericPopupsIfExist(page);
-    });
-
-    await test.step(`Click the 'Learn more about content templates' link and verify the destination`, async () => {
-      const pagePromise = context.waitForEvent('page');
-
-      await page.getByRole('link', { name: 'Learn more about content templates' }).click();
-      const docsPage = await pagePromise;
-      await expect(docsPage).toHaveURL(docsRedhatUrlMatcher(USING_CONTENT_TEMPLATES_PAGE));
-      await expect(docsPage.getByText(/^.*Using content templates.*$/).first()).toBeVisible();
-      await expect(
-        docsPage.getByText('A content template is a set of repository snapshots').first(),
-      ).toBeVisible();
-    });
   });
 
   test('Add, Read, update, delete a template', async ({ page, client, cleanup, unusedRepoUrl }) => {

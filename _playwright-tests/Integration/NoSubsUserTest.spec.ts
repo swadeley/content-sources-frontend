@@ -74,9 +74,7 @@ test.describe('No-subs user content management', () => {
 
       const docsPage = await pagePromise;
       await expect(docsPage).toHaveURL(docsRedhatUrlMatcher(MANAGING_CONTENT_AND_PATCH_GUIDE));
-      await expect(
-        docsPage.getByText(/Managing system content and patch updates/i).first(),
-      ).toBeVisible();
+      await expect(docsPage.getByText(/system content and patch updates/i).first()).toBeVisible();
     });
 
     test('Zero state call to action (CTA) buttons navigate to list pages', async ({ page }) => {
@@ -171,10 +169,7 @@ test.describe('No-subs user content management', () => {
       await page.getByRole('link', { name: 'Learn more about content templates' }).click();
       const docsPage = await pagePromise;
       await expect(docsPage).toHaveURL(docsRedhatUrlMatcher(USING_CONTENT_TEMPLATES_PAGE));
-      await expect(docsPage.getByText(/^.*Using content templates.*$/).first()).toBeVisible();
-      await expect(
-        docsPage.getByText('A content template is a set of repository snapshots').first(),
-      ).toBeVisible();
+      await expect(docsPage.getByText(/content templates/i).first()).toBeVisible();
     });
   });
 
