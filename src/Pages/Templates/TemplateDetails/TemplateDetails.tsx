@@ -2,6 +2,7 @@ import {
   Alert,
   Breadcrumb,
   BreadcrumbItem,
+  DescriptionList,
   Flex,
   Grid,
   Label,
@@ -47,11 +48,6 @@ const useStyles = createUseStyles({
   },
   childContainer: {
     margin: '24px',
-  },
-  detailItems: {
-    '@media (min-width: 1400px)': {
-      maxHeight: '165px',
-    },
   },
   alertMargin: {
     marginTop: '20px',
@@ -127,14 +123,14 @@ export default function TemplateDetails() {
             </Toolbar>
           </StackItem>
           <StackItem className={classes.descriptionMaxWidth}>
-            <Flex
-              direction={{ default: 'column' }}
-              flexWrap={{ default: 'wrap' }}
-              className={classes.detailItems}
+            <DescriptionList
+              aria-label='Template details'
+              columnModifier={{ lg: '3Col' }}
+              isCompact
             >
-              <DetailItem title='Description:' value={template?.description} />
+              <DetailItem title='Description' value={template?.description} />
               <DetailItem
-                title='Snapshot date:'
+                title='Snapshot date'
                 value={
                   template?.use_latest
                     ? 'Using latest content from repositories'
@@ -143,17 +139,17 @@ export default function TemplateDetails() {
                       : ''
                 }
               />
-              <DetailItem title='Created by:' value={template?.created_by} />
+              <DetailItem title='Created by' value={template?.created_by} />
               <DetailItem
-                title='Created:'
+                title='Created'
                 value={template?.created_at ? formatDateDDMMMYYYY(template.created_at) : ''}
               />
-              <DetailItem title='Last edited by:' value={template?.last_updated_by} />
+              <DetailItem title='Last edited by' value={template?.last_updated_by} />
               <DetailItem
-                title='Last edited:'
+                title='Last edited'
                 value={template?.updated_at ? formatDateDDMMMYYYY(template.updated_at) : ''}
               />
-            </Flex>
+            </DescriptionList>
           </StackItem>
           <Hide
             hide={

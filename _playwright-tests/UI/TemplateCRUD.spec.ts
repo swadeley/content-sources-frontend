@@ -129,7 +129,8 @@ test.describe('Templates CRUD', () => {
       await rowTemplate.getByRole('button', { name: templateName }).click();
       await expect(page.getByLabel('Breadcrumb').first()).toHaveText('RHELContentTemplates');
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(templateName);
-      await expect(page.getByText('Description:Template test')).toBeVisible();
+      await expect(page.getByText('Description')).toBeVisible();
+      await expect(page.getByText('Template test')).toBeVisible();
       await page.getByRole('button', { name: 'Actions' }).click();
       await page.getByRole('menuitem', { name: 'Edit' }).click();
       await expect(
