@@ -101,3 +101,25 @@ it('Render delete modal where repo is included in 1 template', () => {
   expect(queryByText(defaultContentItem.url)).toBeInTheDocument();
   expect(queryByText(defaultTemplateItem.name)).toBeInTheDocument();
 });
+
+it('Render delete modal URL column with N/A when repo url is blank', () => {
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    data: {
+      isLoading: false,
+      data: [{ ...defaultContentItem, url: '' }],
+    },
+  }));
+  (useTemplateList as jest.Mock).mockImplementation(() => ({
+    data: {
+      isLoading: false,
+      data: [defaultTemplateItem2],
+    },
+  }));
+  const { queryByText } = render(
+    <ReactQueryTestWrapper>
+      <DeleteContentModal />
+    </ReactQueryTestWrapper>,
+  );
+  expect(queryByText(defaultContentItem.name)).toBeInTheDocument();
+  expect(queryByText('N/A')).toBeInTheDocument();
+});

@@ -210,7 +210,7 @@ export default function DeleteContentModal() {
                 return (
                   <Tr key={repo.uuid + index}>
                     <Td>{repo.name}</Td>
-                    <Td>{repo.url}</Td>
+                    <Td>{repo.url?.trim() || 'N/A'}</Td>
                     <Td className={classes.templateColumnMinWidth}>
                       {templatesWithRepos.length > 0 ? (
                         <List isPlain>
