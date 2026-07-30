@@ -30,7 +30,15 @@ import {
   IntrospectRepositoryRequestItem,
 } from '../../../services/Content/ContentApi';
 import { useAppContext } from '../../../middleware/AppContext';
-import { Pagination, Button, EmptyStateActions, Flex, FlexItem } from '@patternfly/react-core';
+import {
+  Pagination,
+  Button,
+  EmptyStateActions,
+  Flex,
+  FlexItem,
+  ToolbarItem,
+  ToolbarItemVariant,
+} from '@patternfly/react-core';
 import useDistributionDetails from '../../../Hooks/useDistributionDetails';
 import { useSearchParams, useNavigate, Outlet, useOutletContext } from 'react-router-dom';
 import Hide from 'components/Hide/Hide';
@@ -701,15 +709,16 @@ const ContentListTable = () => {
               </FlexItem>
             </Flex>
           }
-          pagination={
+        >
+          <ToolbarItem variant={ToolbarItemVariant.pagination} align={{ default: 'alignEnd' }}>
             <Pagination
               id='top-pagination-id'
               widgetId='topPaginationWidgetId'
               {...paginationProps}
               isCompact
             />
-          }
-        />
+          </ToolbarItem>
+        </DataViewToolbar>
         <DataViewTable
           aria-label='Repositories table'
           ouiaId={ouiaId}

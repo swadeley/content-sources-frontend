@@ -25,7 +25,7 @@ import EmptyTableDataView from 'components/EmptyTableDataView/EmptyTableDataView
 import { useNavigate } from 'react-router-dom';
 import { DELETE_ROUTE } from 'Routes/constants';
 
-import { Pagination } from '@patternfly/react-core';
+import { Pagination, ToolbarItem, ToolbarItemVariant } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { FilterProps } from 'components/Tables/Packages/hooks/usePackageTableFilters';
 import { PaginationLocalStorage } from 'Hooks/tables/usePaginationLocalStorage';
@@ -249,8 +249,11 @@ const PackagesTableWithToolbars = ({
         {...(enabledBulkDelete ? { ...bulkDeleteProps } : {})}
         clearAllFilters={clearAllFiltersAndResetPage}
         filters={searchFilter}
-        pagination={topPagination}
-      />
+      >
+        <ToolbarItem variant={ToolbarItemVariant.pagination} align={{ default: 'alignEnd' }}>
+          {topPagination}
+        </ToolbarItem>
+      </DataViewToolbar>
       <DataViewTable
         aria-label='Packages table'
         ouiaId={ouiaId}
