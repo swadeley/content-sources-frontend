@@ -9,7 +9,7 @@ import { isVersionLockedSystem } from '../../../../TemplatesTable/helpers';
 import { TEMPLATES_DOCS_URL } from 'constants/docs';
 
 type Props = Pick<SystemItem, 'id'> &
-  Pick<SystemItem['attributes'], 'display_name' | 'rhsm' | 'satellite_managed'> & {
+  Pick<SystemItem['attributes'], 'display_name' | 'rhsm' | 'satellite_managed' | 'image_based'> & {
     basePath: string;
     isExtendedSupportTemplate: boolean;
   };
@@ -29,6 +29,7 @@ export default function SystemNameCell({
   rhsm,
   basePath,
   satellite_managed,
+  image_based,
   isExtendedSupportTemplate,
 }: Props) {
   const name = (
@@ -52,6 +53,14 @@ export default function SystemNameCell({
       key: 'satellite-managed-warning',
       title: 'This system is managed by Satellite',
       description: 'Systems managed by Satellite cannot be associated with a template.',
+    });
+  }
+
+  if (image_based) {
+    warnings.push({
+      key: 'image-based-warning',
+      title: 'This system is image-based',
+      description: 'Image-based systems cannot be associated with a template.',
     });
   }
 

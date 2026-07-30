@@ -60,11 +60,13 @@ export const isExtendedSupportTemplate = (
 export const canAssignSystemToTemplate = (
   rhsm: string,
   satelliteManaged: boolean,
+  imageBased: boolean,
   notAlreadyAssigned: boolean,
   templateUsesExtendedSupport: boolean,
 ) =>
   notAlreadyAssigned &&
   !satelliteManaged &&
+  !imageBased &&
   // Standard templates: can only be assigned to rolling release systems (not version-locked)
   // Extended support templates: can be assigned to any system (version-locked or rolling)
   (templateUsesExtendedSupport || !isVersionLockedSystem(rhsm));

@@ -22,6 +22,7 @@ export interface SystemAttributes {
   created: string;
   stale: boolean;
   satellite_managed: boolean;
+  image_based: boolean;
   built_pkgcache: boolean;
   packages_installable: number;
   packages_applicable: number;

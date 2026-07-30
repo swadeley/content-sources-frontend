@@ -13,6 +13,7 @@ import {
   satelliteManagedSystemsListItem,
   defaultEUSupportTemplateItem,
   defaultTemplateItem,
+  imageBasedSystemsListItem,
 } from 'testingHelpers';
 import { TEMPLATE_SYSTEMS_UPDATE_LIMIT } from 'Pages/Templates/TemplatesTable/constants';
 
@@ -178,6 +179,23 @@ it('prevents selection of satellite-managed systems and shows warning icon', asy
 
   // Warning icon should be present for satellite-managed system
   expectIconInRowWith('system-list-warning-icon', '69204.host.example.com');
+});
+
+it('prevents selection of image-based systems and shows warning icon', async () => {
+  mockSystemsList([defaultSystemsListItem, imageBasedSystemsListItem]);
+
+  render(<AssignTemplateModal />);
+
+  await waitForRows(3); // 1 header + 2 data rows
+
+  expect(screen.getByText('14867.host.example.com')).toBeInTheDocument();
+  expect(screen.getByText('00420.host.example.com')).toBeInTheDocument();
+
+  expect(screen.getByRole('checkbox', { name: 'Select row 0' })).toBeEnabled();
+  expect(screen.getByRole('checkbox', { name: 'Select row 1' })).toBeDisabled();
+
+  // Warning icon should be present for image-based system
+  expectIconInRowWith('system-list-warning-icon', '00420.host.example.com');
 });
 
 it('prevents assigning a template when more than 1000 systems are selected', async () => {

@@ -702,6 +702,7 @@ export const defaultSystemsListItem: SystemItem = {
     created: '2024-07-12T21:10:37.142509Z',
     stale: true,
     satellite_managed: false,
+    image_based: false,
     built_pkgcache: false,
     packages_installable: 0,
     packages_applicable: 0,
@@ -742,6 +743,19 @@ export const satelliteManagedSystemsListItem: SystemItem = {
     display_name: '69204.host.example.com',
     rhsm: '',
     satellite_managed: true,
+    template_name: '',
+    template_uuid: '',
+  },
+  type: 'system',
+};
+
+export const imageBasedSystemsListItem: SystemItem = {
+  id: '00000000-0000-0000-0000-000000000001',
+  attributes: {
+    ...defaultSystemsListItem.attributes,
+    display_name: '00420.host.example.com',
+    rhsm: '',
+    image_based: true,
     template_name: '',
     template_uuid: '',
   },

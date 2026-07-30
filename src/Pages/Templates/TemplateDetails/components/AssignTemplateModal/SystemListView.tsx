@@ -141,22 +141,31 @@ const SystemListView = ({
     [systemsList],
   );
 
+  const imageBasedSystems = useMemo(
+    () => systemsList.filter((system) => system.attributes.image_based).map(({ id }) => id),
+    [systemsList],
+  );
+
   const allVersionLocked = versionLockedSystems.length === systemsList.length;
   const allSatellite = satelliteSystems.length === systemsList.length;
+  const allImageBased = imageBasedSystems.length === systemsList.length;
 
-  // True when at least some systems on the page have a compatible release version and are not satellite-managed
-  const canEnableAssignButton = !allSatellite && (templateUsesExtendedSupport || !allVersionLocked);
+  // True when at least some systems on the page have a compatible release version and are not satellite-managed and not image-based
+  const canEnableAssignButton =
+    !allSatellite && (templateUsesExtendedSupport || !allVersionLocked) && !allImageBased;
 
-  // Systems that are compatible with the template, not satellite-managed, and not already assigned
+  // Systems that are compatible with the template, not satellite-managed, not image-based, and not already assigned
   const selectableSystems = useMemo(
     () =>
-      systemsList.filter(({ attributes: { template_uuid, rhsm, satellite_managed } }) =>
-        canAssignSystemToTemplate(
-          rhsm,
-          satellite_managed,
-          template_uuid !== uuid,
-          templateUsesExtendedSupport,
-        ),
+      systemsList.filter(
+        ({ attributes: { template_uuid, rhsm, satellite_managed, image_based } }) =>
+          canAssignSystemToTemplate(
+            rhsm,
+            satellite_managed,
+            image_based,
+            template_uuid !== uuid,
+            templateUsesExtendedSupport,
+          ),
       ),
     [systemsList, uuid, templateUsesExtendedSupport],
   );

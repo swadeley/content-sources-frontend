@@ -124,6 +124,7 @@ export default function SystemListTable({
                     template_uuid,
                     rhsm,
                     satellite_managed,
+                    image_based,
                   },
                 },
                 rowIndex,
@@ -142,6 +143,7 @@ export default function SystemListTable({
                       isDisabled: !canAssignSystemToTemplate(
                         rhsm,
                         satellite_managed,
+                        image_based,
                         template_uuid !== uuid,
                         isExtendedSupportTemplate,
                       ),
@@ -156,6 +158,7 @@ export default function SystemListTable({
                       rhsm={rhsm}
                       basePath={basePath}
                       satellite_managed={satellite_managed}
+                      image_based={image_based}
                       isExtendedSupportTemplate={isExtendedSupportTemplate}
                     />
                   </Td>
