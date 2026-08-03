@@ -2032,16 +2032,6 @@
     semver "^7.3.7"
     yup "^0.32.11"
 
-"@openshift/dynamic-plugin-sdk@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@openshift/dynamic-plugin-sdk/-/dynamic-plugin-sdk-5.0.1.tgz#3487afe57d07a28b9aba393e643d86ca13a3735c"
-  integrity sha512-+azUBN6FgcDmlcWMzG0bthcRUJC1u12wf9xa2aJGFbC/uTiOXwjrkcQ7LW/PyK5Em7wDhwaUdapaeOgh8I6Kjg==
-  dependencies:
-    lodash "^4.17.21"
-    semver "^7.3.7"
-    uuid "^8.3.2"
-    yup "^0.32.11"
-
 "@openshift/dynamic-plugin-sdk@^8.0.0":
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/@openshift/dynamic-plugin-sdk/-/dynamic-plugin-sdk-8.2.0.tgz#8c4954c33e5ea90925545807a7dbf782b5fe7ba7"
@@ -2374,12 +2364,12 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.3.6.tgz#3569708bd4be4d8870ba32bf1c456dac81600d97"
   integrity sha512-SEeaJLb3qBNF/OaXnaR1NmmBbFYk1zC0ZH/52fATcRPLFg/p791YrcyFFy44Bo9sLaGuSuLp5Q6axbb/O+v/RA==
 
-"@playwright/test@~1.61.1":
-  version "1.61.1"
-  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.61.1.tgz#48568dc22af7819e55fa5e8e3bc79b7e6a3e6675"
-  integrity sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig==
+"@playwright/test@~1.62.0":
+  version "1.62.0"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.62.0.tgz#dab444563549f4cc94caacb7d6a72067bff4aac6"
+  integrity sha512-9zOJ6ZQRAena31MpOH9VSzIz8Ou3YJ/wtY/eQm5T2uhfhG7/U3COrMS8xOtUrZrp9OgdmzEnIYODye3nY1VqzA==
   dependencies:
-    playwright "1.61.1"
+    playwright "1.62.0"
 
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.15":
   version "0.5.17"
@@ -2420,10 +2410,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.29.tgz#5a40109a1ab5f84d6fd8fc928b19f367cbe7e7b1"
   integrity sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==
 
-"@project-kessel/react-kessel-access-check@^0.5.6":
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/@project-kessel/react-kessel-access-check/-/react-kessel-access-check-0.5.6.tgz#474cb50a73eb73e93b4e27e92f5a82b35f71342c"
-  integrity sha512-kuNbMn1SZwKKsUILvo2NPFGHanIgu1ruDuhIqgVuMljvpC+5PsCuNTr9dLAc64BwnX3jnUASmTW7gNIH1ADArQ==
+"@project-kessel/react-kessel-access-check@^0.5.7":
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/@project-kessel/react-kessel-access-check/-/react-kessel-access-check-0.5.7.tgz#0032eb153b6c7215db671ef9922df2c21344fe85"
+  integrity sha512-hxT7NfemD/fbRkPO6JERUEvgs8nGj1mcarZC7B7m97gH8Jj5FV0f5NhacdsY/R+hlwcv2s63OfpBTAvy/1TRVw==
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
@@ -2484,10 +2474,10 @@
     js-yaml "^4.1.0"
     node-fetch "2.6.7"
 
-"@redhat-cloud-services/frontend-components-config@^6.13.0":
-  version "6.13.0"
-  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-config/-/frontend-components-config-6.13.0.tgz#68d17cfc595d4a7156ca1ef141df8660d6265f5a"
-  integrity sha512-kvbGqUd8Z72zlTqKm1HEEd7R5M+/X9be3+Ac7YGxOFEIBzHDLTLhjyD+NGitRi2do0O0oK54snWiQEeZrotM8Q==
+"@redhat-cloud-services/frontend-components-config@^6.14.2":
+  version "6.14.2"
+  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-config/-/frontend-components-config-6.14.2.tgz#4ff46ffb651417fac8e9ca52c0d783a70fd68147"
+  integrity sha512-UjLIEdQ9oqF0JstzkcyLkZK1jo455f3MCv4+3grHdrMGu4/IetkBou14p9HXAp662AcxyI+PlEV1u0lNu+vS8A==
   dependencies:
     "@pmmmwh/react-refresh-webpack-plugin" "^0.5.15"
     "@redhat-cloud-services/frontend-components-config-utilities" "^4.9.0"
@@ -2534,18 +2524,18 @@
     webpack-dev-server "5.2.3"
     yargs "^17.6.2"
 
-"@redhat-cloud-services/frontend-components-notifications@^6.11.3":
-  version "6.11.3"
-  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-notifications/-/frontend-components-notifications-6.11.3.tgz#ae05bc04c681069c96392c8a07b48d9fa5d89e5e"
-  integrity sha512-jbk79VtnpgBxaJwvqPIBBzKLaClxeGgdvMd/Tn55yyqMW3b7dIkgukRhb2yTb1dM7qpk+INuSTJtethW7rKcGg==
+"@redhat-cloud-services/frontend-components-notifications@^6.11.4":
+  version "6.11.4"
+  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-notifications/-/frontend-components-notifications-6.11.4.tgz#3fdf03fe4c915d4667b0ad819ebb82d785b09d71"
+  integrity sha512-NyIMM2WwYdLYwgo4t3KZXGYl0GL5BxbFbFTtAmbFjzW51Jr1FLlOhGnRAZyB3EPbxsFbrPe4z8fxgnmBdX4fHQ==
   dependencies:
     "@redhat-cloud-services/frontend-components" "^7.0.13"
     "@redhat-cloud-services/frontend-components-utilities" "^7.0.0"
 
-"@redhat-cloud-services/frontend-components-utilities@^7.0.0", "@redhat-cloud-services/frontend-components-utilities@^7.5.1":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-utilities/-/frontend-components-utilities-7.5.1.tgz#382b4c88a1cdb41ee5f8760a8fbd28b539723729"
-  integrity sha512-DVx7a9YRySlS4N73Fdl1YiNALtHfqZo1DjKnrxvsHUUwhXbc18axEf+AiiYeg5F870V/DcAq0FtXhCEJKnafQw==
+"@redhat-cloud-services/frontend-components-utilities@^7.0.0", "@redhat-cloud-services/frontend-components-utilities@^7.5.2":
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-utilities/-/frontend-components-utilities-7.5.2.tgz#752ae2c71fa30133c9eb1a51fdf137a1c3c9f98d"
+  integrity sha512-La44d7BbyBB1PIbEZH38kec7qsJJtWL/IH4fr3hJJx47yplsCm0Y9Ubyn4WiKeyAgrZwcZEsH2o956YEgksf4g==
   dependencies:
     "@redhat-cloud-services/rbac-client" "^6.0.1"
     "@redhat-cloud-services/types" "^3.0.0"
@@ -2557,15 +2547,15 @@
     p-map "^7.0.2"
     react-content-loader "^6.2.0"
 
-"@redhat-cloud-services/frontend-components@^7.0.13", "@redhat-cloud-services/frontend-components@^7.10.3":
-  version "7.10.3"
-  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components/-/frontend-components-7.10.3.tgz#1622199895928c7fde8cfaab448b98dab4d32698"
-  integrity sha512-Zu6zgZI+cycCOTWJxSro/I63vdoyJKq2MyP3dU7TTMcMJid32OXypNNrFqJQPn21hoFcBz7xrPcmLJ5HyHdgRQ==
+"@redhat-cloud-services/frontend-components@^7.0.13", "@redhat-cloud-services/frontend-components@^7.10.4":
+  version "7.10.4"
+  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components/-/frontend-components-7.10.4.tgz#5fe144341a5a09e83e41855ad87b8ba98c5ee26a"
+  integrity sha512-DV0skI5M8ils3Rmg+9xxmLrPMst6sRjlfx3kVY6egItHXtKaoaO8k3yf67YHqxSuBYbJF5b1ccMFqE8E2QASbA==
   dependencies:
     "@patternfly/react-component-groups" "^6.0.0"
     "@redhat-cloud-services/frontend-components-utilities" "^7.0.0"
     "@redhat-cloud-services/types" "^3.0.0"
-    "@scalprum/core" "^0.9.2"
+    "@scalprum/core" "^0.10.1"
     "@scalprum/react-core" "^0.13.1"
     classnames "^2.2.5"
     sanitize-html "^2.13.1"
@@ -2586,17 +2576,17 @@
     "@redhat-cloud-services/javascript-clients-shared" "^2.0.5"
     tslib "^2.6.2"
 
-"@redhat-cloud-services/tsc-transform-imports@^1.0.26", "@redhat-cloud-services/tsc-transform-imports@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/tsc-transform-imports/-/tsc-transform-imports-1.3.1.tgz#240e7b349770a277d03447b16f571b5bc96dd191"
-  integrity sha512-/Px0amWb1jZa1OCUn97iJscSyO2S//dMpJDbLShHlGaZ3pjtiqjIrQMFb2qMqNnXz9IN8zkD3intRMyTBc2WZQ==
+"@redhat-cloud-services/tsc-transform-imports@^1.0.26", "@redhat-cloud-services/tsc-transform-imports@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/tsc-transform-imports/-/tsc-transform-imports-1.3.2.tgz#ff862376ea3ded3f02b37491a98fc5abcf8de2c4"
+  integrity sha512-Ix7P0c0aow3W310TZyCFaLFpb+MOJ5qGN3vK4YVPQhPEI82mLJIhmUTSxAqLhPjg9AsTXacf4Ykz4MJGEq2FiA==
   dependencies:
     glob "10.5.0"
 
-"@redhat-cloud-services/types@^3.0.0", "@redhat-cloud-services/types@^3.7.1":
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/types/-/types-3.7.1.tgz#efe2380390bd0d9b9183b1c45a34e5566d072d19"
-  integrity sha512-glTdiA66mbFtO4OgWDRFN28D8jfekfcj6MMg47HD2JFpUuwwh+COvKtQ1RZfl+5s85KNxsQ6dKpAgG3LWUsYoQ==
+"@redhat-cloud-services/types@^3.0.0", "@redhat-cloud-services/types@^3.7.2":
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/@redhat-cloud-services/types/-/types-3.7.2.tgz#2e771253adcd09a449e178daaf0c36387999bb72"
+  integrity sha512-7/X17DNhneE1ssYq2ib4vVPhk44w7Rp0bqWBCXLO+qeHTl/yXg5kSMymlUUqtVIgnKyVJPDZBOGL5lWUqrmRdw==
 
 "@remix-run/router@1.23.3":
   version "1.23.3"
@@ -2609,14 +2599,6 @@
   integrity sha512-LlUy0stiE2HQ1j41G6yTh+9IPQiJAglVGxmaX8MGExI9SVOSjkjUaG7wd6cSga9XKRsvrFU8FzQ9bj6BWmz4lw==
   dependencies:
     "@openshift/dynamic-plugin-sdk" "^8.0.0"
-    tslib "^2.6.2"
-
-"@scalprum/core@^0.9.2":
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/@scalprum/core/-/core-0.9.2.tgz#3f7eb79e41452d76acfdf20e2bd13e77c513b25d"
-  integrity sha512-IfyoERrtCY3ZcfAyHx9qSU5Uf5hYWGqZeDgwY2gmSd1UO4XyVS4AY8NkUPAgsGGIQuDqkWWSe6qVwbv/f7WAfg==
-  dependencies:
-    "@openshift/dynamic-plugin-sdk" "^5.0.1"
     tslib "^2.6.2"
 
 "@scalprum/react-core@^0.13.1":
@@ -3439,10 +3421,10 @@
   dependencies:
     minimatch "*"
 
-"@types/node@*", "@types/node@>=13.7.0", "@types/node@^26.1.1":
-  version "26.1.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-26.1.1.tgz#bad758d601e97d6cf457d204ee76a35fce7bd119"
-  integrity sha512-nxAkRSVkN1Y0JC1W8ky/fTfkGsMmcrRsbx+3XoZE+rMOX71kLYTV7fLXpqud1GpbpP5TuffXFqfX7fH2GgZREw==
+"@types/node@*", "@types/node@>=13.7.0", "@types/node@^26.1.2":
+  version "26.1.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-26.1.2.tgz#da79708f1f9c6294f4cdec8f455a3032b028808a"
+  integrity sha512-Vu4a5UFA9rIIFJ7rB/Vaafh9lrCQszopTCx6KjFboXTGQbPNasehVR5TEiithSDGyd1DEiUByggTZsg8jukeIg==
   dependencies:
     undici-types "~8.3.0"
 
@@ -4017,6 +3999,11 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
   version "6.2.3"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.2.3.tgz#c044d5dcc521a076413472597a1acb1f103c4041"
   integrity sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==
+
+ansi-styles@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-7.0.0.tgz#859089a725560e235a41fecde8999196df6c78c0"
+  integrity sha512-kKvt3m4uwzqL0wlkPd09CmljPJGOZZ4D0fP65sqFSvPkMRKhNi+74MgIJ5QxE6SxqB4t4KyUFGg8+n5zjo6hew==
 
 ansi-to-html@^0.7.2:
   version "0.7.2"
@@ -5910,10 +5897,10 @@ eslint-config-prettier@^10.1.8:
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-10.1.8.tgz#15734ce4af8c2778cc32f0b01b37b0b5cd1ecb97"
   integrity sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==
 
-eslint-plugin-playwright@^2.10.5:
-  version "2.10.5"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-playwright/-/eslint-plugin-playwright-2.10.5.tgz#89017d4a0ab066815e4453e29a25252c98ca23e9"
-  integrity sha512-4k+ml4cEd55kePUIW1WsCiOLDwZkAdPZPKMFulR83XpplCaVOTKHF6yvXLYixLtdVbkMjmKV5F3BaGuI3aH8aQ==
+eslint-plugin-playwright@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-playwright/-/eslint-plugin-playwright-2.11.0.tgz#c385f525bd832e2765cfdff08d61957cc1877077"
+  integrity sha512-zOIEYyv1TSn2izXkyg/yj0LXc4YBQI6pl3xIFWwMCcXt/dgQCz8dBqXiXFMoM3xc/GqZThAtaGYo8aPu/vBd+Q==
   dependencies:
     globals "^17.3.0"
 
@@ -6730,10 +6717,10 @@ globals@^14.0.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-14.0.0.tgz#898d7413c29babcf6bafe56fcadded858ada724e"
   integrity sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==
 
-globals@^17.3.0, globals@^17.7.0:
-  version "17.7.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-17.7.0.tgz#553d55090b4dde8209ec2da42580d6e7e7d8b10d"
-  integrity sha512-Czmyns5dUsq4seFBR/Kdydhmo8y9kC79hiSkPn0YcGtNnYWnrgt0vjrSjx9tspoDGWm2CMarffRuLjM4xUz8xg==
+globals@^17.3.0, globals@^17.8.0:
+  version "17.8.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-17.8.0.tgz#a1f213a06adcd0eec38004c5cd39fef7af7e0830"
+  integrity sha512-Zz/LMDZScFmkakeL2cTHzf+PbWKdpU3uclqkZT7TjDG58j5WPt0PpA+n9uPI24fZtlw07q0OtEi84K+umsRzqQ==
 
 globalthis@^1.0.4:
   version "1.0.4"
@@ -8971,12 +8958,12 @@ npm-normalize-package-bin@^6.0.0:
   resolved "https://registry.yarnpkg.com/npm-normalize-package-bin/-/npm-normalize-package-bin-6.0.0.tgz#d8cc44d7a9eff2a2a210e9b2442edf3824f2d227"
   integrity sha512-tdt4aFn9QamlhdN3HV2D2ccpBwO5/fyjjbXUxYA6uBjyekMZcZvDq0aSj9t5Jo+tih6AYFnt/cuIRn9013e0Uw==
 
-npm-run-all2@^9.0.2:
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/npm-run-all2/-/npm-run-all2-9.0.2.tgz#20f84cae47f0de98041bfbdca40c6349340c0724"
-  integrity sha512-+dd4SO2jAlLE06OzmJKzIe6QvvjXezcbmobnh8usR0a8BzQCABTdqTXqVPji0ICOhSQpIIrkGd7IzNl5iDaRSA==
+npm-run-all2@^9.0.3:
+  version "9.0.3"
+  resolved "https://registry.yarnpkg.com/npm-run-all2/-/npm-run-all2-9.0.3.tgz#2e7f3979b30c019e5b2dbf846ec9aca1478a0c02"
+  integrity sha512-BQAEdU1PtYc48qYRdghW2BVTQT3VqWCoFQmO87NlM1h1PYwMCKQpUWaNyB20V26caNzFsXQDfyOdznLlHCih6g==
   dependencies:
-    ansi-styles "^6.2.1"
+    ansi-styles "^7.0.0"
     cross-spawn "^7.0.6"
     memorystream "^0.3.1"
     picomatch "^4.0.2"
@@ -9596,10 +9583,10 @@ pkijs@^3.3.3:
     pvutils "^1.1.3"
     tslib "^2.8.1"
 
-playwright-core@1.61.1:
-  version "1.61.1"
-  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.61.1.tgz#3c99841307efbbabc9d724c41a88c914705d15fc"
-  integrity sha512-h7Qlt6m4REp25qvIdvbDtVmD4LqVXfpRxhORv9L0jzETM05p4fuPJ3dKyuSXQxDSbXnmS79HAgi9589lGSpLkg==
+playwright-core@1.62.0:
+  version "1.62.0"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.62.0.tgz#66f50795fa22d4ccb1a6f70d82264f07171fa3b5"
+  integrity sha512-nsNRyq0r2zsG8AcRHWknc9QRA5XCueC7gWMrs+Gx2tlZn9hcl8zudfh00lhJPY1DE7NmZ6bDsT9g2yey8mXljA==
 
 playwright-ctrf-json-reporter@^0.0.29:
   version "0.0.29"
@@ -9608,12 +9595,12 @@ playwright-ctrf-json-reporter@^0.0.29:
   dependencies:
     ctrf "^0.2.0"
 
-playwright@1.61.1:
-  version "1.61.1"
-  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.61.1.tgz#d8c0c06eb93c28981afc747bace453bdbd5018bc"
-  integrity sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ==
+playwright@1.62.0:
+  version "1.62.0"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.62.0.tgz#eddedb94b0e492a6c7425a602b0eadea35c71526"
+  integrity sha512-Z14dG305dgaLu6foB1TXQagFiW8JfSUIUaUuPaKQ6NtBPKF1P/qXcqfh6c6K/icPqdy37JmjbiBXf6JNg6Sylw==
   dependencies:
-    playwright-core "1.61.1"
+    playwright-core "1.62.0"
   optionalDependencies:
     fsevents "2.3.2"
 
@@ -11624,10 +11611,10 @@ universalify@^2.0.0:
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-2.0.1.tgz#168efc2180964e6386d061e094df61afe239b18d"
   integrity sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==
 
-unleash-proxy-client@^3.8.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/unleash-proxy-client/-/unleash-proxy-client-3.8.0.tgz#5acc7ca0db568644028ac6f770c6b6a75652308b"
-  integrity sha512-7+IMDM/t8sUojbYmOMoRW0SjD7+ShOrpI+vR1QWSv1Fnf7IxXLKp1dVhWnWyh9p4iyqFw4RXG9Iw5LHuBMV4aA==
+unleash-proxy-client@^3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/unleash-proxy-client/-/unleash-proxy-client-3.8.2.tgz#1e8b645f9904fb3bcb11b78342d95cf789058f9d"
+  integrity sha512-xwFk4Zq7mdZxWU69g9On1TT3VSARBm2c+U1oY6PbaBA+FZrODpUHw7xMhIg74Ai56w0RlPMZ4znzHZ3R9PBGpA==
   dependencies:
     tiny-emitter "^2.1.0"
 
