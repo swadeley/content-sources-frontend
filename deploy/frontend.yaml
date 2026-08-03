@@ -40,15 +40,15 @@ objects:
               title: Content
               expandable: true
               routes:
+                - id: templates
+                  title: Templates
+                  href: /insights/content/templates
                 - segmentRef:
                     frontendName: patch
                     segmentId: patch-advisories-packages
                 - id: repositories
                   title: Repositories
                   href: /insights/content/repositories
-                - id: templates
-                  title: Templates
-                  href: /insights/content/templates
                 - segmentRef:
                     frontendName: patch
                     segmentId: patch-systems
