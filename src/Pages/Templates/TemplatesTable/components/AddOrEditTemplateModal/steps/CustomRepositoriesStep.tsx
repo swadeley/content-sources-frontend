@@ -33,9 +33,10 @@ import useDebounce from 'Hooks/useDebounce';
 import { ADD_ROUTE, REPOSITORIES_ROUTE } from 'Routes/constants';
 import TdWithTooltip from 'components/TdWithTooltip/TdWithTooltip';
 import ConditionalTooltip from 'components/ConditionalTooltip/ConditionalTooltip';
-import { isEPELUrl, reduceStringToCharsWithEllipsis } from 'helpers';
+import { reduceStringToCharsWithEllipsis } from 'helpers';
 import UploadRepositoryLabel from 'components/RepositoryLabels/UploadRepositoryLabel';
-import CommunityRepositoryLabel from 'components/RepositoryLabels/CommunityRepositoryLabel';
+import PartnerRepositoryLabel from 'components/RepositoryLabels/PartnerRepositoryLabel';
+import { isEPELRepository } from 'Pages/Repositories/helpers';
 
 const useStyles = createUseStyles({
   topBottomContainers: {
@@ -132,14 +133,6 @@ export default function CustomRepositoriesStep() {
   const countIsZero = count === 0;
   const showLoader = countIsZero && !isLoading;
 
-  const isEPELRepository = (repo: ContentItem): boolean => {
-    if (repo.origin === ContentOrigin.COMMUNITY) {
-      return true;
-    }
-
-    return isEPELUrl(repo.url);
-  };
-
   const isAnyEPELRepoSelected = (): boolean =>
     contentList.some((repo) => selectedCustomRepos.has(repo.uuid) && isEPELRepository(repo));
 
@@ -166,7 +159,7 @@ export default function CustomRepositoriesStep() {
       </Flex>
       <Flex direction={{ default: 'row' }}>
         <Content component={ContentVariants.p} className={classes.reduceTrailingMargin}>
-          Select custom or EPEL repositories.
+          Select custom or Partner repositories.
         </Content>
         <UrlWithExternalIcon
           href={pathname + '/' + REPOSITORIES_ROUTE}
@@ -287,7 +280,7 @@ export default function CustomRepositoriesStep() {
               </Thead>
               <Tbody>
                 {contentList.map((rowData: ContentItem, rowIndex) => {
-                  const { uuid, name, url, origin } = rowData;
+                  const { uuid, name, url, origin, partner } = rowData;
                   const shouldDisableOtherEPEL =
                     isEPELRepository(rowData) &&
                     isAnyEPELRepoSelected() &&
@@ -317,11 +310,11 @@ export default function CustomRepositoriesStep() {
                               <UploadRepositoryLabel />
                             </Hide>
                             <Hide hide={origin !== ContentOrigin.COMMUNITY}>
-                              <CommunityRepositoryLabel />
+                              <PartnerRepositoryLabel />
                             </Hide>
                           </>
                         </ConditionalTooltip>
-                        <Hide hide={origin === ContentOrigin.UPLOAD}>
+                        <Hide hide={origin === ContentOrigin.UPLOAD || partner === true}>
                           <ConditionalTooltip show={url.length > 50} content={url}>
                             <UrlWithExternalIcon
                               href={url}

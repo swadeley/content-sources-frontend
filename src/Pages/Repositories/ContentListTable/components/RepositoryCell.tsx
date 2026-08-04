@@ -4,17 +4,17 @@ import dayjs from 'dayjs';
 import { ContentItem, ContentOrigin } from 'services/Content/ContentApi';
 import Hide from 'components/Hide/Hide';
 import UploadRepositoryLabel from 'components/RepositoryLabels/UploadRepositoryLabel';
-import CommunityRepositoryLabel from 'components/RepositoryLabels/CommunityRepositoryLabel';
+import PartnerRepositoryLabel from 'components/RepositoryLabels/PartnerRepositoryLabel';
 import UrlWithExternalIcon from 'components/UrlWithLinkIcon/UrlWithLinkIcon';
 import ChangedArrows from './SnapshotListModal/components/ChangedArrows';
 
 interface Props {
-  rowData: Pick<ContentItem, 'name' | 'url' | 'last_snapshot' | 'origin'>;
+  rowData: Pick<ContentItem, 'name' | 'url' | 'last_snapshot' | 'origin' | 'partner'>;
   snapshotsAccessible: boolean;
 }
 
 const RepositoryCell = memo(({ rowData, snapshotsAccessible }: Props) => {
-  const { name, url, last_snapshot, origin } = rowData;
+  const { name, url, last_snapshot, origin, partner } = rowData;
 
   return (
     <Flex direction={{ default: 'column' }}>
@@ -24,11 +24,11 @@ const RepositoryCell = memo(({ rowData, snapshotsAccessible }: Props) => {
           <UploadRepositoryLabel />
         </Hide>
         <Hide hide={origin !== ContentOrigin.COMMUNITY}>
-          <CommunityRepositoryLabel />
+          <PartnerRepositoryLabel />
         </Hide>
       </Flex>
 
-      <Hide hide={origin === ContentOrigin.UPLOAD}>
+      <Hide hide={origin === ContentOrigin.UPLOAD || partner === true}>
         <UrlWithExternalIcon href={url} />
       </Hide>
 

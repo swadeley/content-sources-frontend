@@ -3,7 +3,7 @@ import { t_global_background_color_floating_default as floatingBackground } from
 
 // Removes null values and builds url params from a given object.
 export const objectToUrlParams = (obj: {
-  [key: string]: string | string[] | undefined;
+  [key: string]: string | string[] | boolean | undefined;
 }): string => {
   const keyList = Object.keys(obj).filter((key) => !!obj[key]);
   // Check each item for falsey value and filter
@@ -68,15 +68,6 @@ export const reduceStringToCharsWithEllipsis = (str: string, maxLength: number =
 // Removes any cases of 3+ line breaks and replaces them with 2
 export const formatDescription = (description: string): string =>
   description.replace(/\n{3,}/g, '\n\n');
-
-export const isEPELUrl = (repoUrl) => {
-  const epelUrls = [
-    'https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/',
-    'https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/',
-    'https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/',
-  ];
-  return epelUrls.includes(repoUrl);
-};
 
 const floatingBackgroundColor = floatingBackground.var;
 

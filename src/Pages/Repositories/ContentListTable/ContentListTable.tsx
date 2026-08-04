@@ -72,7 +72,7 @@ import {
 export const perPageKey = 'contentListPerPage';
 
 const readOnlyReposTooltipCopy =
-  'Red Hat and EPEL repositories are read-only and cannot be manipulated.';
+  'Red Hat and Partner repositories are read-only and cannot be manipulated.';
 
 const communityAndCustomReposTooltipCopy = 'No custom repositories on this page to select.';
 
@@ -400,6 +400,7 @@ const ContentListTable = () => {
           last_snapshot_task,
           package_count,
           status,
+          partner,
         }: ContentItem) => {
           // Pre-compute values for memoized components
           const actionRowData: ActionRowData = {
@@ -420,7 +421,7 @@ const ContentListTable = () => {
               {
                 cell: (
                   <RepositoryCell
-                    rowData={{ name, url, last_snapshot, origin }}
+                    rowData={{ name, url, last_snapshot, origin, partner }}
                     snapshotsAccessible={snapshotsAccessible}
                   />
                 ),

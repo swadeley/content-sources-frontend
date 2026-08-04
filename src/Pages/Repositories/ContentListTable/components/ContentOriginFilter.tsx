@@ -8,8 +8,8 @@ interface Props {
   setContentOrigin: React.Dispatch<React.SetStateAction<ContentOrigin[]>>;
 }
 
-/** API `community` origin is the shared EPEL catalog for this product. */
-const EPEL_ORIGIN = ContentOrigin.COMMUNITY;
+/** API `community` origin is the shared EPEL and partner (for non-owners) catalog for this product. */
+const PARTNER_ORIGIN = ContentOrigin.COMMUNITY;
 
 const ContentOriginFilter = ({ contentOrigin, setContentOrigin }: Props) => {
   const { features } = useAppContext();
@@ -38,19 +38,6 @@ const ContentOriginFilter = ({ contentOrigin, setContentOrigin }: Props) => {
         }}
       />
       <ToggleGroupItem
-        text='EPEL'
-        buttonId='epel-repositories-toggle-button'
-        data-ouia-component-id='epel-repositories-toggle'
-        isSelected={contentOrigin.includes(EPEL_ORIGIN)}
-        onChange={() => {
-          setContentOrigin((prev) =>
-            prev.includes(EPEL_ORIGIN)
-              ? prev.filter((origin) => origin !== EPEL_ORIGIN)
-              : [...prev, EPEL_ORIGIN],
-          );
-        }}
-      />
-      <ToggleGroupItem
         text='Red Hat'
         buttonId='redhat-repositories-toggle-button'
         data-ouia-component-id='redhat-repositories-toggle'
@@ -60,6 +47,19 @@ const ContentOriginFilter = ({ contentOrigin, setContentOrigin }: Props) => {
             prev.includes(ContentOrigin.REDHAT)
               ? prev.filter((origin) => origin !== ContentOrigin.REDHAT)
               : [...prev, ContentOrigin.REDHAT],
+          );
+        }}
+      />
+      <ToggleGroupItem
+        text='Partner'
+        buttonId='partner-repositories-toggle-button'
+        data-ouia-component-id='partner-repositories-toggle'
+        isSelected={contentOrigin.includes(PARTNER_ORIGIN)}
+        onChange={() => {
+          setContentOrigin((prev) =>
+            prev.includes(PARTNER_ORIGIN)
+              ? prev.filter((origin) => origin !== PARTNER_ORIGIN)
+              : [...prev, PARTNER_ORIGIN],
           );
         }}
       />

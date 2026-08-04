@@ -35,6 +35,7 @@ export interface ContentItem {
   published_distribution_url?: string;
   build_count?: number;
   version_count?: number;
+  partner?: boolean;
 }
 
 export interface PopularRepository {
@@ -165,6 +166,7 @@ export type FilterData = Partial<{
   availableForVersion: string;
   feature_name: string;
   name: string;
+  partner: boolean;
 }>;
 
 export type ValidateItem = {
@@ -463,6 +465,7 @@ export const getContentList: (
       extended_release_version: filterData.extended_release_version,
       feature_name: filterData.feature_name,
       name: filterData.name,
+      partner: filterData.partner,
     })}`,
   );
   return data;

@@ -2,10 +2,12 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
   hasOrigin,
+  isEPELRepository,
   lastIntrospectionDisplay,
   showPendingTooltip,
   versionNameToApiValue,
 } from './helpers';
+import { ContentOrigin } from 'services/Content/ContentApi';
 
 dayjs.extend(relativeTime);
 
@@ -72,5 +74,28 @@ describe('versionNameToApiValue', () => {
 
   it('should return an empty string if the version name does not satisfy the expected format', () => {
     expect(versionNameToApiValue('RHEL')).toBe('');
+  });
+});
+
+describe('isEPELRepository', () => {
+  it('should be true for community origin and EPEL URL', () => {
+    expect(
+      isEPELRepository({
+        origin: ContentOrigin.COMMUNITY,
+        url: 'https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/',
+      }),
+    ).toBe(true);
+  });
+
+  it('should be false for non-EPEL URL ', () => {
+    expect(isEPELRepository({ origin: ContentOrigin.COMMUNITY, url: 'https://example.com' })).toBe(
+      false,
+    );
+  });
+
+  it('should be false for non-community origin and non-EPEL URL', () => {
+    expect(isEPELRepository({ origin: ContentOrigin.EXTERNAL, url: 'https://example.com' })).toBe(
+      false,
+    );
   });
 });

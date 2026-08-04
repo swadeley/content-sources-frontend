@@ -98,13 +98,13 @@ describe('ContentOriginFilter', () => {
     expect(updater([ContentOrigin.REDHAT])).toEqual([]);
   });
 
-  it('toggles EPEL origin', async () => {
+  it('toggles Partner origin', async () => {
     const user = userEvent.setup();
     const setContentOrigin = jest.fn();
 
     render(<ContentOriginFilter contentOrigin={[]} setContentOrigin={setContentOrigin} />);
 
-    await user.click(screen.getByRole('button', { name: 'EPEL' }));
+    await user.click(screen.getByRole('button', { name: 'Partner' }));
 
     const addCommunity = setContentOrigin.mock.calls[0][0] as (
       prev: ContentOrigin[],
@@ -112,7 +112,7 @@ describe('ContentOriginFilter', () => {
     expect(addCommunity([])).toEqual([ContentOrigin.COMMUNITY]);
   });
 
-  it('removes community origin when EPEL is turned off', async () => {
+  it('removes community origin when Partner is turned off', async () => {
     const user = userEvent.setup();
     const setContentOrigin = jest.fn();
 
@@ -123,7 +123,7 @@ describe('ContentOriginFilter', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'EPEL' }));
+    await user.click(screen.getByRole('button', { name: 'Partner' }));
 
     const removeCommunity = setContentOrigin.mock.calls[0][0] as (
       prev: ContentOrigin[],

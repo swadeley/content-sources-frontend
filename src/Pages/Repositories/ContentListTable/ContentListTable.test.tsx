@@ -116,7 +116,7 @@ it('renders with a single row', async () => {
   expect(getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
 });
 
-it('disables EPEL checkboxes when Custom and EPEL tabs are active', async () => {
+it('disables Partner checkboxes when Custom and Partner tabs are active', async () => {
   (useContentListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     data: {
@@ -191,7 +191,7 @@ it('disables checkboxes for Community repos when no origin tab is active', async
   expect(epelRepoCheckbox).toBeDisabled();
 });
 
-it('disables delete kebab when Red Hat and/or EPEL tabs are active and shows read-only tooltip', async () => {
+it('disables delete kebab when Red Hat and/or Partner tabs are active and shows read-only tooltip', async () => {
   (useContentListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     data: {
@@ -215,7 +215,7 @@ it('disables delete kebab when Red Hat and/or EPEL tabs are active and shows rea
   await user.hover(deleteKebab);
   expect(
     await screen.findByRole('tooltip', {
-      name: 'Red Hat and EPEL repositories are read-only and cannot be manipulated.',
+      name: 'Red Hat and Partner repositories are read-only and cannot be manipulated.',
     }),
   ).toBeInTheDocument();
 });
@@ -245,7 +245,7 @@ it('queries with ContentOrigin.ALL when no origin filter is selected', () => {
   );
 });
 
-it('hides bulk select when Red Hat and/or EPEL tabs are active', async () => {
+it('hides bulk select when Red Hat and/or Partner tabs are active', async () => {
   (useContentListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     data: {

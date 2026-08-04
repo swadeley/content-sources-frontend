@@ -10,18 +10,18 @@ test.describe('Community EPEL repositories', () => {
     await closeGenericPopupsIfExist(page);
     await expect(page).toHaveTitle('Repositories - Content | RHEL');
 
-    await test.step('Custom and EPEL tabs are selected by default', async () => {
+    await test.step('Custom and Partner tabs are selected by default', async () => {
       await expect(page.getByRole('button', { name: 'Custom', exact: true })).toHaveAttribute(
         'aria-pressed',
         'true',
       );
-      await expect(page.getByRole('button', { name: 'EPEL', exact: true })).toHaveAttribute(
+      await expect(page.getByRole('button', { name: 'Partner', exact: true })).toHaveAttribute(
         'aria-pressed',
         'true',
       );
     });
 
-    await test.step('EPEL tab shows only the community EPEL repository', async () => {
+    await test.step('Partner tab shows only the community EPEL repository', async () => {
       await page.getByRole('button', { name: 'Custom', exact: true }).click();
       const rowsWithoutEPEL = page.locator('table tbody tr').filter({ hasNotText: 'EPEL' });
       await expect(rowsWithoutEPEL).toHaveCount(0);
