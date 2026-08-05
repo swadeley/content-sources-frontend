@@ -158,7 +158,7 @@ const RepositoriesTable = () => {
         paragraph='Browse Lightwell repositories by ecosystem and security level.'
         showOpenSourceBadge={false}
       />
-      <PageSection hasBodyWrapper={false} className={`${spacing.pt_0} ${spacing.pb_2xl}`}>
+      <PageSection hasBodyWrapper={false} className={`${spacing.pt_0} ${spacing.pbLg}`}>
         <Grid data-ouia-component-id='lightwell-repositories-page'>
           <Hide hide={countIsZero || count < 10}>
             <Flex

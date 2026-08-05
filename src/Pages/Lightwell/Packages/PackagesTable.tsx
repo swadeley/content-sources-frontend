@@ -363,7 +363,7 @@ const PackagesTable = () => {
         </Stack>
       </Grid>
 
-      <Grid className={spacing.pxLg}>
+      <Grid className={`${spacing.pxLg} ${spacing.pbLg}`}>
         <Toolbar ouiaId='lightwell-packages-toolbar'>
           <ToolbarContent>
             <ToolbarItem className={classes.filterToolbarItem}>
