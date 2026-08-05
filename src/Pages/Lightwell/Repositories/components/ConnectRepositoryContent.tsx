@@ -35,7 +35,7 @@ const renderTabPanel = (tab: ConnectSnippetTab) => (
           hoverTip='Copy'
           clickTip='Copied'
           variant={snippet.urlOnly ? ClipboardCopyVariant.inline : ClipboardCopyVariant.expansion}
-          isExpanded={false}
+          isExpanded={snippet.urlOnly ? false : snippet.code.split('\n').length > 1 ? true : false}
         >
           {snippet.code}
         </ClipboardCopy>
