@@ -147,6 +147,10 @@ export const compareReleasesDesc = (
  * Example:
  * https://packages.redhat.com/api/pulp-content/lightwell/java/validated
  * -> https://packages.redhat.com/lightwell/java/validated
+ * https://packages.redhat.com/api/pulp-content/public-lightwell-demo/python/validated/simple
+ * -> https://packages.redhat.com/lightwell/public-lightwell-demo/python/validated/simple
  */
 export const formatDistributionUrl = (url: string): string =>
-  url.replace('/api/pulp-content/lightwell', '/lightwell');
+  url
+    .replace('/api/pulp-content/public-lightwell-demo', '/lightwell/public-lightwell-demo')
+    .replace('/api/pulp-content/lightwell', '/lightwell');

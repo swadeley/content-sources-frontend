@@ -214,6 +214,22 @@ describe('formatDistributionUrl', () => {
     expect(formatDistributionUrl('')).toBe('');
   });
 
+  it('transforms demo Pulp API URL to Lightwell URL', () => {
+    expect(
+      formatDistributionUrl(
+        'https://packages.redhat.com/api/pulp-content/public-lightwell-demo/python/validated/simple',
+      ),
+    ).toBe('https://packages.redhat.com/lightwell/public-lightwell-demo/python/validated/simple');
+  });
+
+  it('transforms demo Pulp API URL to Lightwell URL with trailing slash', () => {
+    expect(
+      formatDistributionUrl(
+        'https://packages.redhat.com/api/pulp-content/public-lightwell-demo/python/validated/simple/',
+      ),
+    ).toBe('https://packages.redhat.com/lightwell/public-lightwell-demo/python/validated/simple/');
+  });
+
   it('returns URL unchanged if it does not contain the expected path', () => {
     expect(formatDistributionUrl('https://example.com/some/other/path')).toBe(
       'https://example.com/some/other/path',
