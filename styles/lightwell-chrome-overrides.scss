@@ -1,15 +1,3 @@
-// Hide 'My Profile', 'My User Access' and 'User Preferences' as they get you away from Lightwell and you cannot get back
-li.pf-v6-c-menu__list-item:has(> a[href*="/wapps/ugc/protected/personalInfo.html"]),
-li.pf-v6-c-menu__list-item:has(> a[href="/iam/my-user-access"]),
-li.pf-v6-c-menu__list-item:has(> a[href="/settings/notifications/user-preferences"]) {
-    display: none !important;
-}
-
-// Hide everything in the Settings menu except for Color scheme
-.chr-c-menu-settings .pf-v6-c-menu__group:not(:has([data-ouia-component-id="settings-menu-color-system"])),
-.chr-c-menu-settings .pf-v6-c-divider {
-    display: none !important;
-}
 
 // TrustArc "Cookie preferences" link is injected by Chrome and pushed off-screen,
 // causing an unwanted scrollbar. Fix it in the bottom-left corner instead.
