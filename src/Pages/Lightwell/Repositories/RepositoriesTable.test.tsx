@@ -13,6 +13,7 @@ import { ContentItem } from 'services/Content/ContentApi';
 import { getSlugFromRepositoryName } from '../helpers';
 import { useLightwellNotificationPrefs } from './hooks/useLightwellNotificationPrefs';
 import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
+import { useLightwellRepoNotifications } from './hooks/useLightwellRepoNotifications';
 
 jest.mock('services/Content/ContentQueries', () => ({
   useContentListQuery: jest.fn(),
@@ -32,6 +33,11 @@ jest.mock('../constants', () => ({
 
 jest.mock('./hooks/useLightwellNotificationPrefs', () => ({
   useLightwellNotificationPrefs: jest.fn(),
+}));
+
+jest.mock('./hooks/useLightwellRepoNotifications', () => ({
+  ...jest.requireActual('./hooks/useLightwellRepoNotifications'),
+  useLightwellRepoNotifications: jest.fn(),
 }));
 
 const javaRemediatedContentItem: ContentItem = {
@@ -61,6 +67,13 @@ beforeEach(() => {
     isLoading: false,
     isError: false,
     shouldExposeNotifications: false,
+  });
+  (useLightwellRepoNotifications as jest.Mock).mockReturnValue({
+    isRepoSubscribed: jest.fn().mockReturnValue(false),
+    setRepoSubscribed: jest.fn(),
+    isLoading: false,
+    isError: false,
+    pendingEventType: undefined,
   });
 });
 
@@ -286,4 +299,39 @@ it('disables notification features when preferences fail to load', async () => {
 
   expect(await screen.findByRole('button', { name: 'Notification preferences' })).toBeDisabled();
   expect(screen.queryByRole('columnheader', { name: 'Notify' })).not.toBeInTheDocument();
+});
+
+it('unsubscribes from repository notifications when toggle is turned off', async () => {
+  const user = userEvent.setup();
+  const mockSetRepoSubscribed = jest.fn();
+  (useLightwellNotificationPrefs as jest.Mock).mockReturnValue({
+    prefs: { enabled: true, minimumSeverity: 'critical' },
+    isLoading: false,
+    isError: false,
+    shouldExposeNotifications: true,
+  });
+  (useLightwellRepoNotifications as jest.Mock).mockReturnValue({
+    isRepoSubscribed: jest.fn().mockReturnValue(true),
+    setRepoSubscribed: mockSetRepoSubscribed,
+    isLoading: false,
+    isError: false,
+    pendingEventType: undefined,
+  });
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultPythonRemediatedContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  const toggle = await screen.findByRole('switch', {
+    name: `Toggle notifications for ${defaultPythonRemediatedContentItem.name}`,
+  });
+  expect(toggle).toBeChecked();
+
+  await user.click(toggle);
+  expect(mockSetRepoSubscribed).toHaveBeenCalledWith('python-remediated', []);
 });

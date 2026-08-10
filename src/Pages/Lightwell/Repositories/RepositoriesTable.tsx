@@ -50,6 +50,7 @@ import {
   formatEcosystemDisplay,
   getRepositoryDescription,
   formatRepositoryName,
+  getRepositoryPathSlug,
   getSlugFromRepositoryName,
 } from '../helpers';
 import ConnectRepositoryModal from './components/ConnectRepositoryModal';
@@ -59,6 +60,10 @@ import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellN
 import NotificationPreferencesModal from './components/NotificationPreferencesModal';
 import LightwellPageHeader from '../components/LightwellPageHeader';
 import { useLightwellNotificationPrefs } from './hooks/useLightwellNotificationPrefs';
+import {
+  mapSeveritiesToApi,
+  useLightwellRepoNotifications,
+} from './hooks/useLightwellRepoNotifications';
 
 const useStyles = createUseStyles({
   topContainer: {
@@ -120,8 +125,16 @@ const RepositoriesTable = () => {
     shouldExposeNotifications,
   } = useLightwellNotificationPrefs(!countIsZero);
 
+  const {
+    isRepoSubscribed,
+    setRepoSubscribed,
+    isLoading: isRepoNotificationsLoading,
+    isError: isRepoNotificationsError,
+    pendingEventType,
+  } = useLightwellRepoNotifications(!countIsZero);
+
   const shouldShowNotificationButton = (shouldExposeNotifications && !countIsZero) || isDemo;
-  const showNotificationsColumn = prefs?.enabled === true;
+  const showNotificationsColumn = prefs?.enabled === true && !isRepoNotificationsLoading;
 
   const columnHeaders: {
     title: string;
@@ -170,6 +183,10 @@ const RepositoriesTable = () => {
     onSetPage,
     onPerPageSelect,
   };
+
+  const handleNotificationToggle = (eventType: string, checked: boolean) =>
+    // prefs! is safe: the toggle is only reachable when showNotificationsColumn (prefs.enabled === true)
+    setRepoSubscribed(eventType, checked ? mapSeveritiesToApi(prefs!.minimumSeverity) : []);
 
   return (
     <>
@@ -249,6 +266,8 @@ const RepositoriesTable = () => {
                           version_count,
                         } = repo;
 
+                        const eventType = getRepositoryPathSlug(content_type, security_level);
+
                         return (
                           <Tr key={uuid}>
                             <Td dataLabel={columnHeaders[0].title}>
@@ -327,11 +346,15 @@ const RepositoriesTable = () => {
                                   <Switch
                                     id={`notify-toggle-${uuid}`}
                                     aria-label={`Toggle notifications for ${name}`}
-                                    isDisabled={isDemo}
-                                    // TODO: isChecked should be modified via the handler
-                                    isChecked={isDemo}
-                                    // TODO: implement per-repo notification toggle
-                                    onChange={() => {}}
+                                    isDisabled={
+                                      isDemo ||
+                                      isRepoNotificationsError ||
+                                      pendingEventType === eventType
+                                    }
+                                    isChecked={isDemo ? true : isRepoSubscribed(eventType)}
+                                    onChange={(_event, checked) =>
+                                      handleNotificationToggle(eventType, checked)
+                                    }
                                   />
                                 ) : (
                                   'N/A'

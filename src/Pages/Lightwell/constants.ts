@@ -4,6 +4,7 @@ import {
   LIGHTWELL_NOTIFICATION_SEVERITIES,
   type LightwellNotificationSeverity,
 } from 'services/Lightwell/UserPreferencesApi';
+import type { NotificationSubscriptionType } from 'services/Notifications/NotificationsApi';
 
 export {
   LIGHTWELL_NOTIFICATION_ENABLED_LABEL,
@@ -11,6 +12,8 @@ export {
   LIGHTWELL_NOTIFICATION_SEVERITIES,
   type LightwellNotificationSeverity,
 };
+
+export const INSTANT_EMAIL_SUBSCRIPTION_TYPE: NotificationSubscriptionType = 'instant_email';
 
 export const LIGHTWELL_FEATURE_NAME = 'lightwell-network';
 export const LIGHTWELL_DEMO_FEATURE_NAME = 'lightwell-network-demo';
@@ -64,6 +67,6 @@ export const DEFAULT_LIGHTWELL_NOTIFICATION_PREFS: LightwellNotificationPrefs = 
 };
 
 export const DEMO_LIGHTWELL_NOTIFICATION_PREFS: LightwellNotificationPrefs = {
+  ...DEFAULT_LIGHTWELL_NOTIFICATION_PREFS,
   enabled: true,
-  minimumSeverity: 'high',
 };
