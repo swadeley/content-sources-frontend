@@ -8,7 +8,7 @@ import {
   Switch,
 } from '@patternfly/react-core';
 import { Severity, SeverityType } from '@patternfly/react-component-groups';
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 import {
   LIGHTWELL_VULNERABILITY_SEVERITY_OPTIONS,
@@ -26,15 +26,21 @@ const LIGHTWELL_TO_PF_SEVERITY: Record<LightwellNotificationSeverity, SeverityTy
 type NotificationPreferencesContentProps = {
   preferences: LightwellNotificationPrefs;
   onPreferencesChange: Dispatch<SetStateAction<LightwellNotificationPrefs>>;
-  isDisabled?: boolean;
+  isReadOnly?: boolean;
 };
 
 const NotificationPreferencesContent = ({
   preferences,
   onPreferencesChange,
-  isDisabled = false,
+  isReadOnly = false,
 }: NotificationPreferencesContentProps) => {
   const { enabled, minimumSeverity } = preferences;
+
+  const handleNotificationToggle = (_event: React.FormEvent, checked: boolean) =>
+    onPreferencesChange((prev) => ({ ...prev, enabled: checked }));
+
+  const handleSeverityChange = (value: LightwellNotificationSeverity) =>
+    onPreferencesChange((prev) => ({ ...prev, minimumSeverity: value }));
 
   return (
     <Form>
@@ -46,10 +52,8 @@ const NotificationPreferencesContent = ({
           aria-label='Notify me when fixes are available'
           ouiaId={`lightwell-notification-enabled-switch-${enabled ? 'on' : 'off'}`}
           isChecked={enabled}
-          isDisabled={isDisabled}
-          onChange={(_event, checked) =>
-            onPreferencesChange((prev) => ({ ...prev, enabled: checked }))
-          }
+          isDisabled={isReadOnly}
+          onChange={handleNotificationToggle}
         />
       </FormGroup>
 
@@ -73,13 +77,8 @@ const NotificationPreferencesContent = ({
               name='lightwell-notification-severity'
               ouiaId={`lightwell-notification-severity-${option.value}`}
               isChecked={minimumSeverity === option.value}
-              isDisabled={isDisabled}
-              onChange={() =>
-                onPreferencesChange((prev) => ({
-                  ...prev,
-                  minimumSeverity: option.value,
-                }))
-              }
+              isDisabled={isReadOnly}
+              onChange={() => handleSeverityChange(option.value)}
               label={
                 <Severity
                   severity={LIGHTWELL_TO_PF_SEVERITY[option.value]}

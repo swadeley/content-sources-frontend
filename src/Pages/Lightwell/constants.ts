@@ -62,3 +62,8 @@ export const DEFAULT_LIGHTWELL_NOTIFICATION_PREFS: LightwellNotificationPrefs = 
   enabled: false,
   minimumSeverity: 'high',
 };
+
+export const DEMO_LIGHTWELL_NOTIFICATION_PREFS: LightwellNotificationPrefs = {
+  enabled: true,
+  minimumSeverity: 'high',
+};

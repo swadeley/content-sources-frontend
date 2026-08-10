@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import RepositoriesTable from './RepositoriesTable';
@@ -10,7 +10,8 @@ import {
   ReactQueryTestWrapper,
 } from 'testingHelpers';
 import { ContentItem } from 'services/Content/ContentApi';
-import { getRepositoryPathSlug } from '../helpers';
+import { getSlugFromRepositoryName } from '../helpers';
+import { useLightwellNotificationPrefs } from './hooks/useLightwellNotificationPrefs';
 import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 
 jest.mock('services/Content/ContentQueries', () => ({
@@ -27,6 +28,10 @@ jest.mock('Hooks/Lightwell/navigation/useLightwellNavigateTo', () => ({
 jest.mock('../constants', () => ({
   ...jest.requireActual('../constants'),
   LIGHTWELL_USE_MOCK: false,
+}));
+
+jest.mock('./hooks/useLightwellNotificationPrefs', () => ({
+  useLightwellNotificationPrefs: jest.fn(),
 }));
 
 const javaRemediatedContentItem: ContentItem = {
@@ -50,6 +55,12 @@ const renderRepositoriesTable = () =>
 beforeEach(() => {
   (useLightwellNavigateTo as jest.Mock).mockReturnValue({
     navigateTo: mockNavigateTo,
+  });
+  (useLightwellNotificationPrefs as jest.Mock).mockReturnValue({
+    prefs: undefined,
+    isLoading: false,
+    isError: false,
+    shouldExposeNotifications: false,
   });
 });
 
@@ -97,6 +108,7 @@ it('shows a loading skeleton while repositories are loading', () => {
 });
 
 it('navigates to repository packages when a repository name is clicked', async () => {
+  const user = userEvent.setup();
   (useContentListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     data: {
@@ -107,13 +119,10 @@ it('navigates to repository packages when a repository name is clicked', async (
 
   renderRepositoriesTable();
 
-  await userEvent.click(await screen.findByRole('button', { name: 'Java Validated' }));
+  await user.click(await screen.findByRole('button', { name: 'Java Validated' }));
 
   expect(mockNavigateTo).toHaveBeenCalledWith('repositoryPackages', {
-    repoSlug: getRepositoryPathSlug(
-      defaultLightwellContentItem.content_type,
-      defaultLightwellContentItem.security_level,
-    ),
+    repoSlug: getSlugFromRepositoryName(defaultLightwellContentItem.name),
   });
 });
 
@@ -203,4 +212,78 @@ it('renders repository table column headers', async () => {
   expect(screen.getByRole('columnheader', { name: 'Security level' })).toBeInTheDocument();
   expect(screen.getByRole('columnheader', { name: 'Packages' })).toBeInTheDocument();
   expect(screen.getByRole('columnheader', { name: 'Versions' })).toBeInTheDocument();
+});
+
+it('hides notification features when the feature flag is off', async () => {
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultLightwellContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  expect(await screen.findByText('Java Validated')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Notification preferences' }),
+  ).not.toBeInTheDocument();
+});
+
+it('shows notification column and modal when user has stored notification preferences', async () => {
+  const user = userEvent.setup();
+  (useLightwellNotificationPrefs as jest.Mock).mockReturnValue({
+    prefs: { enabled: true, minimumSeverity: 'critical' },
+    isLoading: false,
+    isError: false,
+    shouldExposeNotifications: true,
+  });
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultLightwellContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  expect(await screen.findByRole('columnheader', { name: 'Notify' })).toBeInTheDocument();
+  expect(screen.getByText('N/A')).toBeInTheDocument();
+
+  const notificationsButton = screen.getByRole('button', { name: 'Notification preferences' });
+  expect(notificationsButton).toBeEnabled();
+
+  await user.click(notificationsButton);
+
+  const modal = await screen.findByRole('dialog', { name: 'Notification preferences' });
+
+  await waitFor(() => {
+    expect(
+      within(modal).getByRole('switch', { name: 'Notify me when fixes are available' }),
+    ).toBeChecked();
+    expect(within(modal).getByRole('radio', { name: 'Critical' })).toBeChecked();
+  });
+});
+
+it('disables notification features when preferences fail to load', async () => {
+  (useLightwellNotificationPrefs as jest.Mock).mockReturnValue({
+    prefs: undefined,
+    isLoading: false,
+    isError: true,
+    shouldExposeNotifications: true,
+  });
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultLightwellContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  expect(await screen.findByRole('button', { name: 'Notification preferences' })).toBeDisabled();
+  expect(screen.queryByRole('columnheader', { name: 'Notify' })).not.toBeInTheDocument();
 });

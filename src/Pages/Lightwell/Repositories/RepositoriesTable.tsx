@@ -11,6 +11,7 @@ import {
   Pagination,
   PaginationVariant,
   Stack,
+  Switch,
 } from '@patternfly/react-core';
 import { CodeIcon, JavaIcon, PythonIcon, BellIcon } from '@patternfly/react-icons';
 import { SkeletonTable } from '@patternfly/react-component-groups';
@@ -57,6 +58,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import NotificationPreferencesModal from './components/NotificationPreferencesModal';
 import LightwellPageHeader from '../components/LightwellPageHeader';
+import { useLightwellNotificationPrefs } from './hooks/useLightwellNotificationPrefs';
 
 const useStyles = createUseStyles({
   topContainer: {
@@ -110,6 +112,17 @@ const RepositoriesTable = () => {
 
   if (isError) throw error;
 
+  const countIsZero = count === 0; // Empty list signals missing Lightwell entitlement
+
+  const {
+    prefs,
+    isError: isNotificationPrefsError,
+    shouldExposeNotifications,
+  } = useLightwellNotificationPrefs(!countIsZero);
+
+  const shouldShowNotificationButton = (shouldExposeNotifications && !countIsZero) || isDemo;
+  const showNotificationsColumn = prefs?.enabled === true;
+
   const columnHeaders: {
     title: string;
     width?: BaseCellProps['width'];
@@ -130,6 +143,15 @@ const RepositoriesTable = () => {
         tooltip: 'Total package versions available in this repository.',
       },
     },
+    ...(showNotificationsColumn
+      ? [
+          {
+            title: 'Notify',
+            width: 10 as const,
+            info: { tooltip: 'Toggle email notifications for new packages in this repository.' },
+          },
+        ]
+      : []),
   ];
 
   const onSetPage = (_, newPage: number) => setPage(newPage);
@@ -149,27 +171,28 @@ const RepositoriesTable = () => {
     onPerPageSelect,
   };
 
-  const countIsZero = count === 0;
-
   return (
     <>
       <LightwellPageHeader
         title='Repositories'
         ouiaId='lightwell-header'
         description='Browse Lightwell repositories by ecosystem and security level.'
-        actions={
-          <NotificationPreferencesModal>
-            <Button
-              size='sm'
-              variant='secondary'
-              aria-label='Notification preferences'
-              ouiaId='lightwell-notification-preferences-button'
-              icon={<BellIcon />}
-            >
-              Notifications
-            </Button>
-          </NotificationPreferencesModal>
-        }
+        {...(shouldShowNotificationButton && {
+          actions: (
+            <NotificationPreferencesModal>
+              <Button
+                size='sm'
+                variant='secondary'
+                aria-label='Notification preferences'
+                ouiaId='lightwell-notification-preferences-button'
+                icon={<BellIcon />}
+                {...(!isDemo && { isDisabled: isNotificationPrefsError })}
+              >
+                Notifications
+              </Button>
+            </NotificationPreferencesModal>
+          ),
+        })}
       />
       <PageSection hasBodyWrapper={false} className={`${spacing.pt_0} ${spacing.pbLg}`}>
         <Grid data-ouia-component-id='lightwell-repositories-page'>
@@ -298,6 +321,23 @@ const RepositoriesTable = () => {
                             <Td dataLabel={columnHeaders[4].title}>
                               {version_count?.toLocaleString() ?? '0'}
                             </Td>
+                            {showNotificationsColumn ? (
+                              <Td>
+                                {security_level === 'remediated' ? (
+                                  <Switch
+                                    id={`notify-toggle-${uuid}`}
+                                    aria-label={`Toggle notifications for ${name}`}
+                                    isDisabled={isDemo}
+                                    // TODO: isChecked should be modified via the handler
+                                    isChecked={isDemo}
+                                    // TODO: implement per-repo notification toggle
+                                    onChange={() => {}}
+                                  />
+                                ) : (
+                                  'N/A'
+                                )}
+                              </Td>
+                            ) : null}
                           </Tr>
                         );
                       })}

@@ -17,6 +17,7 @@ import { useSetUserPreferencesMutation } from 'services/Lightwell/UserPreference
 import { DEFAULT_LIGHTWELL_NOTIFICATION_PREFS, LightwellNotificationPrefs } from '../../constants';
 import { useLightwellNotificationPrefs } from '../hooks/useLightwellNotificationPrefs';
 import NotificationPreferencesContent from './NotificationPreferencesContent';
+import { useLightwellDemo } from '../../LightwellDemoContext';
 
 type NotificationPreferencesModalProps = {
   children: ReactElement<{ onClick?: (event: React.MouseEvent) => void }>;
@@ -28,30 +29,36 @@ const NotificationPreferencesModal = ({ children }: NotificationPreferencesModal
     DEFAULT_LIGHTWELL_NOTIFICATION_PREFS,
   );
 
-  const { enabled, minimumSeverity, isLoading, isError } = useLightwellNotificationPrefs(isOpen);
+  const isDemo = useLightwellDemo();
+
+  const { prefs, isLoading, isError } = useLightwellNotificationPrefs(isOpen);
+
   const { mutateAsync, isPending } = useSetUserPreferencesMutation();
 
-  const savedPreferences: LightwellNotificationPrefs = {
-    enabled,
-    minimumSeverity,
-  };
-  const hasNotChanged = isEqual(preferences, savedPreferences);
-  const isFormLoading = isOpen && isLoading;
-  const canSave = !hasNotChanged && !isPending && !isFormLoading;
+  const storedPreferences = prefs ?? DEFAULT_LIGHTWELL_NOTIFICATION_PREFS;
+  const { enabled: storedEnabled, minimumSeverity: storedMinimumSeverity } = storedPreferences;
+  const hasNotChanged = isEqual(preferences, storedPreferences);
+
+  const showLoading = isOpen && isLoading;
+  const arePreferencesReady = isOpen && !isLoading && !isError;
+  const canSave = !hasNotChanged && !isPending && arePreferencesReady;
 
   useEffect(() => {
-    if (!isOpen || isLoading) return;
-    setPreferences({ enabled, minimumSeverity });
-  }, [isOpen, isLoading, enabled, minimumSeverity]);
+    if (!arePreferencesReady) return;
+    setPreferences({ enabled: storedEnabled, minimumSeverity: storedMinimumSeverity });
+  }, [arePreferencesReady, storedEnabled, storedMinimumSeverity]);
+
+  useEffect(() => {
+    if (isOpen && isError) {
+      setIsOpen(false);
+    }
+  }, [isOpen, isError]);
 
   const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
-
-  useEffect(() => {
-    if (isError) {
-      closeModal();
-    }
-  }, [isError]);
+  const closeModal = () => {
+    setIsOpen(false);
+    setPreferences(storedPreferences);
+  };
 
   const trigger = cloneElement(children, {
     onClick: (event: React.MouseEvent) => {
@@ -87,18 +94,19 @@ const NotificationPreferencesModal = ({ children }: NotificationPreferencesModal
           description='Get notified when vulnerability fixes are available for packages in your repositories.'
           labelId='lightwell-notification-preferences-modal-title'
         />
+
         <ModalBody>
-          {isFormLoading ? (
+          {showLoading ? (
             <Flex justifyContent={{ default: 'justifyContentCenter' }} className={spacing.pXl}>
               <Spinner aria-label='Loading notification preferences' />
             </Flex>
-          ) : (
+          ) : arePreferencesReady ? (
             <NotificationPreferencesContent
               preferences={preferences}
               onPreferencesChange={setPreferences}
-              isDisabled={isPending}
+              isReadOnly={isPending || isDemo}
             />
-          )}
+          ) : null}
         </ModalBody>
 
         <ModalFooter>
