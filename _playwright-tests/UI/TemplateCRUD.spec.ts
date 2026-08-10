@@ -127,7 +127,9 @@ test.describe('Templates CRUD', () => {
     await test.step('Read and update values in the template', async () => {
       const rowTemplate = await getRowByNameOrUrl(page, templateName);
       await rowTemplate.getByRole('button', { name: templateName }).click();
-      await expect(page.getByLabel('Breadcrumb').first()).toHaveText('RHELContentTemplates');
+      await expect(page.getByLabel('Breadcrumb').first()).toHaveText(
+        'Red Hat Hybrid Cloud ConsoleRHELContentTemplates',
+      );
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(templateName);
       await expect(page.getByText('Description')).toBeVisible();
       await expect(page.getByText('Template test')).toBeVisible();
