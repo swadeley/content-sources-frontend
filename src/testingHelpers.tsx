@@ -559,7 +559,7 @@ export const gradleValidatedDependencySnippet = `// Source: ${defaultLightwellCo
 implementation("${defaultLightwellRepositoryPackageItem.group}:${defaultLightwellRepositoryPackageItem.name}:2.21.2")`;
 
 export const pipRemediatedInstallSnippet = `# Source: ${defaultPythonRemediatedContentItem.published_distribution_url}
-pip install --index-url ${defaultPythonRemediatedContentItem.published_distribution_url} ${defaultPythonRemediatedRepositoryPackageItem.name}==2.32.0.rhlw-0002`;
+pip install --index-url ${defaultPythonRemediatedContentItem.published_distribution_url}/simple ${defaultPythonRemediatedRepositoryPackageItem.name}==2.32.0.rhlw-0002`;
 
 export const requirementsRemediatedInstallSnippet = `# Source: ${defaultPythonRemediatedContentItem.published_distribution_url}
 --index-url ${defaultPythonRemediatedContentItem.published_distribution_url}
@@ -570,7 +570,7 @@ export const pipConfRemediatedInstallSnippet = `# ~/.config/pip/pip.conf
 index-url = ${defaultPythonRemediatedContentItem.published_distribution_url}`;
 
 export const pipValidatedInstallSnippet = `# Source: ${defaultPythonValidatedContentItem.published_distribution_url}
-pip install --index-url ${defaultPythonValidatedContentItem.published_distribution_url} ${defaultPythonValidatedPackageItem.name}==2.21.2`;
+pip install --index-url ${defaultPythonValidatedContentItem.published_distribution_url}/simple ${defaultPythonValidatedPackageItem.name}==2.21.2`;
 
 export const requirementsValidatedInstallSnippet = `# Source: ${defaultPythonValidatedContentItem.published_distribution_url}
 --index-url ${defaultPythonValidatedContentItem.published_distribution_url}
