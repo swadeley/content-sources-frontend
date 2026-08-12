@@ -215,7 +215,7 @@ const RepositoriesTable = () => {
 
                         return (
                           <Tr key={uuid}>
-                            <Td>
+                            <Td dataLabel={columnHeaders[0].title}>
                               <Flex direction={{ default: 'column' }} gap={{ default: 'gapXs' }}>
                                 <Flex
                                   alignItems={{ default: 'alignItemsCenter' }}
@@ -265,8 +265,10 @@ const RepositoriesTable = () => {
                                 </FlexItem>
                               </Flex>
                             </Td>
-                            <Td>{formatEcosystemDisplay(content_type)}</Td>
-                            <Td>
+                            <Td dataLabel={columnHeaders[1].title}>
+                              {formatEcosystemDisplay(content_type)}
+                            </Td>
+                            <Td dataLabel={columnHeaders[2].title}>
                               {security_level === 'validated' ? (
                                 <Label variant='outline' color='purple'>
                                   {capitalize(security_level)}
@@ -277,8 +279,12 @@ const RepositoriesTable = () => {
                                 '—'
                               )}
                             </Td>
-                            <Td>{package_count.toLocaleString() ?? '0'}</Td>
-                            <Td>{version_count?.toLocaleString() ?? '0'}</Td>
+                            <Td dataLabel={columnHeaders[3].title}>
+                              {package_count.toLocaleString() ?? '0'}
+                            </Td>
+                            <Td dataLabel={columnHeaders[4].title}>
+                              {version_count?.toLocaleString() ?? '0'}
+                            </Td>
                           </Tr>
                         );
                       })}

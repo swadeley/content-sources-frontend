@@ -432,7 +432,7 @@ const PackagesTable = () => {
 
                         return (
                           <Tr key={packageKey}>
-                            <Td>
+                            <Td dataLabel={columnHeaders[0].title}>
                               <Button
                                 variant='link'
                                 isInline
@@ -450,7 +450,7 @@ const PackagesTable = () => {
                                 {isMaven ? `${group_id}:${name}` : name}
                               </Button>
                             </Td>
-                            <Td>
+                            <Td dataLabel={columnHeaders[1].title}>
                               <StackedItemsCell
                                 items={versions}
                                 packageKey={packageKey}
@@ -465,7 +465,7 @@ const PackagesTable = () => {
                               />
                             </Td>
                             {isRemediated ? (
-                              <Td>
+                              <Td dataLabel={columnHeaders[2].title}>
                                 <StackedItemsCell
                                   items={latest_releases}
                                   packageKey={packageKey}
@@ -478,7 +478,7 @@ const PackagesTable = () => {
                                 />
                               </Td>
                             ) : null}
-                            <Td>
+                            <Td dataLabel={columnHeaders[isRemediated ? 3 : 2].title}>
                               {last_updated ? (
                                 <Timestamp
                                   date={new Date(last_updated)}
