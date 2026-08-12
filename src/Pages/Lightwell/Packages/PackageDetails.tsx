@@ -22,6 +22,7 @@ import {
   Tabs,
   TabTitleText,
   Title,
+  Truncate,
 } from '@patternfly/react-core';
 import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -300,7 +301,9 @@ const PackageDetails = () => {
                 {repositoryName}
               </BreadcrumbItem>
               <BreadcrumbItem isActive>
-                {isMaven ? `${packageGroup}:${packageName}` : packageName || '—'}
+                <Truncate
+                  content={isMaven ? `${packageGroup}:${packageName}` : packageName || '—'}
+                />
               </BreadcrumbItem>
             </Breadcrumb>
           </StackItem>
