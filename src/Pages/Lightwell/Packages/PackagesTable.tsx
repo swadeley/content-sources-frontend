@@ -381,6 +381,7 @@ const PackagesTable = () => {
                 <Pagination
                   id='lightwell-top-pagination'
                   widgetId='lightwellTopPaginationWidgetId'
+                  isCompact
                   {...paginationProps}
                 />
               </Hide>
@@ -498,20 +499,15 @@ const PackagesTable = () => {
                       })}
                     </Tbody>
                   </Table>
-                  <Hide hide={!showPagination}>
-                    <Flex className={classes.bottomContainer}>
-                      <FlexItem />
-                      <FlexItem>
-                        <Hide hide={isPackagesLoading}>
-                          <Pagination
-                            id='lightwell-bottom-pagination'
-                            widgetId='lightwellBottomPaginationWidgetId'
-                            variant={PaginationVariant.bottom}
-                            {...paginationProps}
-                          />
-                        </Hide>
-                      </FlexItem>
-                    </Flex>
+                  <Hide hide={!showPagination || isPackagesLoading}>
+                    <Pagination
+                      id='lightwell-bottom-pagination'
+                      widgetId='lightwellBottomPaginationWidgetId'
+                      variant={PaginationVariant.bottom}
+                      isCompact={false}
+                      isStatic
+                      {...paginationProps}
+                    />
                   </Hide>
                 </Stack>
               </Card>

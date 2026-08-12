@@ -218,10 +218,11 @@ const RepositoriesTable = () => {
               className={classes.topContainer}
               data-ouia-component-id='lightwell-repositories-toolbar'
             >
-              <FlexItem>
+              <FlexItem align={{ default: 'alignRight' }}>
                 <Pagination
                   id='lightwell-top-pagination'
                   widgetId='lightwellTopPaginationWidgetId'
+                  isCompact
                   {...paginationProps}
                 />
               </FlexItem>
@@ -367,17 +368,14 @@ const RepositoriesTable = () => {
                     </Tbody>
                   </Table>
                   <Hide hide={countIsZero || count < 10}>
-                    <Flex className={classes.bottomContainer}>
-                      <FlexItem />
-                      <FlexItem>
-                        <Pagination
-                          id='lightwell-bottom-pagination'
-                          widgetId='lightwellBottomPaginationWidgetId'
-                          variant={PaginationVariant.bottom}
-                          {...paginationProps}
-                        />
-                      </FlexItem>
-                    </Flex>
+                    <Pagination
+                      id='lightwell-bottom-pagination'
+                      widgetId='lightwellBottomPaginationWidgetId'
+                      variant={PaginationVariant.bottom}
+                      isCompact={false}
+                      isStatic
+                      {...paginationProps}
+                    />
                   </Hide>
                 </Stack>
               </Card>
