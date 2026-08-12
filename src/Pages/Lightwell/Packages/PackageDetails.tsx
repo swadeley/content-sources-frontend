@@ -68,6 +68,11 @@ const useStyles = createUseStyles({
   detailCard: {
     overflow: 'visible',
   },
+  // Fixed height so switching Overview/Releases/Versions does not cause a layout shift.
+  tabPanelArea: {
+    height: 'min(40rem, 55vh)',
+    overflowY: 'auto',
+  },
 });
 
 const PackageDetails = () => {
@@ -426,70 +431,74 @@ const PackageDetails = () => {
                     />
                   )}
                 </Tabs>
-                <TabContent
-                  eventKey={0}
-                  id='lightwell-package-overview-panel'
-                  ref={overviewTabRef}
-                  aria-label='Overview'
-                >
-                  <TabContentBody hasPadding>
-                    <PackageOverviewTab
-                      isMaven={isMaven}
-                      group={packageGroup}
-                      name={packageName}
-                      latestRelease={displayVersion}
-                      hasRelease={hasRelease}
-                      summary={isMaven ? mavenDetail?.summary : pythonDetail?.summary}
-                      sourceUrl={formatDistributionUrl(repository.published_distribution_url ?? '')}
-                      repository={{
-                        uuid: repository.uuid,
-                        name: repository.name,
-                        published_distribution_url: formatDistributionUrl(
+                <div className={classes.tabPanelArea}>
+                  <TabContent
+                    eventKey={0}
+                    id='lightwell-package-overview-panel'
+                    ref={overviewTabRef}
+                    aria-label='Overview'
+                  >
+                    <TabContentBody hasPadding>
+                      <PackageOverviewTab
+                        isMaven={isMaven}
+                        group={packageGroup}
+                        name={packageName}
+                        latestRelease={displayVersion}
+                        hasRelease={hasRelease}
+                        summary={isMaven ? mavenDetail?.summary : pythonDetail?.summary}
+                        sourceUrl={formatDistributionUrl(
                           repository.published_distribution_url ?? '',
-                        ),
-                        content_type: repository.content_type ?? '',
-                      }}
-                    />
-                  </TabContentBody>
-                </TabContent>
-                {showReleasesTab && (
-                  <TabContent
-                    eventKey={1}
-                    id='lightwell-package-releases-panel'
-                    ref={releasesTabRef}
-                    aria-label='Releases'
-                    hidden
-                  >
-                    <TabContentBody hasPadding>
-                      <PackageReleasesTab
-                        version={upstreamVersion}
-                        builds={mavenBuilds}
-                        allVersions={mavenVersions}
-                        latestReleases={mavenAllReleases}
-                        onVersionSelect={setSelectedVersion}
-                        formatCopyText={formatReleaseCopyText}
+                        )}
+                        repository={{
+                          uuid: repository.uuid,
+                          name: repository.name,
+                          published_distribution_url: formatDistributionUrl(
+                            repository.published_distribution_url ?? '',
+                          ),
+                          content_type: repository.content_type ?? '',
+                        }}
                       />
                     </TabContentBody>
                   </TabContent>
-                )}
-                {showVersionsTab && (
-                  <TabContent
-                    eventKey={1}
-                    id='lightwell-package-versions-panel'
-                    ref={versionsTabRef}
-                    aria-label='Versions'
-                    hidden
-                  >
-                    <TabContentBody hasPadding>
-                      <PackageVersionsTab
-                        currentVersion={selectedVersion || activeVersion}
-                        versions={versionOptions}
-                        latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
-                        onVersionSelect={setSelectedVersion}
-                      />
-                    </TabContentBody>
-                  </TabContent>
-                )}
+                  {showReleasesTab && (
+                    <TabContent
+                      eventKey={1}
+                      id='lightwell-package-releases-panel'
+                      ref={releasesTabRef}
+                      aria-label='Releases'
+                      hidden
+                    >
+                      <TabContentBody hasPadding>
+                        <PackageReleasesTab
+                          version={upstreamVersion}
+                          builds={mavenBuilds}
+                          allVersions={mavenVersions}
+                          latestReleases={mavenAllReleases}
+                          onVersionSelect={setSelectedVersion}
+                          formatCopyText={formatReleaseCopyText}
+                        />
+                      </TabContentBody>
+                    </TabContent>
+                  )}
+                  {showVersionsTab && (
+                    <TabContent
+                      eventKey={1}
+                      id='lightwell-package-versions-panel'
+                      ref={versionsTabRef}
+                      aria-label='Versions'
+                      hidden
+                    >
+                      <TabContentBody hasPadding>
+                        <PackageVersionsTab
+                          currentVersion={selectedVersion || activeVersion}
+                          versions={versionOptions}
+                          latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
+                          onVersionSelect={setSelectedVersion}
+                        />
+                      </TabContentBody>
+                    </TabContent>
+                  )}
+                </div>
               </GridItem>
               <GridItem md={4}>
                 <PackageSidebar
