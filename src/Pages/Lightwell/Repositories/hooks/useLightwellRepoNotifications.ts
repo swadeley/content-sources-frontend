@@ -5,7 +5,10 @@ import {
   useNotificationSubscriptionsQuery,
   useUpdateNotificationSubscriptionsMutation,
 } from 'services/Notifications/NotificationsQueries';
-import type { NotificationSeverity } from 'services/Notifications/NotificationsApi';
+import type {
+  NotificationEventTypeRequest,
+  NotificationSeverity,
+} from 'services/Notifications/NotificationsApi';
 import { LightwellNotificationSeverity, INSTANT_EMAIL_SUBSCRIPTION_TYPE } from '../../constants';
 
 import { useLightwellDemo } from '../../LightwellDemoContext';
@@ -72,11 +75,46 @@ export const useLightwellRepoNotifications = (shouldFetch = true) => {
     [canFetch, mutate],
   );
 
+  const syncAllSubscribedSeverities = useCallback(
+    (severities: NotificationSeverity[]) => {
+      if (!canFetch || !query.data) return;
+
+      const updates: NotificationEventTypeRequest[] = [];
+
+      for (const bundle of query.data) {
+        for (const app of bundle.applications) {
+          for (const et of app.event_types) {
+            const emailChannel = et.subscriptions.find(
+              ({ subscription_type }) => subscription_type === INSTANT_EMAIL_SUBSCRIPTION_TYPE,
+            );
+            if ((emailChannel?.subscribed_severities?.length ?? 0) > 0) {
+              updates.push({
+                event_type: et.event_type,
+                subscriptions: [
+                  {
+                    subscription_type: INSTANT_EMAIL_SUBSCRIPTION_TYPE,
+                    subscribed_severities: severities,
+                  },
+                ],
+              });
+            }
+          }
+        }
+      }
+
+      if (updates.length > 0) {
+        mutate(updates);
+      }
+    },
+    [canFetch, query.data, mutate],
+  );
+
   const pendingEventType = isPending ? variables?.[0]?.event_type : undefined;
 
   return {
     isRepoSubscribed,
     setRepoSubscribed,
+    syncAllSubscribedSeverities,
     isLoading: canFetch && query.isLoading,
     isError: canFetch && query.isError,
     pendingEventType,

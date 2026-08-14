@@ -16,6 +16,10 @@ import { useSetUserPreferencesMutation } from 'services/Lightwell/UserPreference
 
 import { DEFAULT_LIGHTWELL_NOTIFICATION_PREFS, LightwellNotificationPrefs } from '../../constants';
 import { useLightwellNotificationPrefs } from '../hooks/useLightwellNotificationPrefs';
+import {
+  mapSeveritiesToApi,
+  useLightwellRepoNotifications,
+} from '../hooks/useLightwellRepoNotifications';
 import NotificationPreferencesContent from './NotificationPreferencesContent';
 import { useLightwellDemo } from '../../LightwellDemoContext';
 
@@ -34,6 +38,7 @@ const NotificationPreferencesModal = ({ children }: NotificationPreferencesModal
   const { prefs, isLoading, isError } = useLightwellNotificationPrefs(isOpen);
 
   const { mutateAsync, isPending } = useSetUserPreferencesMutation();
+  const { syncAllSubscribedSeverities } = useLightwellRepoNotifications(isOpen);
 
   const storedPreferences = prefs ?? DEFAULT_LIGHTWELL_NOTIFICATION_PREFS;
   const { enabled: storedEnabled, minimumSeverity: storedMinimumSeverity } = storedPreferences;
@@ -72,6 +77,11 @@ const NotificationPreferencesModal = ({ children }: NotificationPreferencesModal
   const handleSave = async () => {
     try {
       await mutateAsync(preferences);
+      if (!preferences.enabled && storedEnabled) {
+        syncAllSubscribedSeverities([]);
+      } else if (preferences.enabled && preferences.minimumSeverity !== storedMinimumSeverity) {
+        syncAllSubscribedSeverities(mapSeveritiesToApi(preferences.minimumSeverity));
+      }
       closeModal();
     } catch {
       // Error toast is handled by the mutation
