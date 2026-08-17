@@ -59,11 +59,12 @@ const NotificationPreferencesModal = ({ children }: NotificationPreferencesModal
     }
   }, [isOpen, isError]);
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => {
-    setIsOpen(false);
+  const openModal = () => {
     setPreferences(storedPreferences);
+    setIsOpen(true);
   };
+
+  const closeModal = () => setIsOpen(false);
 
   const trigger = cloneElement(children, {
     onClick: (event: React.MouseEvent) => {
