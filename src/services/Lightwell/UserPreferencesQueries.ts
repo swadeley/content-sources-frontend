@@ -74,8 +74,7 @@ export const useSetUserPreferencesMutation = () => {
       });
       void queryClient.invalidateQueries({ queryKey: [USER_PREFERENCES_KEY] });
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (err: any, _variables, context) => {
+    onError: (err: unknown, _variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData([USER_PREFERENCES_KEY], context.previousData);
       }
