@@ -37,6 +37,7 @@
   "dependencies": {
     "@patternfly/react-catalog-view-extension": "^6.5.0",
     "@patternfly/react-component-groups": "^6.5.0",
+    "@patternfly/react-charts": "^8.6.1",
     "@patternfly/react-core": "^6.3.1",
     "@patternfly/react-data-view": "6.5.0",
     "@patternfly/react-drag-drop": "^6.6.1",
@@ -73,6 +74,7 @@
     "react18-json-view": "^0.2.8",
     "redux": "^5.0.1",
     "unleash-proxy-client": "^3.8.2",
+    "victory": "^37.3.6",
     "yup": "^1.7.1"
   },
   "devDependencies": {

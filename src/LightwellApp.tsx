@@ -11,6 +11,7 @@ import PackagesTable from 'Pages/Lightwell/Packages/PackagesTable';
 import PackageDetails from 'Pages/Lightwell/Packages/PackageDetails';
 import RepositoriesTable from 'Pages/Lightwell/Repositories/RepositoriesTable';
 import Beacon from 'Pages/Lightwell/Beacon/Beacon';
+import CoverageAnalyzer from 'Pages/Lightwell/Coverage/CoverageAnalyzer';
 import { LightwellDemoLayout } from 'Pages/Lightwell/LightwellDemoContext';
 
 export default function LightwellApp() {
@@ -34,6 +35,7 @@ export default function LightwellApp() {
         </Route>
         <Route index element={<RepositoriesTable />} />
         <Route path='beacon' element={<Beacon />} />
+        <Route path='lens' element={<CoverageAnalyzer />} />
         <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
         <Route path=':repoName/:packageName' element={<PackageDetails />} />
         <Route path=':repoName' element={<PackagesTable />} />
