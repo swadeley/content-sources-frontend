@@ -54,6 +54,7 @@ import Hide from 'components/Hide/Hide';
 import { LIGHTWELL_USE_MOCK, lightwellPkgsPerPageKey } from '../constants';
 import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
 import Loader from 'components/Loader';
+import LightwellNotFound from '../components/LightwellNotFound';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
 import { buildVersionFromRelease } from './components/PackageReleasesTab';
 import CopyLabel from './components/CopyLabel';
@@ -246,8 +247,12 @@ const PackagesTable = () => {
   const countIsZero = packageCount === 0;
   const showPagination = packages.length > 0;
 
-  if (isResolvingRepository || !repository) {
+  if (isResolvingRepository) {
     return <Loader />;
+  }
+
+  if (!repository) {
+    return <LightwellNotFound />;
   }
 
   if (!repoUUID || isError) throw error;

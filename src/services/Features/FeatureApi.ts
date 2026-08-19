@@ -11,6 +11,7 @@ export interface Features {
   kessel?: Feature;
   extendedreleaserepos?: Feature;
   lightwellnotifications?: Feature;
+  lightwellbeaconandlens?: Feature;
 }
 
 export const getFeatures: () => Promise<Features> = async () => {

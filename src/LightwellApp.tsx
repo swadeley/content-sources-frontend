@@ -4,6 +4,7 @@ import '../styles/lightwell-clipboard-copy.scss';
 import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import Loader from 'components/Loader';
 
 import { ErrorPage } from 'components/Error/ErrorPage';
 import usePageSafe from 'Hooks/usePageSafe';
@@ -12,11 +13,14 @@ import PackageDetails from 'Pages/Lightwell/Packages/PackageDetails';
 import RepositoriesTable from 'Pages/Lightwell/Repositories/RepositoriesTable';
 import Beacon from 'Pages/Lightwell/Beacon/Beacon';
 import CoverageAnalyzer from 'Pages/Lightwell/Coverage/CoverageAnalyzer';
+import LightwellNotFound from 'Pages/Lightwell/components/LightwellNotFound';
 import { LightwellDemoLayout } from 'Pages/Lightwell/LightwellDemoContext';
+import { useAppContext } from './middleware/AppContext';
 
 export default function LightwellApp() {
   const pageSafe = usePageSafe();
   const { hideGlobalFilter } = useChrome();
+  const { features, isFetchingPermissions } = useAppContext();
 
   useEffect(() => {
     hideGlobalFilter(true);
@@ -25,21 +29,31 @@ export default function LightwellApp() {
   return (
     <ErrorPage>
       <div data-ouia-safe={pageSafe} />
-      <Routes>
-        <Route path='demo' element={<LightwellDemoLayout />}>
+      {isFetchingPermissions ? (
+        <Loader />
+      ) : (
+        <Routes>
+          <Route path='demo' element={<LightwellDemoLayout />}>
+            <Route index element={<RepositoriesTable />} />
+            <Route path='beacon' element={<Beacon />} />
+            <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
+            <Route path=':repoName/:packageName' element={<PackageDetails />} />
+            <Route path=':repoName' element={<PackagesTable />} />
+          </Route>
           <Route index element={<RepositoriesTable />} />
-          <Route path='beacon' element={<Beacon />} />
+          {features?.lightwellbeaconandlens?.enabled &&
+          features?.lightwellbeaconandlens?.accessible ? (
+            <>
+              <Route path='beacon' element={<Beacon />} />
+              <Route path='lens' element={<CoverageAnalyzer />} />
+            </>
+          ) : null}
           <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
           <Route path=':repoName/:packageName' element={<PackageDetails />} />
           <Route path=':repoName' element={<PackagesTable />} />
-        </Route>
-        <Route index element={<RepositoriesTable />} />
-        <Route path='beacon' element={<Beacon />} />
-        <Route path='lens' element={<CoverageAnalyzer />} />
-        <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
-        <Route path=':repoName/:packageName' element={<PackageDetails />} />
-        <Route path=':repoName' element={<PackagesTable />} />
-      </Routes>
+          <Route path='*' element={<LightwellNotFound />} />
+        </Routes>
+      )}
     </ErrorPage>
   );
 }

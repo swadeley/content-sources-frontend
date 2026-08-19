@@ -32,6 +32,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 
 import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
 import Loader from 'components/Loader';
+import LightwellNotFound from '../components/LightwellNotFound';
 import {
   useMavenPackageVersionsListQuery,
   usePythonPackageVersionsQuery,
@@ -229,8 +230,12 @@ const PackageDetails = () => {
       ? mavenVersionsListQuery.isLoading
       : pythonPackageVersionsQuery.isLoading && !pythonPackageVersionsQuery.data;
 
-  if (isResolvingRepository || !repository) {
+  if (isResolvingRepository) {
     return <Loader />;
+  }
+
+  if (!repository) {
+    return <LightwellNotFound />;
   }
 
   if (!repoUUID || isError) throw error;
