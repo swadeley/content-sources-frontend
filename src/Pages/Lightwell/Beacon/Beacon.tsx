@@ -236,7 +236,7 @@ const Beacon = () => {
       <LightwellPageHeader
         title='Beacon'
         ouiaId='lightwell-beacon-header'
-        description='Track vulnerability remediation progress through the Lightwell fix pipeline.'
+        description='Understand the status of your Lightwell submissions'
         actions={<ExportMenu vulnerabilities={filteredVulns} />}
       />
 
