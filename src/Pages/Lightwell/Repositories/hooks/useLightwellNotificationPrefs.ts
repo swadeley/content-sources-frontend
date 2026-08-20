@@ -1,5 +1,5 @@
-import { useFlag } from '@unleash/proxy-client-react';
 import { useUserPreferencesQuery, UserPreference } from 'services/Lightwell/UserPreferencesQueries';
+import { useAppContext } from 'middleware/AppContext';
 
 import {
   DEMO_LIGHTWELL_NOTIFICATION_PREFS,
@@ -46,7 +46,8 @@ export const parseLightwellNotificationPrefs = (
  */
 export const useLightwellNotificationPrefs = (shouldFetch = true) => {
   const isDemo = useLightwellDemo();
-  const shouldExposeNotifications = useFlag('content-sources.lightwell-notifications.enabled');
+  const { features } = useAppContext();
+  const shouldExposeNotifications = !!features?.lightwellnotifications?.accessible;
   const canFetch = shouldExposeNotifications && !isDemo && shouldFetch;
 
   const query = useUserPreferencesQuery(canFetch);

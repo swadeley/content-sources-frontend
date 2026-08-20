@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useFlag } from '@unleash/proxy-client-react';
 
 import {
   useNotificationSubscriptionsQuery,
@@ -10,6 +9,7 @@ import type {
   NotificationSeverity,
 } from 'services/Notifications/NotificationsApi';
 import { LightwellNotificationSeverity, INSTANT_EMAIL_SUBSCRIPTION_TYPE } from '../../constants';
+import { useAppContext } from 'middleware/AppContext';
 
 import { useLightwellDemo } from '../../LightwellDemoContext';
 
@@ -26,7 +26,8 @@ export const mapSeveritiesToApi = (
 
 export const useLightwellRepoNotifications = (shouldFetch = true) => {
   const isDemo = useLightwellDemo();
-  const shouldExposeNotifications = useFlag('content-sources.lightwell-notifications.enabled');
+  const { features } = useAppContext();
+  const shouldExposeNotifications = !!features?.lightwellnotifications?.accessible;
   const canFetch = shouldExposeNotifications && !isDemo && shouldFetch;
 
   const query = useNotificationSubscriptionsQuery('lightwell', 'lightwell', canFetch);
