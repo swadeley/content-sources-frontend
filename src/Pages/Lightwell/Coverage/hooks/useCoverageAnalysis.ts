@@ -10,6 +10,8 @@ export type ProcessStep = 'select' | 'uploading' | 'analyzing' | 'complete' | 'e
 export type FileUploadStatus = 'success' | 'error' | 'default';
 
 const POLLING_RETRY_LIMIT = 40;
+const MAX_FILE_SIZE_MB = 500;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export const useCoverageAnalysis = () => {
   const [step, setStep] = useState<ProcessStep>('select');
@@ -52,6 +54,11 @@ export const useCoverageAnalysis = () => {
   // where onFileInputChange fires twice when selecting a file via the browser dialog
   const handleFileAccepted = (acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];
+    if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+      setFileError(`File exceeds the ${MAX_FILE_SIZE_MB}MB size limit. Please try a smaller file.`);
+      setFile(selectedFile);
+      return;
+    }
     if (!validateManifestFile(selectedFile)) {
       setFileError('Could not detect format. Please check your file.');
       setFile(selectedFile);
