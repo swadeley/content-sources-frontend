@@ -49,7 +49,7 @@ const CoverageAnalyzer = () => {
                 <Divider />
                 <HelperText className={`${spacing.pMd}`}>
                   <HelperTextItem variant='indeterminate'>
-                    {report.unmatched} out of network packages logged as demand signals for the
+                    {report.unmatched} out-of-network packages logged as demand signals for the
                     Catalog Build Queue. This does not constitute a commitment to build these
                     packages.
                   </HelperTextItem>
