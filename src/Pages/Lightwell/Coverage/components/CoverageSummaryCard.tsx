@@ -60,8 +60,11 @@ const CoverageSummaryCard = ({ filename, report }: CoverageSummaryCardProps) => 
               padding={{ bottom: 10, left: 10, right: 10, top: 10 }}
             />
           </FlexItem>
-          <FlexItem className={`${alignment.textAlignCenter} ${spacing.px_4xl}`}>
-            <Content component='p' className={spacing.pbSm}>
+          <FlexItem
+            className={`${alignment.textAlignCenter} ${spacing.px_4xl}`}
+            style={{ maxWidth: 650 }}
+          >
+            <Content component='p' className={spacing.pbSm} style={{ wordBreak: 'keep-all' }}>
               Lightwell Network currently covers {percentage}% of the inventory given in{' '}
               <span className={text.fontWeightBold}>{filename}</span>. Packages that are not found
               in the Network have been noted as demand signals for the content team.
