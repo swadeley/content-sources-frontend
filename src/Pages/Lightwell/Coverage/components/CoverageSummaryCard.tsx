@@ -13,6 +13,7 @@ import text from '@patternfly/react-styles/css/utilities/Text/text';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IN_NETWORK_COLOR, UNCOVERED_COLOR } from '../constants';
+import { useContainerWidth } from '../../hooks/useContainerWidth';
 import { CompletedCoverageReport } from 'services/Lightwell/CoverageReportsApi';
 
 type CoverageSummaryCardProps = {
@@ -21,6 +22,8 @@ type CoverageSummaryCardProps = {
 };
 
 const CoverageSummaryCard = ({ filename, report }: CoverageSummaryCardProps) => {
+  const { containerRef, width } = useContainerWidth(250);
+
   const inNetwork = report.exact_matches + report.partial_matches;
   const outOfNetwork = report.unmatched;
   const percentage = report.total > 0 ? Math.round((inNetwork / report.total) * 100) : 0;
@@ -40,20 +43,20 @@ const CoverageSummaryCard = ({ filename, report }: CoverageSummaryCardProps) => 
           alignItems={{ default: 'alignItemsCenter' }}
           gap={{ default: 'gapMd' }}
         >
-          <FlexItem>
+          <FlexItem ref={containerRef} style={{ maxWidth: 300 }}>
             <ChartDonut
               ariaDesc='Coverage summary donut chart'
               constrainToVisibleArea
               data={[
                 { x: 'In Network', y: inNetwork },
-                { x: 'Out of Network', y: outOfNetwork },
+                { x: 'Not in Network', y: outOfNetwork },
               ]}
               colorScale={[IN_NETWORK_COLOR, UNCOVERED_COLOR]}
               labels={({ datum }) => `${datum.x}: ${datum.y}`}
               title={`${percentage}%`}
               subTitle='in network'
-              width={250}
-              height={180}
+              width={width}
+              height={width * 0.72}
               padding={{ bottom: 10, left: 10, right: 10, top: 10 }}
             />
           </FlexItem>

@@ -17,6 +17,7 @@ import {
 } from '@patternfly/react-charts/victory';
 
 import { IN_NETWORK_COLOR, UNCOVERED_COLOR } from '../constants';
+import { useContainerWidth } from '../../hooks/useContainerWidth';
 import { CompletedCoverageReport } from 'services/Lightwell/CoverageReportsApi';
 
 type EcosystemBreakdownCardProps = {
@@ -24,6 +25,8 @@ type EcosystemBreakdownCardProps = {
 };
 
 const EcosystemBreakdownCard = ({ report }: EcosystemBreakdownCardProps) => {
+  const { containerRef, width } = useContainerWidth(450);
+
   const ecosystemCount = report.ecosystem_coverage_summary.length;
   const inNetwork = report.exact_matches + report.partial_matches;
   const matchedPackages = report.ecosystem_coverage_summary.map((eco) => ({
@@ -52,20 +55,23 @@ const EcosystemBreakdownCard = ({ report }: EcosystemBreakdownCardProps) => {
               Lightwell Validated catalog.
             </Content>
           </FlexItem>
-          {/* TODO: v2 — make charts responsive */}
-          <FlexItem alignSelf={{ default: 'alignSelfCenter' }} style={{ maxWidth: 450 }}>
+          <FlexItem
+            ref={containerRef}
+            alignSelf={{ default: 'alignSelfCenter' }}
+            style={{ maxWidth: 450, width: '100%' }}
+          >
             <Chart
               ariaDesc='Horizontal stacked bar chart showing in-network vs out-of-network packages per ecosystem'
               horizontal
-              domainPadding={{ x: [15, 15] }}
-              height={75 + ecosystemCount * 55}
-              width={500}
-              padding={{ bottom: 65, left: 100, right: 140, top: 10 }}
+              domainPadding={{ x: [10, 10] }}
+              height={55 + ecosystemCount * 35}
+              width={width}
+              padding={{ bottom: 65, left: 100, right: 160, top: 10 }}
               legendPosition='right'
               legendOrientation='vertical'
               legendData={[
                 { name: 'In Network', symbol: { fill: IN_NETWORK_COLOR } },
-                { name: 'Out of Network', symbol: { fill: UNCOVERED_COLOR } },
+                { name: 'Not in Network', symbol: { fill: UNCOVERED_COLOR } },
               ]}
             >
               <ChartAxis style={{ tickLabels: { fontSize: 14 } }} />
@@ -81,16 +87,18 @@ const EcosystemBreakdownCard = ({ report }: EcosystemBreakdownCardProps) => {
               />
               <ChartStack>
                 <ChartBar
+                  barWidth={12}
                   data={matchedPackages}
                   style={{ data: { fill: IN_NETWORK_COLOR } }}
                   labelComponent={<ChartTooltip constrainToVisibleArea />}
                   labels={({ datum }) => `${datum.x} in network: ${datum.y}`}
                 />
                 <ChartBar
+                  barWidth={12}
                   data={unmatchedPackages}
                   style={{ data: { fill: UNCOVERED_COLOR } }}
                   labelComponent={<ChartTooltip constrainToVisibleArea />}
-                  labels={({ datum }) => `${datum.x} out of network: ${datum.y}`}
+                  labels={({ datum }) => `${datum.x} not in network: ${datum.y}`}
                 />
               </ChartStack>
             </Chart>
