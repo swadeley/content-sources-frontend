@@ -70,11 +70,6 @@ const useStyles = createUseStyles({
   detailCard: {
     overflow: 'visible',
   },
-  // Fixed height so switching Overview/Releases/Versions does not cause a layout shift.
-  tabPanelArea: {
-    height: 'min(40rem, 55vh)',
-    overflowY: 'auto',
-  },
 });
 
 const PackageDetails = () => {
@@ -439,7 +434,7 @@ const PackageDetails = () => {
                     />
                   )}
                 </Tabs>
-                <div className={classes.tabPanelArea}>
+                <>
                   <TabContent
                     eventKey={0}
                     id='lightwell-package-overview-panel'
@@ -506,7 +501,7 @@ const PackageDetails = () => {
                       </TabContentBody>
                     </TabContent>
                   )}
-                </div>
+                </>
               </GridItem>
               <GridItem md={4}>
                 <PackageSidebar
