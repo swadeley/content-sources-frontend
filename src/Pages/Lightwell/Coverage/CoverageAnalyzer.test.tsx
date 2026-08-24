@@ -68,14 +68,17 @@ describe('CoverageAnalyzer', () => {
 
   it('displays coverage percentage and filename in the summary card', () => {
     renderCoverageAnalyzer();
-    expect(screen.getByText(/covers 75% of the inventory/)).toBeInTheDocument();
-    expect(screen.getByText('test-sbom.json')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 3, name: /covers 75% of this manifest/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /test-sbom\.json/ })).toBeInTheDocument();
   });
 
   it('displays ecosystem breakdown with package counts', () => {
     renderCoverageAnalyzer();
-    expect(screen.getByText('Coverage by Ecosystem Breakdown')).toBeInTheDocument();
-    expect(screen.getByText(/75 of 100 packages/)).toBeInTheDocument();
+    expect(screen.getByText('Coverage by Ecosystem')).toBeInTheDocument();
+    const paragraphs = screen.getAllByRole('paragraph');
+    expect(paragraphs.some((p) => p.textContent?.includes('75 of 100 packages'))).toBe(true);
   });
 
   it('shows filename and inline error when file format is invalid', () => {
