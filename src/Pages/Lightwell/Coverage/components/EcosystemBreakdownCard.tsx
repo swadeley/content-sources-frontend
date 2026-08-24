@@ -1,9 +1,4 @@
-import {
-  Content,
-  Flex,
-  FlexItem,
-  Title,
-} from '@patternfly/react-core';
+import { Content, Flex, FlexItem, Title } from '@patternfly/react-core';
 import { useRef, useState, useEffect } from 'react';
 import {
   Chart,
@@ -62,8 +57,8 @@ const EcosystemBreakdownCard = ({ report }: EcosystemBreakdownCardProps) => {
       <Flex direction={{ default: 'column' }} gap={{ default: 'gapMd' }}>
         <FlexItem>
           <Content component='p'>
-            <strong>{inNetwork}</strong> of <strong>{report.total}</strong> packages in your inventory are available in the
-            Lightwell Validated catalog.
+            <strong>{inNetwork}</strong> of <strong>{report.total}</strong> packages in your
+            inventory are available in the Lightwell Validated catalog.
           </Content>
         </FlexItem>
         <FlexItem>
@@ -116,7 +111,7 @@ const EcosystemBreakdownCard = ({ report }: EcosystemBreakdownCardProps) => {
               </ChartStack>
             </Chart>
           </div>
-          </FlexItem>
+        </FlexItem>
       </Flex>
     </>
   );

@@ -1,12 +1,4 @@
-import {
-  Card,
-  CardBody,
-  Content,
-  Flex,
-  FlexItem,
-  Title,
-  Tooltip,
-} from '@patternfly/react-core';
+import { Card, CardBody, Content, Flex, FlexItem, Title, Tooltip } from '@patternfly/react-core';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -55,7 +47,10 @@ const CoverageSummaryCard = ({ report }: CoverageSummaryCardProps) => {
           <FlexItem>
             <Card>
               <CardBody>
-                <Flex gap={{ default: 'gapLg' }} justifyContent={{ default: 'justifyContentSpaceAround' }}>
+                <Flex
+                  gap={{ default: 'gapLg' }}
+                  justifyContent={{ default: 'justifyContentSpaceAround' }}
+                >
                   {[
                     {
                       count: report.exact_matches,
@@ -65,7 +60,8 @@ const CoverageSummaryCard = ({ report }: CoverageSummaryCardProps) => {
                     {
                       count: report.partial_matches,
                       label: 'Partial matches',
-                      tooltip: 'Package name found in the catalog, but not the specific version you are running.',
+                      tooltip:
+                        'Package name found in the catalog, but not the specific version you are running.',
                     },
                     {
                       count: report.unmatched,
@@ -86,7 +82,11 @@ const CoverageSummaryCard = ({ report }: CoverageSummaryCardProps) => {
                     </FlexItem>
                   ))}
                 </Flex>
-                <Content component='small' className={`${text.textColorSubtle} ${alignment.textAlignCenter} ${spacing.mtMd}`} style={{ display: 'block' }}>
+                <Content
+                  component='small'
+                  className={`${text.textColorSubtle} ${alignment.textAlignCenter} ${spacing.mtMd}`}
+                  style={{ display: 'block' }}
+                >
                   Out of network packages logged as demand signals for the Catalog Build Queue
                 </Content>
               </CardBody>
