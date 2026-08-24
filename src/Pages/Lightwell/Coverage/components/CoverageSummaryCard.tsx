@@ -41,7 +41,7 @@ const CoverageSummaryCard = ({ report }: CoverageSummaryCardProps) => {
         <Flex direction={{ default: 'column' }} gap={{ default: 'gapLg' }}>
           <FlexItem>
             <Title headingLevel='h3' size='2xl'>
-              Lightwell Network covers <strong>{percentage}%</strong> of this SBOM
+              Lightwell Network covers <strong>{percentage}%</strong> of this manifest
             </Title>
           </FlexItem>
           <FlexItem>
