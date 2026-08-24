@@ -12,9 +12,15 @@ export interface Features {
   extendedreleaserepos?: Feature;
   lightwellnotifications?: Feature;
   lightwellbeaconandlens?: Feature;
+  /** PLACEHOLDER: Hardcoded to false until backend feature flag is implemented */
+  partnerrepos?: Feature;
 }
 
 export const getFeatures: () => Promise<Features> = async () => {
   const { data } = await axios.get('/api/content-sources/v1/features/');
-  return data;
+  // TODO: Remove hardcoded partnerrepos when backend support is added
+  return {
+    ...data,
+    partnerrepos: { enabled: false, accessible: false },
+  };
 };

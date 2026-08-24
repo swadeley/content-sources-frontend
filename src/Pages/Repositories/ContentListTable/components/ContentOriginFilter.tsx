@@ -9,10 +9,13 @@ interface Props {
 }
 
 /** API `community` origin is the shared EPEL and partner (for non-owners) catalog for this product. */
-const PARTNER_ORIGIN = ContentOrigin.COMMUNITY;
+const COMMUNITY_ORIGIN = ContentOrigin.COMMUNITY;
 
 const ContentOriginFilter = ({ contentOrigin, setContentOrigin }: Props) => {
   const { features } = useAppContext();
+  const usePartnerTerminology =
+    features?.partnerrepos?.enabled && features.partnerrepos?.accessible;
+  const communityLabel = usePartnerTerminology ? 'Partner' : 'EPEL';
 
   return features?.snapshots?.accessible ? (
     <ToggleGroup aria-label='Default with single selectable'>
@@ -38,6 +41,19 @@ const ContentOriginFilter = ({ contentOrigin, setContentOrigin }: Props) => {
         }}
       />
       <ToggleGroupItem
+        text={communityLabel}
+        buttonId='partner-repositories-toggle-button'
+        data-ouia-component-id='partner-repositories-toggle'
+        isSelected={contentOrigin.includes(COMMUNITY_ORIGIN)}
+        onChange={() => {
+          setContentOrigin((prev) =>
+            prev.includes(COMMUNITY_ORIGIN)
+              ? prev.filter((origin) => origin !== COMMUNITY_ORIGIN)
+              : [...prev, COMMUNITY_ORIGIN],
+          );
+        }}
+      />
+      <ToggleGroupItem
         text='Red Hat'
         buttonId='redhat-repositories-toggle-button'
         data-ouia-component-id='redhat-repositories-toggle'
@@ -47,19 +63,6 @@ const ContentOriginFilter = ({ contentOrigin, setContentOrigin }: Props) => {
             prev.includes(ContentOrigin.REDHAT)
               ? prev.filter((origin) => origin !== ContentOrigin.REDHAT)
               : [...prev, ContentOrigin.REDHAT],
-          );
-        }}
-      />
-      <ToggleGroupItem
-        text='Partner'
-        buttonId='partner-repositories-toggle-button'
-        data-ouia-component-id='partner-repositories-toggle'
-        isSelected={contentOrigin.includes(PARTNER_ORIGIN)}
-        onChange={() => {
-          setContentOrigin((prev) =>
-            prev.includes(PARTNER_ORIGIN)
-              ? prev.filter((origin) => origin !== PARTNER_ORIGIN)
-              : [...prev, PARTNER_ORIGIN],
           );
         }}
       />

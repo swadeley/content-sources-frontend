@@ -14,7 +14,7 @@ test.describe('RepositoriesCard', () => {
     await test.step('Card title and three repository category labels are visible', async () => {
       await expect(page.getByText('Available repositories')).toBeVisible();
       await expect(page.getByText('Red Hat repositories')).toBeVisible();
-      await expect(page.getByText('Partner repositories')).toBeVisible();
+      await expect(page.getByText('Community repositories')).toBeVisible();
       await expect(page.getByText('Custom repositories')).toBeVisible();
     });
 

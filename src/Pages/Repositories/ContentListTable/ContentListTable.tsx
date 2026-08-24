@@ -71,13 +71,14 @@ import {
 
 export const perPageKey = 'contentListPerPage';
 
-const readOnlyReposTooltipCopy =
-  'Red Hat and Partner repositories are read-only and cannot be manipulated.';
-
 const communityAndCustomReposTooltipCopy = 'No custom repositories on this page to select.';
 
 const ContentListTable = () => {
   const { contentOrigin, setContentOrigin, features, rbac } = useAppContext();
+  const usePartnerTerminology =
+    features?.partnerrepos?.enabled && features.partnerrepos?.accessible;
+  const communityLabel = usePartnerTerminology ? 'Partner' : 'Community';
+  const readOnlyReposTooltipCopy = `Red Hat and ${communityLabel} repositories are read-only and cannot be manipulated.`;
   const [urlSearchParams, setUrlSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();

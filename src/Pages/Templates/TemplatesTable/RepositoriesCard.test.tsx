@@ -11,6 +11,12 @@ jest.mock('Hooks/navigation/useNavigateTo', () => ({
   useNavigateTo: jest.fn(() => jest.fn()),
 }));
 
+jest.mock('middleware/AppContext', () => ({
+  useAppContext: jest.fn(),
+}));
+
+import { useAppContext } from 'middleware/AppContext';
+
 beforeEach(() => {
   jest.clearAllMocks();
   (useCountEachRepositoryType as jest.Mock).mockReturnValue({
@@ -18,6 +24,9 @@ beforeEach(() => {
     partnerCount: 8,
     customCount: 3,
     isLoading: false,
+  });
+  (useAppContext as jest.Mock).mockReturnValue({
+    features: {},
   });
 });
 
@@ -28,7 +37,7 @@ describe('RepositoriesCard', () => {
     expect(getByText('15')).toBeInTheDocument();
     expect(getByText('Red Hat repositories')).toBeInTheDocument();
     expect(getByText('8')).toBeInTheDocument();
-    expect(getByText('Partner repositories')).toBeInTheDocument();
+    expect(getByText('Community repositories')).toBeInTheDocument();
     expect(getByText('3')).toBeInTheDocument();
     expect(getByText('Custom repositories')).toBeInTheDocument();
   });
@@ -66,14 +75,14 @@ describe('RepositoriesCard', () => {
     expect(mockRedHatNavigate).toHaveBeenCalled();
   });
 
-  it('navigates to Partner repositories when clicking the Partner link', () => {
+  it('navigates to Community repositories when clicking the Community link', () => {
     const mockPartnerNavigate = jest.fn();
     (useNavigateTo as jest.Mock).mockImplementation((key) =>
       key === 'partnerRepositories' ? mockPartnerNavigate : jest.fn(),
     );
 
     const { getByText } = render(<RepositoriesCard />);
-    fireEvent.click(getByText('Partner repositories'));
+    fireEvent.click(getByText('Community repositories'));
 
     expect(mockPartnerNavigate).toHaveBeenCalled();
   });
@@ -113,7 +122,7 @@ describe('RepositoriesCard', () => {
     const { queryByText, getAllByRole } = render(<RepositoriesCard />);
 
     expect(queryByText('Red Hat repositories')).not.toBeInTheDocument();
-    expect(queryByText('Partner repositories')).not.toBeInTheDocument();
+    expect(queryByText('Community repositories')).not.toBeInTheDocument();
     expect(queryByText('Custom repositories')).not.toBeInTheDocument();
     expect(getAllByRole('progressbar')).toHaveLength(3);
   });
