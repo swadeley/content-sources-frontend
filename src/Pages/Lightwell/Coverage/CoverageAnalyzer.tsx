@@ -24,12 +24,18 @@ const CoverageAnalyzer = () => {
       <LightwellPageHeader
         title={report ? `Coverage report for ${filename}` : 'Lightwell Lens'}
         ouiaId='lightwell-coverage-header'
-        description={report ? undefined : 'Upload your SBOM or package manifest to see how much of your stack is covered by the Validated catalog in Lightwell Network.'}
-        actions={report ? (
-          <Button variant='link' icon={<ArrowLeftIcon />} onClick={startOver}>
-            Analyze another file
-          </Button>
-        ) : undefined}
+        description={
+          report
+            ? undefined
+            : 'Upload your SBOM or package manifest to see how much of your stack is covered by the Validated catalog in Lightwell Network.'
+        }
+        actions={
+          report ? (
+            <Button variant='link' icon={<ArrowLeftIcon />} onClick={startOver}>
+              Analyze another file
+            </Button>
+          ) : undefined
+        }
       />
       {/* plXs matches the mXs margin LightwellPageHeader applies to its inner title flex, keeping content left-aligned */}
       <PageSection
@@ -50,7 +56,7 @@ const CoverageAnalyzer = () => {
                 <Divider />
                 <HelperText className={spacing.pMd}>
                   <HelperTextItem variant='default'>
-                    {report.unmatched} out of network packages logged as demand signals for the
+                    {report.unmatched} out-of-network packages logged as demand signals for the
                     Catalog Build Queue. This does not constitute a commitment to build these
                     packages.
                   </HelperTextItem>

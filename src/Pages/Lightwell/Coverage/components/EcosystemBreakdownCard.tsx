@@ -69,7 +69,7 @@ const EcosystemBreakdownCard = ({ report }: EcosystemBreakdownCardProps) => {
               domainPadding={{ x: [15, 15] }}
               height={75 + ecosystemCount * 55}
               width={chartWidth}
-              padding={{ bottom: 65, left: 100, right: 140, top: 10 }}
+              padding={{ bottom: 65, left: 100, right: 175, top: 10 }}
               legendPosition='right'
               legendOrientation='vertical'
               legendData={[
