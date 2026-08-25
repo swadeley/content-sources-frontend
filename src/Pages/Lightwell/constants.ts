@@ -19,7 +19,8 @@ export const LIGHTWELL_FEATURE_NAME = 'lightwell-network';
 export const LIGHTWELL_DEMO_FEATURE_NAME = 'lightwell-network-demo';
 export const LIGHTWELL_ROUTE = '/lightwell';
 export const LIGHTWELL_ORIGIN = 'lightwell';
-export const LIGHTWELL_USE_MOCK = false; // set to true locally to skip file upload during dev
+export const LIGHTWELL_USE_MOCK = false;
+export const LIGHTWELL_LENS_USE_MOCK = false; // Set to true locally to skip file upload during dev
 export const LIGHTWELL_BEACON_USE_MOCK = false;
 
 export const lightwellReposPerPageKey = 'lightwellRepositoriesPerPage';

@@ -5,7 +5,7 @@ import {
 } from 'services/Lightwell/CoverageReportsQueries';
 import { validateManifestFile } from '../utils/validateManifestFile';
 import type { CompletedCoverageReport } from 'services/Lightwell/CoverageReportsApi';
-import { LIGHTWELL_USE_MOCK } from 'Pages/Lightwell/constants';
+import { LIGHTWELL_LENS_USE_MOCK } from 'Pages/Lightwell/constants';
 import { MOCK_ANALYSIS } from '../../mockAnalysis';
 
 export type ProcessStep = 'select' | 'uploading' | 'analyzing' | 'complete' | 'error';
@@ -16,7 +16,7 @@ const MAX_FILE_SIZE_MB = 500;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export const useCoverageAnalysis = () => {
-  if (LIGHTWELL_USE_MOCK) return MOCK_ANALYSIS;
+  if (LIGHTWELL_LENS_USE_MOCK) return MOCK_ANALYSIS;
 
   const [step, setStep] = useState<ProcessStep>('select');
   const [file, setFile] = useState<File | undefined>();
