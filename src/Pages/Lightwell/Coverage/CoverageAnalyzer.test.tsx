@@ -61,17 +61,28 @@ describe('CoverageAnalyzer', () => {
     });
   });
 
-  it('shows "Analyze another file" button when report is complete', () => {
+  it('shows "New analysis" when a report is complete', () => {
     renderCoverageAnalyzer();
-    expect(screen.getByRole('button', { name: 'Analyze another file' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'New analysis' })).toBeInTheDocument();
   });
 
-  it('displays coverage percentage and filename in the summary card', () => {
+  it('displays the coverage report title and filename', () => {
+    renderCoverageAnalyzer();
+    expect(
+      screen.getByRole('heading', { name: 'Coverage report for test-sbom.json' }),
+    ).toBeInTheDocument();
+  });
+
+  it('displays coverage summary with in-network percentage and match counts', () => {
     renderCoverageAnalyzer();
     expect(
       screen.getByRole('heading', { level: 3, name: /covers 75% of this manifest/ }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /test-sbom\.json/ })).toBeInTheDocument();
+    expect(screen.getByText('60')).toBeInTheDocument();
+    expect(screen.getByText('15')).toBeInTheDocument();
+    expect(screen.getByText('25')).toBeInTheDocument();
+    expect(screen.getByText('Exact matches')).toBeInTheDocument();
+    expect(screen.getByText('Partial matches')).toBeInTheDocument();
   });
 
   it('displays ecosystem breakdown with package counts', () => {

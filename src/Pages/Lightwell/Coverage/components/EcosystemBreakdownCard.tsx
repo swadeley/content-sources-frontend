@@ -1,5 +1,4 @@
 import { Content, Flex, FlexItem, Title } from '@patternfly/react-core';
-import { useRef, useState, useEffect } from 'react';
 import {
   Chart,
   ChartAxis,
@@ -11,28 +10,14 @@ import {
 import { EXACT_MATCH_COLOR, FUZZY_MATCH_COLOR, UNCOVERED_COLOR } from '../constants';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { CompletedCoverageReport } from 'services/Lightwell/CoverageReportsApi';
+import { useContainerWidth } from '../../hooks/useContainerWidth';
 
 type EcosystemBreakdownCardProps = {
   report: CompletedCoverageReport;
 };
 
 const EcosystemBreakdownCard = ({ report }: EcosystemBreakdownCardProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [chartWidth, setChartWidth] = useState(0);
-
-  useEffect(() => {
-    if (typeof ResizeObserver === 'undefined') return;
-    if (containerRef.current) {
-      setChartWidth(containerRef.current.getBoundingClientRect().width);
-    }
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setChartWidth(entry.contentRect.width);
-      }
-    });
-    if (containerRef.current) observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
+  const { containerRef, width: chartWidth } = useContainerWidth(500);
 
   const ecosystemCount = report.ecosystem_coverage_summary.length;
   const inNetwork = report.exact_matches + report.partial_matches;

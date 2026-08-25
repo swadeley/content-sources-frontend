@@ -11,10 +11,10 @@ import {
 import ManifestUploadCard from './components/ManifestUploadCard';
 import CoverageSummaryCard from './components/CoverageSummaryCard';
 import EcosystemBreakdownCard from './components/EcosystemBreakdownCard';
-import { ArrowLeftIcon } from '@patternfly/react-icons';
 
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useCoverageAnalysis } from './hooks/useCoverageAnalysis';
+import { PlusIcon } from '@patternfly/react-icons';
 
 const CoverageAnalyzer = () => {
   const { filename, report, uploadProps, startOver } = useCoverageAnalysis();
@@ -22,20 +22,24 @@ const CoverageAnalyzer = () => {
   return (
     <>
       <LightwellPageHeader
-        title={report ? `Coverage report for ${filename}` : 'Lightwell Lens'}
+        title={filename && report ? `Coverage report for ${filename}` : 'Lightwell Lens'}
         ouiaId='lightwell-coverage-header'
-        description={
-          report
-            ? undefined
-            : 'Upload your SBOM or package manifest to see how much of your stack is covered by the Validated catalog in Lightwell Network.'
-        }
-        actions={
-          report ? (
-            <Button variant='link' icon={<ArrowLeftIcon />} onClick={startOver}>
-              Analyze another file
+        {...(!report && {
+          description:
+            'Upload your SBOM or package manifest to see how much of your stack is covered by the Validated catalog in Lightwell Network.',
+        })}
+        {...(report && {
+          actions: (
+            <Button
+              variant='secondary'
+              icon={<PlusIcon />}
+              ouiaId='lightwell-new-analysis-button'
+              onClick={startOver}
+            >
+              New analysis
             </Button>
-          ) : undefined
-        }
+          ),
+        })}
       />
       {/* plXs matches the mXs margin LightwellPageHeader applies to its inner title flex, keeping content left-aligned */}
       <PageSection

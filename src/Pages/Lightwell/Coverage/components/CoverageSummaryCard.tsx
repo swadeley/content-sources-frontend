@@ -6,19 +6,26 @@ import { ChartDonut } from '@patternfly/react-charts/victory';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { EXACT_MATCH_COLOR, FUZZY_MATCH_COLOR, UNCOVERED_COLOR } from '../constants';
 import { CompletedCoverageReport } from 'services/Lightwell/CoverageReportsApi';
+import { useContainerWidth } from '../../hooks/useContainerWidth';
 
 type CoverageSummaryCardProps = {
   report: CompletedCoverageReport;
 };
 
+const DONUT_WIDTH = 320;
+const DONUT_HEIGHT = 280;
+
 const CoverageSummaryCard = ({ report }: CoverageSummaryCardProps) => {
+  const { containerRef, width: chartWidth } = useContainerWidth(DONUT_WIDTH);
+  const chartHeight = Math.round((chartWidth * DONUT_HEIGHT) / DONUT_WIDTH);
+
   const inNetwork = report.exact_matches + report.partial_matches;
   const percentage = report.total > 0 ? Math.round((inNetwork / report.total) * 100) : 0;
 
   return (
     <Flex gap={{ default: 'gapXl' }} alignItems={{ default: 'alignItemsCenter' }}>
-      <FlexItem>
-        <div style={{ width: 320 }}>
+      <FlexItem style={{ width: '100%', maxWidth: DONUT_WIDTH }}>
+        <div ref={containerRef} style={{ width: '100%' }}>
           <ChartDonut
             ariaDesc='Coverage summary donut chart'
             constrainToVisibleArea
@@ -31,8 +38,8 @@ const CoverageSummaryCard = ({ report }: CoverageSummaryCardProps) => {
             labels={({ datum }) => `${datum.x}: ${datum.y}`}
             title={`${percentage}%`}
             subTitle='in network'
-            width={320}
-            height={280}
+            width={chartWidth}
+            height={chartHeight}
             padding={{ bottom: 10, left: 10, right: 10, top: 10 }}
           />
         </div>
