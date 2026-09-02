@@ -73,7 +73,7 @@ export default function PackageModal() {
         aria-describedby='rpm-package-modal-description'
       >
         <ModalHeader
-          title='Packages'
+          title='Packages in the latest snapshot'
           labelId='rpm-package-modal-title'
           description='View list of packages'
           descriptorId='rpm-package-modal-description'

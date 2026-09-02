@@ -53,7 +53,7 @@ it('Render 1 item', () => {
     </ReactQueryTestWrapper>,
   );
 
-  expect(queryByText('Packages')).toBeInTheDocument();
+  expect(queryByText('Packages in the latest snapshot')).toBeInTheDocument();
   expect(queryByText(defaultPackageItem.name)).toBeInTheDocument();
   expect(queryByText(defaultPackageItem.version)).toBeInTheDocument();
   expect(queryByText(defaultPackageItem.release)).toBeInTheDocument();
@@ -76,7 +76,7 @@ it('Render with no packages (after an unsuccessful search)', () => {
     </ReactQueryTestWrapper>,
   );
 
-  expect(queryByText('Packages')).toBeInTheDocument();
+  expect(queryByText('Packages in the latest snapshot')).toBeInTheDocument();
   expect(
     queryByText('You may need to add repositories that contain packages.'),
   ).toBeInTheDocument();
