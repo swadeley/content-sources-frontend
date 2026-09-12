@@ -12,6 +12,7 @@ export const EDIT_ROUTE = 'edit';
 export const UPLOAD_ROUTE = 'upload';
 export const ADD_ROUTE = 'add';
 export const DELETE_ROUTE = 'delete';
+export const PUBLISH_ROUTE = 'publish';
 export const REDHAT_REPO_GEN_ROUTE = 'admin-features';
 export const PARTNER_REPO_ROUTE = 'partner';
 // PATCH

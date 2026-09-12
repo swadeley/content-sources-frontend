@@ -84,7 +84,7 @@ export const REPO_CONFIG_FILE_KEY = 'REPO_CONFIG_FILE_KEY';
 export const LATEST_REPO_CONFIG_FILE_KEY = 'LATEST_REPO_CONFIG_FILE_KEY';
 export const REPO_COUNT_KEY = 'REPO_COUNT_KEY';
 
-const CONTENT_LIST_POLLING_TIME = 10000; // 10 seconds
+const CONTENT_LIST_POLLING_TIME = 5000; // 5 seconds
 
 const buildContentListKey = (
   page: number,
@@ -665,12 +665,19 @@ export const useFetchGpgKey = () => {
   return { fetchGpgKey, isLoading };
 };
 
-export const useGetSnapshotList = (uuid: string, page: number, limit: number, sortBy: string) =>
+export const useGetSnapshotList = (
+  uuid: string,
+  page: number,
+  limit: number,
+  sortBy: string,
+  polling = false,
+) =>
   useQuery({
     queryKey: [LIST_SNAPSHOTS_KEY, uuid, page, limit, sortBy],
     queryFn: () => getSnapshotList(uuid, page, limit, sortBy),
     placeholderData: keepPreviousData,
-    staleTime: 60000,
+    staleTime: polling ? 0 : 20000,
+    refetchInterval: polling ? 1000 : false,
     meta: {
       title: 'Unable to find snapshots with the given UUID.',
       id: 'snapshot-list-error',

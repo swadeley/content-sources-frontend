@@ -14,6 +14,7 @@ import {
   EDIT_ROUTE,
   PACKAGES_ROUTE,
   PARTNER_REPO_ROUTE,
+  PUBLISH_ROUTE,
   REDHAT_REPO_GEN_ROUTE,
   REPOSITORIES_ROUTE,
   SNAPSHOTS_ROUTE,
@@ -41,6 +42,7 @@ import DeleteTemplateModal from 'Pages/Templates/TemplatesTable/components/Delet
 import TemplateRepositoriesTab from 'Pages/Templates/TemplateDetails/components/Tabs/TemplateRepositoriesTab';
 import UploadContent from 'Pages/Repositories/ContentListTable/components/UploadContent/UploadContent';
 import DeleteSnapshotsModal from 'Pages/Repositories/ContentListTable/components/SnapshotListModal/DeleteSnapshotsModal/DeleteSnapshotsModal';
+import PublishSnapshotModal from 'Pages/Repositories/ContentListTable/components/SnapshotListModal/PublishSnapshotModal/PublishSnapshotModal';
 import AdminFeaturesTable from 'Pages/Repositories/AdminFeaturesTable/AdminFeaturesTable';
 import AssignTemplateModal from '../Pages/Templates/TemplateDetails/components/AssignTemplateModal/AssignTemplateModal';
 import PackagesDeleteModal from 'Pages/Repositories/ContentListTable/components/PackagesDeleteModal/PackagesDeleteModal';
@@ -99,11 +101,18 @@ export default function RepositoriesRoutes() {
                   element={<SnapshotListModal />}
                 >
                   {rbac?.repoWrite ? (
-                    <Route
-                      key={DELETE_ROUTE}
-                      path={DELETE_ROUTE}
-                      element={<DeleteSnapshotsModal />}
-                    />
+                    <>
+                      <Route
+                        key={DELETE_ROUTE}
+                        path={DELETE_ROUTE}
+                        element={<DeleteSnapshotsModal />}
+                      />
+                      <Route
+                        key={PUBLISH_ROUTE}
+                        path={PUBLISH_ROUTE}
+                        element={<PublishSnapshotModal />}
+                      />
+                    </>
                   ) : (
                     ''
                   )}

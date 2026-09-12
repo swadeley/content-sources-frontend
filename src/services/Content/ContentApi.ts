@@ -36,6 +36,12 @@ export interface ContentItem {
   build_count?: number;
   version_count?: number;
   partner?: boolean;
+  snapshot_publish_state?: {
+    publishing: boolean;
+    unpublishing: boolean;
+    published: boolean;
+    stopped: boolean;
+  };
 }
 
 export interface PopularRepository {
@@ -330,7 +336,18 @@ export interface SnapshotItem {
   removed_counts: ContentCounts;
   repository_name: string;
   repository_uuid: string;
+  published?: boolean;
+  publish_task_uuid?: string;
+  publish_task?: PublishTask;
 }
+
+type PublishTask = {
+  uuid: string;
+  status: 'pending' | 'running' | 'failed' | 'canceled' | 'completed';
+  created_at?: string;
+  ended_at?: string;
+  error?: string;
+};
 
 export type SnapshotByDateResponse = {
   data: SnapshotForDate[];

@@ -4,6 +4,7 @@ import MarkAsPartneredInProgressLabel from 'components/RepositoryLabels/MarkPart
 import PartneredLabel from 'components/RepositoryLabels/PartneredLabel';
 import PartnerRepositoryLabel from 'components/RepositoryLabels/PartnerRepositoryLabel';
 import UploadRepositoryLabel from 'components/RepositoryLabels/UploadRepositoryLabel';
+import { SnapshotPublishState } from 'services/AdminPartnerRepos/AdminPartnerReposApi';
 
 import { ContentOrigin } from 'services/Content/ContentApi';
 
