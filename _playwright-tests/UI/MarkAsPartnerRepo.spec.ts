@@ -1,5 +1,6 @@
 import { test, expect, cleanupRepositories, waitWhileRepositoryIsPending } from 'test-utils';
-import { navigateToRepositories } from './helpers/navHelpers';
+import { SNAPSHOT_DIALOG_TIMEOUT_MS } from '../testConstants';
+import { navigateToRepositories, navigateToSnapshotsOfRepository } from './helpers/navHelpers';
 import {
   closeGenericPopupsIfExist,
   getRowByNameOrUrl,
@@ -93,6 +94,26 @@ test.describe('Mark upload repository as partner', () => {
       const row = await getRowByNameOrUrl(page, uploadRepoName);
       await row.getByRole('button', { name: 'Kebab toggle' }).click();
       await expect(page.getByRole('menuitem', { name: 'Mark as partner repository' })).toBeHidden();
+    });
+
+    await test.step('Publish action appears in snapshot kebab after partnering', async () => {
+      const row = await getRowByNameOrUrl(page, uploadRepoName);
+      await navigateToSnapshotsOfRepository(page, row);
+
+      const snapshotsDialog = page.getByRole('dialog', { name: 'Snapshots' });
+      await expect(snapshotsDialog.locator('tbody')).toBeVisible({
+        timeout: SNAPSHOT_DIALOG_TIMEOUT_MS,
+      });
+
+      const snapshotRow = page.getByTestId('snapshot_list_table').locator('tbody tr').first();
+      await snapshotRow.getByLabel('Kebab toggle').click();
+
+      // Since the upload repo has 0 packages, the publish action should be disabled
+      const publishMenuItem = page.getByRole('menuitem', {
+        name: 'Cannot publish snapshot with 0 packages',
+      });
+      await expect(publishMenuItem).toBeVisible();
+      await expect(publishMenuItem).toBeDisabled();
     });
   });
 });

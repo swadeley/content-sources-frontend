@@ -72,6 +72,7 @@ import {
   ToggleAsPartner,
   useToggleAsPartnerMutate,
 } from 'services/AdminPartnerRepos/AdminPartnerReposQueries';
+import { useRepositoryPublishSnapshotPolling } from 'Hooks/snapshotActions/usePublishSnapshot';
 
 export const perPageKey = 'contentListPerPage';
 
@@ -243,13 +244,25 @@ const ContentListTable = () => {
   // Set content origins for the repository list query explicitly if no origin filters are selected
   const originsForQuery = contentOrigin.length ? contentOrigin : [ContentOrigin.ALL];
 
+  const [publishPolling, setPublishPolling] = useState(false);
+
   const {
     isLoading,
     isFetching,
     error,
     isError,
     data = { data: [], meta: { count: 0, limit: 20, offset: 0 } },
-  } = useContentListQuery(page, perPage, filters, sortString, originsForQuery, true, polling);
+  } = useContentListQuery(
+    page,
+    perPage,
+    filters,
+    sortString,
+    originsForQuery,
+    true,
+    polling || publishPolling,
+  );
+
+  useRepositoryPublishSnapshotPolling({ repositoryList: data, setPublishPolling });
 
   useEffect(() => {
     if (isError) {
@@ -425,6 +438,7 @@ const ContentListTable = () => {
           package_count,
           status,
           partner,
+          snapshot_publish_state,
         }: ContentItem) => {
           // Pre-compute values for memoized components
           const actionRowData: ActionRowData = {
@@ -446,7 +460,14 @@ const ContentListTable = () => {
               {
                 cell: (
                   <RepositoryCell
-                    rowData={{ name, url, last_snapshot, origin, partner }}
+                    rowData={{
+                      name,
+                      url,
+                      last_snapshot,
+                      origin,
+                      partner,
+                      snapshot_publish_state,
+                    }}
                     snapshotsAccessible={snapshotsAccessible}
                     isRepoBeingMarkedAsPartner={isRepoBeingMarkedAsPartner(uuid)}
                   />

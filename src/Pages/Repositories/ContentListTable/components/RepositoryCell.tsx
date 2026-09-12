@@ -8,14 +8,17 @@ import ChangedArrows from './SnapshotListModal/components/ChangedArrows';
 import { RepositoryLabels } from './RepositoryLabels/RepositoryLabels';
 
 interface Props {
-  rowData: Pick<ContentItem, 'name' | 'url' | 'last_snapshot' | 'origin' | 'partner'>;
+  rowData: Pick<
+    ContentItem,
+    'name' | 'url' | 'last_snapshot' | 'origin' | 'partner' | 'snapshot_publish_state'
+  >;
   snapshotsAccessible: boolean;
   isRepoBeingMarkedAsPartner: boolean;
 }
 
 const RepositoryCell = memo(
   ({ rowData, snapshotsAccessible, isRepoBeingMarkedAsPartner }: Props) => {
-    const { name, url, last_snapshot, origin, partner } = rowData;
+    const { name, url, last_snapshot, origin, partner, snapshot_publish_state } = rowData;
 
     return (
       <Flex direction={{ default: 'column' }}>
@@ -25,6 +28,7 @@ const RepositoryCell = memo(
             origin={origin}
             isRepoBeingMarkedAsPartner={isRepoBeingMarkedAsPartner}
             isPartner={partner}
+            publishState={snapshot_publish_state}
           />
         </Flex>
 
