@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SnapshotDetailsModal, { SnapshotDetailTab } from './SnapshotDetailsModal';
 import { useNavigateTo } from 'Hooks/navigation/useNavigateTo';
+import { ReactQueryTestWrapper } from 'testingHelpers';
 
 const mockUseNavigateTo = useNavigateTo as jest.Mock;
 const mockSetSearchParams = jest.fn();
@@ -16,6 +17,19 @@ jest.mock('./Tabs/SnapshotErrataTab', () => ({
 
 jest.mock('./SnapshotSelector', () => ({
   SnapshotSelector: () => <div>Snapshot selector</div>,
+}));
+
+jest.mock('Hooks/useSafeUUIDParam', () => () => 'repo-uuid');
+
+jest.mock('services/Content/ContentQueries', () => ({
+  useGetSnapshotList: jest.fn(() => ({ data: { data: [], meta: { count: 0 } } })),
+  useFetchContent: jest.fn(() => ({ data: undefined })),
+}));
+
+jest.mock('middleware/AppContext', () => ({
+  useAppContext: () => ({
+    features: { snapshots: { enabled: true, accessible: true } },
+  }),
 }));
 
 jest.mock('Hooks/navigation/useNavigateTo', () => ({
@@ -37,7 +51,11 @@ describe('SnapshotDetailsModal', () => {
   });
 
   it('navigation hooks are called with the correct keys', async () => {
-    render(<SnapshotDetailsModal />);
+    render(
+      <ReactQueryTestWrapper>
+        <SnapshotDetailsModal />
+      </ReactQueryTestWrapper>,
+    );
 
     expect(mockUseNavigateTo).toHaveBeenCalledWith('repositories');
     expect(mockUseNavigateTo).toHaveBeenCalledWith('repositorySnapshots');
@@ -46,7 +64,11 @@ describe('SnapshotDetailsModal', () => {
   it('syncs errata tab from search params on mount', async () => {
     window.history.replaceState({}, '', `/?tab=${SnapshotDetailTab.ERRATA}`);
 
-    render(<SnapshotDetailsModal />);
+    render(
+      <ReactQueryTestWrapper>
+        <SnapshotDetailsModal />
+      </ReactQueryTestWrapper>,
+    );
 
     await waitFor(() => {
       expect(
@@ -58,7 +80,11 @@ describe('SnapshotDetailsModal', () => {
   it('updates search params when switching tabs', async () => {
     const user = userEvent.setup();
 
-    render(<SnapshotDetailsModal />);
+    render(
+      <ReactQueryTestWrapper>
+        <SnapshotDetailsModal />
+      </ReactQueryTestWrapper>,
+    );
 
     await user.click(screen.getByRole('tab', { name: 'Snapshot errata detail tab' }));
 
