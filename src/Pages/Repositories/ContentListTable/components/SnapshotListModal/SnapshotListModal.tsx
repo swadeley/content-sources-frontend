@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 
 import {
@@ -17,7 +17,10 @@ import { useGetSnapshotList } from 'services/Content/ContentQueries';
 import { useNavigateTo } from 'Hooks/navigation/useNavigateTo';
 import { usePaginationLocalStorage } from 'Hooks/tables/usePaginationLocalStorage';
 import useSafeUUIDParam from 'Hooks/useSafeUUIDParam';
-import { useIsSnapshotType } from 'Hooks/usePublishSnapshot';
+import {
+  useRepositoryType,
+  usePublishSnapshotPolling,
+} from 'Hooks/snapshotActions/usePublishSnapshot';
 
 const perPageKey = 'snapshotPerPage';
 
@@ -26,7 +29,8 @@ const SnapshotListModal = () => {
 
   const onClose = useNavigateTo('repositories');
 
-  const { isSnapshotsReadOnly, repositoryName } = useIsSnapshotType(repoUUID);
+  const { isRepositoryReadOnly, canPublish, canModify, repositoryName } =
+    useRepositoryType(repoUUID);
 
   const paginationData = usePaginationLocalStorage({ key: perPageKey });
   const { page, perPage, setPage } = paginationData;
@@ -48,12 +52,14 @@ const SnapshotListModal = () => {
     setPage(1);
   }, [sortString]);
 
+  // Track whether we should poll for in-progress publish tasks
+  const [isPublishPolling, setIsPublishPolling] = useState(false);
+
   const {
     isLoading,
-    isFetching,
     isError,
     data = { data: [], meta: { count: 0, limit: 20, offset: 0 } },
-  } = useGetSnapshotList(repoUUID, page, perPage, sortString);
+  } = useGetSnapshotList(repoUUID, page, perPage, sortString, isPublishPolling);
 
   useEffect(() => {
     if (isError) {
@@ -66,7 +72,9 @@ const SnapshotListModal = () => {
     meta: { count = 0 },
   } = data;
 
-  // required for outlet to confirm action
+  usePublishSnapshotPolling(snapshotsList, setIsPublishPolling);
+
+  // Required for outlet to confirm action
   const clearCheckedSnapshots = useCallback(() => onSelect(false), [onSelect]);
 
   const checkedSnapshots = useMemo(() => new Set<string>(selected.map((s) => s.id)), [selected]);
@@ -102,10 +110,11 @@ const SnapshotListModal = () => {
             <SnapshotsTableWithToolbars
               snapshotsList={snapshotsList}
               paginationData={paginationData}
-              isFetching={isFetching}
               isLoading={isLoading}
               count={count}
-              snapshotsReadOnly={isSnapshotsReadOnly}
+              isRepositoryReadOnly={isRepositoryReadOnly}
+              canPublish={canPublish}
+              canModify={canModify}
               repoUUID={repoUUID}
               selection={selection}
               sortProps={sortProps}

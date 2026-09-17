@@ -7,27 +7,24 @@ import {
   MenuToggleElement,
 } from '@patternfly/react-core';
 import ConditionalTooltip from 'components/ConditionalTooltip/ConditionalTooltip';
-import { AppContextInterface } from 'middleware/AppContext';
+import { Action } from 'Hooks/snapshotActions/sharedActionChecks';
 
 interface SnapshotsPrimaryActionButtonProps {
-  deleteButtonLabel: string;
-  onDeleteClick: () => void;
-  isDeleteDisabled: boolean;
   isFetchingOrLoading: boolean;
-  rbac: AppContextInterface['rbac'];
-  isNothingToDelete: boolean;
+  actions: {
+    deleteAction: Action;
+    publishAction: Action;
+  };
+  canPublish: boolean;
 }
 
 export const SnapshotsPrimaryActionButton = ({
-  deleteButtonLabel,
-  onDeleteClick,
-  isDeleteDisabled,
+  actions,
   isFetchingOrLoading,
-  isNothingToDelete,
-  rbac,
+  canPublish,
 }: SnapshotsPrimaryActionButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const isActionDisabled = isNothingToDelete;
+  const { deleteAction, publishAction } = actions;
 
   return (
     <Dropdown
@@ -39,7 +36,7 @@ export const SnapshotsPrimaryActionButton = ({
           ref={toggleRef}
           variant='primary'
           isExpanded={isOpen}
-          isDisabled={isFetchingOrLoading || isActionDisabled}
+          isDisabled={isFetchingOrLoading}
           onClick={() => setIsOpen((prev) => !prev)}
         >
           Actions
@@ -51,22 +48,34 @@ export const SnapshotsPrimaryActionButton = ({
       <DropdownList>
         <ConditionalTooltip
           key='delete-action'
-          content='You do not have the required permissions to perform this action.'
-          show={!rbac?.repoWrite}
-          setDisabled
+          content={deleteAction.tooltip}
+          show={!!deleteAction.tooltip}
         >
           <DropdownItem
             value='delete'
             ouiaId='remove_snapshots_bulk'
-            isDisabled={isDeleteDisabled}
-            onClick={onDeleteClick}
+            isDisabled={deleteAction.isDisabled}
+            onClick={deleteAction.navigate}
           >
-            {deleteButtonLabel}
+            {deleteAction.dynamicLabel}
           </DropdownItem>
         </ConditionalTooltip>
-        <DropdownItem value='publish' isDisabled>
-          Publish
-        </DropdownItem>
+        {canPublish && (
+          <ConditionalTooltip
+            key='publish-action'
+            content={publishAction.tooltip}
+            show={!!publishAction.tooltip}
+          >
+            <DropdownItem
+              value='publish'
+              ouiaId='publish_snapshot_bulk'
+              isDisabled={publishAction.isDisabled}
+              onClick={publishAction.navigate}
+            >
+              {publishAction.dynamicLabel}
+            </DropdownItem>
+          </ConditionalTooltip>
+        )}
       </DropdownList>
     </Dropdown>
   );
