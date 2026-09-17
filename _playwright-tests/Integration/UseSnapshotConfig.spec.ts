@@ -37,19 +37,19 @@ test.describe('Use Snapshot Config', () => {
 
       await navigateToSnapshotsOfRepository(page, row);
 
-      const snapshotsModal = page.getByRole('dialog', { name: 'Snapshots' });
+      const snapshotsModal = page.getByTestId('snapshot_list_modal');
       await expect(snapshotsModal).toBeVisible();
 
       // Grant clipboard permissions to the page
       await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
       // CLEAR the clipboard first to ensure no stale data
       await page.evaluate(() => navigator.clipboard.writeText(''));
-      const snapshotsTable = snapshotsModal.getByRole('grid', { name: 'snapshot list table' });
+
+      const snapshotsTable = snapshotsModal.getByRole('grid', { name: 'Snapshots list table' });
+      await expect(snapshotsTable).toBeVisible();
       const firstSnapshotRow = snapshotsTable.locator('tbody tr').first();
 
-      const copy_to_clipboard_button = firstSnapshotRow.getByRole('button', {
-        name: 'Copy repository config',
-      });
+      const copy_to_clipboard_button = firstSnapshotRow.getByTestId('repo_config_file_copy_button');
       await copy_to_clipboard_button.click();
 
       let clipboardText = '';
@@ -60,9 +60,7 @@ test.describe('Use Snapshot Config', () => {
         })
         .not.toBe('');
 
-      const download_button = firstSnapshotRow.getByRole('button', {
-        name: 'Download repository config',
-      });
+      const download_button = firstSnapshotRow.getByTestId('repo_config_file_download_button');
       const [download] = await Promise.all([
         page.waitForEvent('download'), // Wait for the download event
         download_button.click(),
