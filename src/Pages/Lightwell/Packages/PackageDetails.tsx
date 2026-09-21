@@ -8,14 +8,13 @@ import {
   DropdownItem,
   DropdownList,
   Flex,
-  FlexItem,
   Grid,
   GridItem,
   Icon,
   Label,
   MenuToggle,
-  Stack,
-  StackItem,
+  PageBreadcrumb,
+  PageSection,
   Tab,
   TabContent,
   TabContentBody,
@@ -27,7 +26,6 @@ import {
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { createUseStyles } from 'react-jss';
 import { createRef, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -35,6 +33,7 @@ import { useParams } from 'react-router-dom';
 import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
 import Loader from 'components/Loader';
 import LightwellNotFound from '../components/LightwellNotFound';
+import LightwellPageHeader from '../components/LightwellPageHeader';
 import {
   useMavenPackageVersionsListQuery,
   usePythonPackageVersionsQuery,
@@ -64,12 +63,6 @@ import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useL
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
 
 const useStyles = createUseStyles({
-  topContainer: {
-    padding: '16px 24px',
-  },
-  titleWrapper: {
-    padding: '16px 0 0',
-  },
   detailCard: {
     overflow: 'visible',
   },
@@ -325,246 +318,234 @@ const PackageDetails = () => {
 
   return (
     <>
-      <Grid className={classes.topContainer}>
-        <Stack>
-          {!appBreadcrumbsEnabled && (
-            <StackItem>
-              <Breadcrumb ouiaId='lightwell-package-details-breadcrumb'>
-                <BreadcrumbItem component='button' onClick={() => navigateTo('repositories')}>
-                  Lightwell Repositories
-                </BreadcrumbItem>
-                <BreadcrumbItem
-                  component='button'
-                  onClick={() => navigateTo('repositoryPackages', { repoSlug })}
-                >
-                  {breadcrumbRepoName}
-                </BreadcrumbItem>
-                <BreadcrumbItem isActive>
-                  <Truncate
-                    content={isMaven ? `${packageGroup}:${packageName}` : packageName || '—'}
-                  />
-                </BreadcrumbItem>
-              </Breadcrumb>
-            </StackItem>
-          )}
-          <StackItem className={classes.titleWrapper}>
-            <Flex
-              alignItems={{ default: 'alignItemsCenter' }}
-              justifyContent={{ default: 'justifyContentSpaceBetween' }}
-              gap={{ default: 'gapMd' }}
+      {!appBreadcrumbsEnabled && (
+        <PageBreadcrumb isWidthLimited>
+          <Breadcrumb ouiaId='lightwell-package-details-breadcrumb'>
+            <BreadcrumbItem component='button' onClick={() => navigateTo('repositories')}>
+              Lightwell Repositories
+            </BreadcrumbItem>
+            <BreadcrumbItem
+              component='button'
+              onClick={() => navigateTo('repositoryPackages', { repoSlug })}
             >
-              <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
-                <FlexItem>
-                  <Icon size='xl'>
-                    {repository.content_type === 'maven' ? <JavaIcon /> : <PythonIcon />}
-                  </Icon>
-                </FlexItem>
-                <FlexItem>
-                  <Title headingLevel='h1' ouiaId='lightwell-package-details-header'>
-                    {isMaven ? `${packageGroup}:${packageName}` : packageName || 'Package details'}
-                  </Title>
-                </FlexItem>
-                {versionOptions.length === 1 && (selectedVersion || activeVersion) ? (
-                  <FlexItem>
-                    <Label variant='outline' style={{ fontSize: '14px', padding: '8px 16px' }}>
-                      {isMaven && hasRelease ? upstreamVersion : selectedVersion || activeVersion}
-                    </Label>
-                  </FlexItem>
-                ) : null}
-                {versionOptions.length > 1 ? (
-                  <FlexItem>
-                    <Dropdown
-                      isScrollable
-                      onSelect={(_e, val) => {
-                        setSelectedVersion(val as string);
-                        setVersionDropdownOpen(false);
-                      }}
-                      toggle={(toggleRef) => (
-                        <MenuToggle
-                          ref={toggleRef}
-                          onClick={() => setVersionDropdownOpen((prev) => !prev)}
-                          isExpanded={versionDropdownOpen}
-                          ouiaId='lightwell-version-selector'
-                        >
-                          {selectedVersion || activeVersion}
-                        </MenuToggle>
-                      )}
-                      onOpenChange={(isOpen) => setVersionDropdownOpen(isOpen)}
-                      isOpen={versionDropdownOpen}
-                    >
-                      <DropdownList>
-                        {versionOptions.map((v) => (
-                          <DropdownItem key={v} value={v} isSelected={selectedVersion === v}>
-                            {v}
-                          </DropdownItem>
-                        ))}
-                      </DropdownList>
-                    </Dropdown>
-                  </FlexItem>
-                ) : null}
-              </Flex>
-              <FlexItem align={{ default: 'alignRight' }}>
-                <ConnectRepositoryModal
-                  repository={{
-                    uuid: repository.uuid,
-                    name: repository.name,
-                    published_distribution_url: formatDistributionUrl(
-                      repository.published_distribution_url || '',
-                    ),
-                    content_type: repository.content_type,
-                  }}
-                >
-                  <Button size='sm' variant='secondary' icon={<CodeIcon />}>
-                    Connect
-                  </Button>
-                </ConnectRepositoryModal>
-              </FlexItem>
-            </Flex>
-          </StackItem>
-          {(repository.security_level === 'remediated' ||
-            repository.security_level === 'predisclosure') && (
-            <StackItem className={spacing.ptMd}>
-              <RemediatedDataWarning />
-            </StackItem>
-          )}
-        </Stack>
-      </Grid>
+              {breadcrumbRepoName}
+            </BreadcrumbItem>
+            <BreadcrumbItem isActive>
+              <Truncate
+                content={isMaven ? `${packageGroup}:${packageName}` : packageName || '—'}
+              />
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </PageBreadcrumb>
+      )}
 
-      {showEmpty ? (
-        <Grid className={spacing.pxLg}>
-          <EmptyTableState
-            notFiltered
-            clearFilters={() => undefined}
-            itemName='package details'
-            notFilteredBody='No details available yet for this package.'
-          />
-        </Grid>
-      ) : null}
-
-      {hasDetail ? (
-        <Card className={`${classes.detailCard} ${spacing.mxLg} ${spacing.mbLg}`}>
-          <CardBody>
-            <Grid hasGutter>
-              <GridItem md={8}>
-                <Tabs
-                  activeKey={activeTabKey}
-                  onSelect={(_, eventKey) => setActiveTabKey(eventKey as number)}
-                  aria-label='Package detail tabs'
-                  ouiaId='lightwell-package-detail-tabs'
-                >
-                  <Tab
-                    eventKey={0}
-                    title={<TabTitleText>Overview</TabTitleText>}
-                    tabContentRef={overviewTabRef}
-                    ouiaId='lightwell-package-overview-tab'
-                  />
-                  {showReleasesTab && (
-                    <Tab
-                      eventKey={1}
-                      title={<TabTitleText>Releases</TabTitleText>}
-                      tabContentRef={releasesTabRef}
-                      ouiaId='lightwell-package-releases-tab'
-                    />
-                  )}
-                  {showVersionsTab && (
-                    <Tab
-                      eventKey={1}
-                      title={<TabTitleText>Versions</TabTitleText>}
-                      tabContentRef={versionsTabRef}
-                      ouiaId='lightwell-package-versions-tab'
-                    />
-                  )}
-                </Tabs>
-                <>
-                  <TabContent
-                    eventKey={0}
-                    id='lightwell-package-overview-panel'
-                    ref={overviewTabRef}
-                    aria-label='Overview'
+      <LightwellPageHeader
+        title={
+          <Title headingLevel='h1' ouiaId='lightwell-package-details-header'>
+            {isMaven ? `${packageGroup}:${packageName}` : packageName || 'Package details'}
+          </Title>
+        }
+        titleStart={
+          <Icon size='xl'>
+            {repository.content_type === 'maven' ? <JavaIcon /> : <PythonIcon />}
+          </Icon>
+        }
+        titleEnd={
+          <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
+            {versionOptions.length === 1 && (selectedVersion || activeVersion) ? (
+              <Label variant='outline' style={{ fontSize: '14px', padding: '8px 16px' }}>
+                {isMaven && hasRelease ? upstreamVersion : selectedVersion || activeVersion}
+              </Label>
+            ) : null}
+            {versionOptions.length > 1 ? (
+              <Dropdown
+                isScrollable
+                onSelect={(_e, val) => {
+                  setSelectedVersion(val as string);
+                  setVersionDropdownOpen(false);
+                }}
+                toggle={(toggleRef) => (
+                  <MenuToggle
+                    variant='primary'
+                    ref={toggleRef}
+                    onClick={() => setVersionDropdownOpen((prev) => !prev)}
+                    isExpanded={versionDropdownOpen}
+                    ouiaId='lightwell-version-selector'
                   >
-                    <TabContentBody hasPadding>
-                      <PackageOverviewTab
-                        isMaven={isMaven}
-                        group={packageGroup}
-                        name={packageName}
-                        latestRelease={displayVersion}
-                        hasRelease={hasRelease}
-                        summary={isMaven ? mavenDetail?.summary : pythonDetail?.summary}
-                        sourceUrl={formatDistributionUrl(
-                          repository.published_distribution_url ?? '',
-                        )}
-                        repository={{
-                          uuid: repository.uuid,
-                          name: repository.name,
-                          published_distribution_url: formatDistributionUrl(
-                            repository.published_distribution_url ?? '',
-                          ),
-                          content_type: repository.content_type ?? '',
-                        }}
+                    {selectedVersion || activeVersion}
+                  </MenuToggle>
+                )}
+                onOpenChange={(isOpen) => setVersionDropdownOpen(isOpen)}
+                isOpen={versionDropdownOpen}
+              >
+                <DropdownList>
+                  {versionOptions.map((v) => (
+                    <DropdownItem key={v} value={v} isSelected={selectedVersion === v}>
+                      {v}
+                    </DropdownItem>
+                  ))}
+                </DropdownList>
+              </Dropdown>
+            ) : null}
+          </Flex>
+        }
+        actions={
+          <ConnectRepositoryModal
+            repository={{
+              uuid: repository.uuid,
+              name: repository.name,
+              published_distribution_url: formatDistributionUrl(
+                repository.published_distribution_url || '',
+              ),
+              content_type: repository.content_type,
+            }}
+          >
+            <Button size='sm' variant='secondary' icon={<CodeIcon />}>
+              Connect
+            </Button>
+          </ConnectRepositoryModal>
+        }
+      />
+
+      {showEmpty || hasDetail ? (
+        <PageSection hasBodyWrapper={false} aria-label='Package details'>
+          {(repository.security_level === 'remediated' ||
+            repository.security_level === 'predisclosure') && <RemediatedDataWarning />}
+          {showEmpty ? (
+            <EmptyTableState
+              notFiltered
+              clearFilters={() => undefined}
+              itemName='package details'
+              notFilteredBody='No details available yet for this package.'
+            />
+          ) : null}
+
+          {hasDetail ? (
+            <Card className={classes.detailCard}>
+              <CardBody>
+                <Grid hasGutter>
+                  <GridItem md={8}>
+                    <Tabs
+                      activeKey={activeTabKey}
+                      onSelect={(_, eventKey) => setActiveTabKey(eventKey as number)}
+                      aria-label='Package detail tabs'
+                      ouiaId='lightwell-package-detail-tabs'
+                    >
+                      <Tab
+                        eventKey={0}
+                        title={<TabTitleText>Overview</TabTitleText>}
+                        tabContentRef={overviewTabRef}
+                        ouiaId='lightwell-package-overview-tab'
                       />
-                    </TabContentBody>
-                  </TabContent>
-                  {showReleasesTab && (
-                    <TabContent
-                      eventKey={1}
-                      id='lightwell-package-releases-panel'
-                      ref={releasesTabRef}
-                      aria-label='Releases'
-                      hidden
-                    >
-                      <TabContentBody hasPadding>
-                        <PackageReleasesTab
-                          version={upstreamVersion}
-                          builds={isPython ? pythonBuilds : mavenBuilds}
-                          allVersions={versionOptions}
-                          latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
-                          onVersionSelect={setSelectedVersion}
-                          formatCopyText={formatReleaseCopyText}
+                      {showReleasesTab && (
+                        <Tab
+                          eventKey={1}
+                          title={<TabTitleText>Releases</TabTitleText>}
+                          tabContentRef={releasesTabRef}
+                          ouiaId='lightwell-package-releases-tab'
                         />
-                      </TabContentBody>
-                    </TabContent>
-                  )}
-                  {showVersionsTab && (
-                    <TabContent
-                      eventKey={1}
-                      id='lightwell-package-versions-panel'
-                      ref={versionsTabRef}
-                      aria-label='Versions'
-                      hidden
-                    >
-                      <TabContentBody hasPadding>
-                        <PackageVersionsTab
-                          currentVersion={selectedVersion || activeVersion}
-                          versions={versionOptions}
-                          latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
-                          onVersionSelect={setSelectedVersion}
+                      )}
+                      {showVersionsTab && (
+                        <Tab
+                          eventKey={1}
+                          title={<TabTitleText>Versions</TabTitleText>}
+                          tabContentRef={versionsTabRef}
+                          ouiaId='lightwell-package-versions-tab'
                         />
-                      </TabContentBody>
-                    </TabContent>
-                  )}
-                </>
-              </GridItem>
-              <GridItem md={4}>
-                <PackageSidebar
-                  lastUpdated={lastUpdated}
-                  groupId={packageGroup}
-                  upstreamVersion={upstreamVersion}
-                  allVersions={
-                    isMaven && !hasRelease
-                      ? mavenVersions
-                      : isPython && pythonVersions.length > 1
-                        ? pythonVersions
-                        : undefined
-                  }
-                  license={isMaven ? mavenDetail?.license : pythonDetail?.license}
-                  author={isMaven ? mavenDetail?.author : pythonDetail?.author?.name}
-                  projectUrl={isMaven ? mavenDetail?.project_url : pythonDetail?.project_url}
-                  hasRelease={hasRelease}
-                />
-              </GridItem>
-            </Grid>
-          </CardBody>
-        </Card>
+                      )}
+                    </Tabs>
+                    <>
+                      <TabContent
+                        eventKey={0}
+                        id='lightwell-package-overview-panel'
+                        ref={overviewTabRef}
+                        aria-label='Overview'
+                      >
+                        <TabContentBody hasPadding>
+                          <PackageOverviewTab
+                            isMaven={isMaven}
+                            group={packageGroup}
+                            name={packageName}
+                            latestRelease={displayVersion}
+                            hasRelease={hasRelease}
+                            summary={isMaven ? mavenDetail?.summary : pythonDetail?.summary}
+                            sourceUrl={formatDistributionUrl(
+                              repository.published_distribution_url ?? '',
+                            )}
+                            repository={{
+                              uuid: repository.uuid,
+                              name: repository.name,
+                              published_distribution_url: formatDistributionUrl(
+                                repository.published_distribution_url ?? '',
+                              ),
+                              content_type: repository.content_type ?? '',
+                            }}
+                          />
+                        </TabContentBody>
+                      </TabContent>
+                      {showReleasesTab && (
+                        <TabContent
+                          eventKey={1}
+                          id='lightwell-package-releases-panel'
+                          ref={releasesTabRef}
+                          aria-label='Releases'
+                          hidden
+                        >
+                          <TabContentBody hasPadding>
+                            <PackageReleasesTab
+                              version={upstreamVersion}
+                              builds={isPython ? pythonBuilds : mavenBuilds}
+                              allVersions={versionOptions}
+                              latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
+                              onVersionSelect={setSelectedVersion}
+                              formatCopyText={formatReleaseCopyText}
+                            />
+                          </TabContentBody>
+                        </TabContent>
+                      )}
+                      {showVersionsTab && (
+                        <TabContent
+                          eventKey={1}
+                          id='lightwell-package-versions-panel'
+                          ref={versionsTabRef}
+                          aria-label='Versions'
+                          hidden
+                        >
+                          <TabContentBody hasPadding>
+                            <PackageVersionsTab
+                              currentVersion={selectedVersion || activeVersion}
+                              versions={versionOptions}
+                              latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
+                              onVersionSelect={setSelectedVersion}
+                            />
+                          </TabContentBody>
+                        </TabContent>
+                      )}
+                    </>
+                  </GridItem>
+                  <GridItem md={4}>
+                    <PackageSidebar
+                      lastUpdated={lastUpdated}
+                      groupId={packageGroup}
+                      upstreamVersion={upstreamVersion}
+                      allVersions={
+                        isMaven && !hasRelease
+                          ? mavenVersions
+                          : isPython && pythonVersions.length > 1
+                            ? pythonVersions
+                            : undefined
+                      }
+                      license={isMaven ? mavenDetail?.license : pythonDetail?.license}
+                      author={isMaven ? mavenDetail?.author : pythonDetail?.author?.name}
+                      projectUrl={isMaven ? mavenDetail?.project_url : pythonDetail?.project_url}
+                      hasRelease={hasRelease}
+                    />
+                  </GridItem>
+                </Grid>
+              </CardBody>
+            </Card>
+          ) : null}
+        </PageSection>
       ) : null}
     </>
   );
