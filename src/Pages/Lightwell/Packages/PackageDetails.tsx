@@ -27,11 +27,11 @@ import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
 import { createUseStyles } from 'react-jss';
-import { createRef, useEffect, useMemo, useRef, useState } from 'react';
+import { createRef, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
 import Loader from 'components/Loader';
+import LightwellEmptyState from '../components/LightwellEmptyState';
 import LightwellNotFound from '../components/LightwellNotFound';
 import LightwellPageHeader from '../components/LightwellPageHeader';
 import {
@@ -39,14 +39,7 @@ import {
   usePythonPackageVersionsQuery,
 } from 'services/Content/ContentQueries';
 import { LIGHTWELL_USE_MOCK } from '../constants';
-import {
-  formatDistributionUrl,
-  formatRepositoryName,
-  lightwellReleaseNum,
-  pythonLightwellRelease,
-  sortVersionsDesc,
-  stripLightwellVersionSuffix,
-} from '../helpers';
+import { formatDistributionUrl, formatRepositoryName } from '../helpers';
 import {
   getMockLightwellPackages,
   getMockMavenPackageVersionsList,
@@ -56,9 +49,16 @@ import RemediatedDataWarning from '../RemediatedDataWarning';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
 import PackageOverviewTab from './components/PackageOverviewTab';
-import PackageReleasesTab, { toLightwellVersion } from './components/PackageReleasesTab';
+import PackageReleasesTab from './components/PackageReleasesTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './components/PackageVersionsTab';
+import {
+  lightwellReleaseNum,
+  pythonLightwellRelease,
+  sortVersionsDesc,
+  stripLightwellVersionSuffix,
+  toLightwellVersion,
+} from './utils/versions';
 import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
 
@@ -87,7 +87,6 @@ const PackageDetails = () => {
   const [activeTabKey, setActiveTabKey] = useState(0);
   const [selectedVersion, setSelectedVersion] = useState<string>('');
   const [versionDropdownOpen, setVersionDropdownOpen] = useState(false);
-  const copyTooltipTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const overviewTabRef = createRef<HTMLElement>();
   const releasesTabRef = createRef<HTMLElement>();
@@ -250,15 +249,6 @@ const PackageDetails = () => {
     }
   }, [versionOptions, selectedVersion]);
 
-  useEffect(
-    () => () => {
-      if (copyTooltipTimeoutRef.current) {
-        clearTimeout(copyTooltipTimeoutRef.current);
-      }
-    },
-    [],
-  );
-
   const isLoadingDetail = useMock
     ? false
     : isMaven
@@ -285,11 +275,6 @@ const PackageDetails = () => {
       ? toLightwellVersion(latestBuild)
       : activeVersion
     : activeVersion;
-
-  const formatReleaseCopyText = (version: string) =>
-    isMaven
-      ? `${packageGroup}:${packageName}:${version}`
-      : `pip install ${packageName}==${version}`;
 
   const lastUpdated = isMaven
     ? (builds
@@ -334,9 +319,7 @@ const PackageDetails = () => {
               {breadcrumbRepoName}
             </BreadcrumbItem>
             <BreadcrumbItem isActive>
-              <Truncate
-                content={isMaven ? `${packageGroup}:${packageName}` : packageName || '—'}
-              />
+              <Truncate content={isMaven ? `${packageGroup}:${packageName}` : packageName || '—'} />
             </BreadcrumbItem>
           </Breadcrumb>
         </PageBreadcrumb>
@@ -415,11 +398,10 @@ const PackageDetails = () => {
           {(repository.security_level === 'remediated' ||
             repository.security_level === 'predisclosure') && <RemediatedDataWarning />}
           {showEmpty ? (
-            <EmptyTableState
-              notFiltered
-              clearFilters={() => undefined}
-              itemName='package details'
-              notFilteredBody='No details available yet for this package.'
+            <LightwellEmptyState
+              variant='empty'
+              displayedItemsName='package details'
+              bodyText='No details available yet for this package.'
             />
           ) : null}
 
@@ -498,7 +480,11 @@ const PackageDetails = () => {
                             <PackageReleasesTab
                               version={upstreamVersion}
                               builds={isPython ? pythonBuilds : mavenBuilds}
-                              formatCopyText={formatReleaseCopyText}
+                              packageIdentity={{
+                                name: packageName,
+                                group: packageGroup,
+                                isPython,
+                              }}
                             />
                           </TabContentBody>
                         </TabContent>

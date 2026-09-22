@@ -45,23 +45,22 @@ import {
 import { useLightwellRepositoryPackagesQuery } from 'services/Content/ContentQueries';
 import { RepositoryPackageItem } from 'services/Content/ContentApi';
 import { getMockLightwellPackages } from '../mockPackages';
-import {
-  compareReleasesDesc,
-  formatDistributionUrl,
-  formatRepositoryName,
-  getRepositoryDescription,
-  pythonLightwellRelease,
-  sortVersionsDesc,
-  stripLightwellVersionSuffix,
-} from '../helpers';
+import { formatDistributionUrl, formatRepositoryName, getRepositoryDescription } from '../helpers';
 import Hide from 'components/Hide/Hide';
 import { LIGHTWELL_USE_MOCK, lightwellPkgsPerPageKey } from '../constants';
 import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
 import Loader from 'components/Loader';
 import LightwellNotFound from '../components/LightwellNotFound';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
-import { toLightwellVersion } from './components/PackageReleasesTab';
 import CopyLabel from './components/CopyLabel';
+import { formatReleaseCopyText, type PackageIdentity } from './utils/format';
+import {
+  compareReleasesDesc,
+  pythonLightwellRelease,
+  sortVersionsDesc,
+  stripLightwellVersionSuffix,
+  toLightwellVersion,
+} from './utils/versions';
 import RemediatedDataWarning from '../RemediatedDataWarning';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
 import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
@@ -162,16 +161,13 @@ type StackedItemsCellProps<T> = {
 };
 
 type PackageCopyLabelProps = {
-  name: string;
-  groupId: string;
+  packageIdentity: PackageIdentity;
   version: string;
-  isPython: boolean;
 };
 
-const PackageCopyLabel = ({ name, groupId, version, isPython }: PackageCopyLabelProps) => {
-  const copyText = isPython ? `pip install ${name}==${version}` : `${groupId}:${name}:${version}`;
-  return <CopyLabel copyText={copyText}>{version}</CopyLabel>;
-};
+const PackageCopyLabel = ({ packageIdentity, version }: PackageCopyLabelProps) => (
+  <CopyLabel copyText={formatReleaseCopyText(packageIdentity, version)}>{version}</CopyLabel>
+);
 
 const StackedItemsCell = <T,>({
   items,
@@ -484,10 +480,8 @@ const PackagesTable = () => {
 
                         const renderCopyLabel = (version: string) => (
                           <PackageCopyLabel
-                            name={name}
-                            groupId={group_id}
+                            packageIdentity={{ name, group: group_id, isPython }}
                             version={version}
-                            isPython={isPython}
                           />
                         );
 

@@ -147,6 +147,7 @@ it('shows empty state when the package has no builds', async () => {
 
   renderPackageDetails();
 
+  expect(await screen.findByRole('heading', { name: 'No package details' })).toBeInTheDocument();
   expect(await screen.findByText('No details available yet for this package.')).toBeInTheDocument();
 });
 
@@ -420,7 +421,7 @@ it('shows an empty state on the Releases tab when the selected version has no Li
     <PackageReleasesTab
       version={version.version}
       builds={version.builds}
-      formatCopyText={(copyVersion) => copyVersion}
+      packageIdentity={{ name: 'json-test' }}
     />,
   );
 

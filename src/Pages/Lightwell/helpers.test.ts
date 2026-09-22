@@ -1,18 +1,19 @@
 import {
-  compareReleasesDesc,
-  compareVersionsDesc,
   formatDistributionUrl,
-  formatReleaseDate,
   formatRepositoryName,
   getEcosystemFromContentType,
   getRepositoryDescription,
   getRepositoryNameFromPathSlug,
   getRepositoryPathSlug,
+} from './helpers';
+import {
+  compareReleasesDesc,
+  compareVersionsDesc,
   lightwellReleaseNum,
   pythonLightwellRelease,
   sortVersionsDesc,
   stripLightwellVersionSuffix,
-} from './helpers';
+} from './Packages/utils/versions';
 
 describe('getEcosystemFromContentType', () => {
   it('returns the ecosystem for a known content type', () => {
@@ -249,16 +250,5 @@ describe('formatDistributionUrl', () => {
     expect(formatDistributionUrl('https://example.com/some/other/path')).toBe(
       'https://example.com/some/other/path',
     );
-  });
-});
-
-describe('formatReleaseDate', () => {
-  it('formats an ISO date as DD MMM YYYY', () => {
-    expect(formatReleaseDate('2024-03-14T00:00:00Z')).toBe('14 Mar 2024');
-  });
-
-  it('returns a dash when the date is missing', () => {
-    expect(formatReleaseDate()).toBe('—');
-    expect(formatReleaseDate('')).toBe('—');
   });
 });

@@ -5,23 +5,16 @@ import { useMemo } from 'react';
 import { RepositoryPackageReleaseInfo } from 'services/Content/ContentApi';
 import CopyLabel from './CopyLabel';
 import LightwellEmptyState from '../../components/LightwellEmptyState';
-import { formatReleaseDate, lightwellReleaseNum } from '../../helpers';
+import { formatReleaseCopyText, formatReleaseDate, type PackageIdentity } from '../utils/format';
+import { lightwellReleaseNum, toLightwellVersion } from '../utils/versions';
 
 type PackageReleasesTabProps = {
   version: string;
   builds: RepositoryPackageReleaseInfo[];
-  formatCopyText: (version: string) => string;
+  packageIdentity: PackageIdentity;
 };
 
-// Formats a release { version, release } into a Lightwell version string, e.g., 5.3.18.rhlw-00007
-export const toLightwellVersion = (
-  release: Pick<RepositoryPackageReleaseInfo, 'version' | 'release'>,
-) =>
-  !release.release || release.release.startsWith('+') || release.release.startsWith('.')
-    ? `${release.version}${release.release}`
-    : `${release.version}.${release.release}`;
-
-const PackageReleasesTab = ({ version, builds, formatCopyText }: PackageReleasesTabProps) => {
+const PackageReleasesTab = ({ version, builds, packageIdentity }: PackageReleasesTabProps) => {
   const releases = useMemo(
     () =>
       [...builds]
@@ -57,7 +50,9 @@ const PackageReleasesTab = ({ version, builds, formatCopyText }: PackageReleases
                 <Tr key={fullVersion}>
                   <Td dataLabel='Release'>
                     <Flex gap={{ default: 'gapSm' }} alignItems={{ default: 'alignItemsCenter' }}>
-                      <CopyLabel copyText={formatCopyText(fullVersion)}>{fullVersion}</CopyLabel>
+                      <CopyLabel copyText={formatReleaseCopyText(packageIdentity, fullVersion)}>
+                        {fullVersion}
+                      </CopyLabel>
                       {index === 0 ? (
                         <Label isCompact color='blue'>
                           Latest
