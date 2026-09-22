@@ -56,7 +56,7 @@ import RemediatedDataWarning from '../RemediatedDataWarning';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
 import PackageOverviewTab from './components/PackageOverviewTab';
-import PackageReleasesTab, { buildVersionFromRelease } from './components/PackageReleasesTab';
+import PackageReleasesTab, { toLightwellVersion } from './components/PackageReleasesTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './components/PackageVersionsTab';
 import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
@@ -233,7 +233,7 @@ const PackageDetails = () => {
       pythonVersionsData?.versions.find(
         (version) =>
           version.version ===
-          (pythonBuilds[0] ? buildVersionFromRelease(pythonBuilds[0]) : activeVersion),
+          (pythonBuilds[0] ? toLightwellVersion(pythonBuilds[0]) : activeVersion),
       ),
     [pythonVersionsData?.versions, pythonBuilds, activeVersion],
   );
@@ -280,8 +280,11 @@ const PackageDetails = () => {
 
   const upstreamVersion = isMaven ? (latestBuild?.version ?? activeVersion) : activeVersion;
 
-  const displayVersion =
-    hasRelease && latestBuild ? buildVersionFromRelease(latestBuild) : activeVersion;
+  const displayVersion = isMaven
+    ? hasRelease && latestBuild
+      ? toLightwellVersion(latestBuild)
+      : activeVersion
+    : activeVersion;
 
   const formatReleaseCopyText = (version: string) =>
     isMaven
@@ -495,9 +498,6 @@ const PackageDetails = () => {
                             <PackageReleasesTab
                               version={upstreamVersion}
                               builds={isPython ? pythonBuilds : mavenBuilds}
-                              allVersions={versionOptions}
-                              latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
-                              onVersionSelect={setSelectedVersion}
                               formatCopyText={formatReleaseCopyText}
                             />
                           </TabContentBody>

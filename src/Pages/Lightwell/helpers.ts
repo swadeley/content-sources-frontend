@@ -151,3 +151,20 @@ export const formatDistributionUrl = (url: string): string =>
   url
     .replace('/api/pulp-content/public-lightwell-demo', '/lightwell/public-lightwell-demo')
     .replace('/api/pulp-content/lightwell', '/lightwell');
+
+/**
+ * Formats an ISO date string as DD MMM YYYY
+ *
+ * Example:
+ * 2024-03-14T00:00:00Z -> 14 Mar 2024
+ */
+export const formatReleaseDate = (iso?: string) => {
+  if (!iso) return '—';
+
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+};

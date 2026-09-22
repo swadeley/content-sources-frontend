@@ -60,7 +60,7 @@ import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
 import Loader from 'components/Loader';
 import LightwellNotFound from '../components/LightwellNotFound';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
-import { buildVersionFromRelease } from './components/PackageReleasesTab';
+import { toLightwellVersion } from './components/PackageReleasesTab';
 import CopyLabel from './components/CopyLabel';
 import RemediatedDataWarning from '../RemediatedDataWarning';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
@@ -533,9 +533,9 @@ const PackagesTable = () => {
                                   isCollapsed={isCollapsed}
                                   onToggle={togglePackageExpanded}
                                   renderItem={(release) =>
-                                    renderCopyLabel(buildVersionFromRelease(release))
+                                    renderCopyLabel(toLightwellVersion(release))
                                   }
-                                  getItemKey={(release) => buildVersionFromRelease(release)}
+                                  getItemKey={(release) => toLightwellVersion(release)}
                                 />
                               </Td>
                             ) : null}

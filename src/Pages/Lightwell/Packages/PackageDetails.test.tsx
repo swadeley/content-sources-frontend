@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import PackageDetails from './PackageDetails';
+import PackageReleasesTab from './components/PackageReleasesTab';
 import {
   useMavenPackageVersionsListQuery,
   usePythonPackageVersionsQuery,
@@ -150,33 +151,37 @@ it('shows empty state when the package has no builds', async () => {
 });
 
 const setupNoReleasePackage = () => {
+  const data = {
+    group: 'org.json.test',
+    name: 'json-test',
+    versions: [
+      {
+        group: 'org.json.test',
+        name: 'json-test',
+        version: '2.21.2',
+        builds: [{ version: '2.21.2', release: '', created_at: '2026-07-01T00:00:00Z' }],
+      },
+      {
+        group: 'org.json.test',
+        name: 'json-test',
+        version: '2.20.0',
+        builds: [{ version: '2.20.0', release: '', created_at: '2026-06-15T00:00:00Z' }],
+      },
+      {
+        group: 'org.json.test',
+        name: 'json-test',
+        version: '2.19.1',
+        builds: [{ version: '2.19.1', release: '', created_at: '2026-06-01T00:00:00Z' }],
+      },
+    ],
+  };
+
   (useMavenPackageVersionsListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
-    data: {
-      group: 'org.json.test',
-      name: 'json-test',
-      versions: [
-        {
-          group: 'org.json.test',
-          name: 'json-test',
-          version: '2.21.2',
-          builds: [{ version: '2.21.2', release: '', created_at: '2026-07-01T00:00:00Z' }],
-        },
-        {
-          group: 'org.json.test',
-          name: 'json-test',
-          version: '2.20.0',
-          builds: [{ version: '2.20.0', release: '', created_at: '2026-06-15T00:00:00Z' }],
-        },
-        {
-          group: 'org.json.test',
-          name: 'json-test',
-          version: '2.19.1',
-          builds: [{ version: '2.19.1', release: '', created_at: '2026-06-01T00:00:00Z' }],
-        },
-      ],
-    },
+    data,
   }));
+
+  return data;
 };
 
 const setupPythonRemediatedPackage = () => {
@@ -234,7 +239,6 @@ it('renders sidebar metadata', async () => {
   renderPackageDetails();
 
   expect(await screen.findByText('Last updated')).toBeInTheDocument();
-  expect(await screen.findAllByText('2026-07-01')).toHaveLength(2);
   expect(await screen.findByText('Group ID')).toBeInTheDocument();
   expect(await screen.findByText(defaultLightwellRepositoryPackageItem.group)).toBeInTheDocument();
   expect(await screen.findByText('Rebuilt by')).toBeInTheDocument();
@@ -331,26 +335,36 @@ const setupMultiVersionReleasePackage = () => {
   }));
 };
 
-it('shows "Available versions" on Releases tab for multi-version release packages', async () => {
+it('shows Lightwell releases for the selected version on the Releases tab', async () => {
   setupMultiVersionReleasePackage();
 
   renderPackageDetails();
 
-  const releasesTab = await screen.findByRole('tab', { name: 'Releases' });
-  await userEvent.click(releasesTab);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Releases' }));
 
-  expect(await screen.findByText('Available versions')).toBeInTheDocument();
-  expect(await screen.findByRole('button', { name: '2.12.0' })).toBeInTheDocument();
-  expect(await screen.findByText('2.12.0.rhlw-00002')).toBeInTheDocument();
-  expect(await screen.findByText('2026-06-18')).toBeInTheDocument();
+  expect(await screen.findByText('Releases for version 3.14.0')).toBeInTheDocument();
 
-  const availableVersionsTable = screen.getByRole('grid', { name: 'Available versions' });
-  const versionRows = availableVersionsTable.querySelectorAll('tbody tr');
-  expect(versionRows[0]).toHaveTextContent('3.14.0');
-  expect(versionRows[1]).toHaveTextContent('2.12.0');
+  const releasesTable = screen.getByRole('grid', { name: 'Releases for 3.14.0' });
+  const releaseRows = releasesTable.querySelectorAll('tbody tr');
+  expect(releaseRows).toHaveLength(1);
+  expect(releaseRows[0]).toHaveTextContent('3.14.0.rhlw-00001');
+  expect(releaseRows[0]).toHaveTextContent('Latest');
+  expect(screen.queryByText('2.12.0.rhlw-00002')).not.toBeInTheDocument();
+
+  await userEvent.click(await screen.findByRole('button', { name: '3.14.0' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: '2.12.0' }));
+
+  expect(await screen.findByText('Releases for version 2.12.0')).toBeInTheDocument();
+
+  const selectedVersionTable = screen.getByRole('grid', { name: 'Releases for 2.12.0' });
+  const selectedVersionRows = selectedVersionTable.querySelectorAll('tbody tr');
+  expect(selectedVersionRows).toHaveLength(1);
+  expect(selectedVersionRows[0]).toHaveTextContent('2.12.0.rhlw-00002');
+  expect(selectedVersionRows[0]).toHaveTextContent('Latest');
+  expect(screen.queryByText('3.14.0.rhlw-00001')).not.toBeInTheDocument();
 });
 
-it('deduplicates "Available versions" rows when multiple releases share the same base version', async () => {
+it('lists all Lightwell releases for the selected version from latest to oldest', async () => {
   (useMavenPackageVersionsListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     data: {
@@ -382,14 +396,39 @@ it('deduplicates "Available versions" rows when multiple releases share the same
 
   renderPackageDetails();
 
-  const releasesTab = await screen.findByRole('tab', { name: 'Releases' });
-  await userEvent.click(releasesTab);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Releases' }));
 
-  const availableVersionsTable = await screen.findByRole('grid', { name: 'Available versions' });
-  const versionRows = availableVersionsTable.querySelectorAll('tbody tr');
-  expect(versionRows).toHaveLength(2);
-  expect(versionRows[0]).toHaveTextContent('3.14.0');
-  expect(versionRows[1]).toHaveTextContent('2.12.0');
+  const releasesTable = await screen.findByRole('grid', { name: 'Releases for 3.14.0' });
+  const releaseRows = releasesTable.querySelectorAll('tbody tr');
+  expect(releaseRows).toHaveLength(3);
+  expect(releaseRows[0]).toHaveTextContent('3.14.0.rhlw-00003');
+  expect(releaseRows[0]).toHaveTextContent('Latest');
+  expect(releaseRows[0]).toHaveTextContent('3 Jul 2026');
+  expect(releaseRows[1]).toHaveTextContent('3.14.0.rhlw-00002');
+  expect(releaseRows[1]).toHaveTextContent('2 Jul 2026');
+  expect(releaseRows[1]).not.toHaveTextContent('Latest');
+  expect(releaseRows[2]).toHaveTextContent('3.14.0.rhlw-00001');
+  expect(releaseRows[2]).toHaveTextContent('1 Jul 2026');
+  expect(screen.queryByText('2.12.0.rhlw-00002')).not.toBeInTheDocument();
+});
+
+it('shows an empty state on the Releases tab when the selected version has no Lightwell releases', () => {
+  const { versions } = setupNoReleasePackage();
+  const [version] = versions;
+
+  render(
+    <PackageReleasesTab
+      version={version.version}
+      builds={version.builds}
+      formatCopyText={(copyVersion) => copyVersion}
+    />,
+  );
+
+  expect(screen.getByText(`Releases for version ${version.version}`)).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'No releases for this version' })).toBeInTheDocument();
+  expect(
+    screen.queryByRole('grid', { name: `Releases for ${version.version}` }),
+  ).not.toBeInTheDocument();
 });
 
 it('shows version dropdown for multi-version release packages', async () => {
@@ -514,16 +553,17 @@ it('copies maven coordinate to clipboard for remediated java package', async () 
     writeText,
     async () => {
       await userEvent.click(await screen.findByRole('tab', { name: 'Releases' }));
-      const buttons = await screen.findAllByRole('button', { name: '3.14.0.rhlw-00001' });
-      await userEvent.click(buttons[0]);
+      await userEvent.click(await screen.findByRole('button', { name: '3.14.0.rhlw-00001' }));
     },
     javaRemediatedCopyCommand,
   );
 
-  // "Available versions" section of Releases tab
+  // Releases for a different selected version
   await assertClipboardCopy(
     writeText,
     async () => {
+      await userEvent.click(await screen.findByRole('button', { name: '3.14.0' }));
+      await userEvent.click(await screen.findByRole('menuitem', { name: '2.12.0' }));
       await userEvent.click(await screen.findByRole('button', { name: '2.12.0.rhlw-00002' }));
     },
     otherJavaRemediatedCopyCommand,
