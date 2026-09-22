@@ -3,7 +3,7 @@ import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import { PageSection, Stack, StackItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import LightwellPageHeader from '../components/LightwellPageHeader';
+import { LwPageHeader } from '../../../../src-migration/components/page-header/page-header';
 import { useManifestUpload } from './hooks/useManifestUpload';
 import ManifestUploadCard from './components/ManifestUploadCard';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
@@ -27,12 +27,12 @@ const ManifestUpload = () => {
 
   return (
     <>
-      <LightwellPageHeader
+      <LwPageHeader
         title='Lightwell Lens'
         ouiaId='lightwell-coverage-header'
         description='Upload your SBOM or package manifest to assess your stack against the Lightwell Network catalog.'
       />
-      {/* plXs matches the mXs margin LightwellPageHeader applies to its inner title flex, keeping content left-aligned */}
+      {/* plXs matches the mXs margin LwPageHeader applies to its inner title flex, keeping content left-aligned */}
       <PageSection
         aria-label='Lens Uploader'
         hasBodyWrapper={false}

@@ -1,0 +1,21 @@
+# Copy to tenant-ui-config.yaml and fill in. Agents: if exportPrefix is null/unset, STOP and ask.
+
+tenantName: null # e.g. Lightwell
+exportPrefix: null # e.g. lw — STOP if unset before shared component work
+cssPrefix: null # e.g. lightwell
+
+shell:
+  type: null # external | app-owned
+  name: null # e.g. insights-chrome
+
+componentsPath: null # e.g. src-migration/components
+configController: null # e.g. src-migration/components/config-component.ts
+
+architecture:
+  file: null # e.g. ARCHITECTURE.md
+  section: null # e.g. lightwell-components
+
+referenceTenant:
+  name: null
+  exportPrefix: null
+  cssPrefix: null

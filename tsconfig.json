@@ -23,7 +23,7 @@
       "test-utils/*": ["../_playwright-tests/test-utils/_playwright-tests/test-utils/src/*"]
     }
   },
-  "include": ["src", "_playwright-tests/**/*.ts"],
+  "include": ["src", "src-migration", "_playwright-tests/**/*.ts"],
   "exclude": [
     "cache",
     "auth",
