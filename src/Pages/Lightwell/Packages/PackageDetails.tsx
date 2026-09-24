@@ -452,6 +452,7 @@ const PackageDetails = () => {
                             group={packageGroup}
                             name={packageName}
                             latestRelease={displayVersion}
+                            packageVersion={upstreamVersion}
                             hasRelease={hasRelease}
                             summary={isMaven ? mavenDetail?.summary : pythonDetail?.summary}
                             sourceUrl={formatDistributionUrl(
@@ -464,6 +465,7 @@ const PackageDetails = () => {
                                 repository.published_distribution_url ?? '',
                               ),
                               content_type: repository.content_type ?? '',
+                              security_level: repository.security_level,
                             }}
                           />
                         </TabContentBody>
