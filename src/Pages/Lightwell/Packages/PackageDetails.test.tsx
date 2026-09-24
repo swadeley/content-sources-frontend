@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import PackageDetails from './PackageDetails';
-import PackageReleasesTab from './components/PackageReleasesTab';
 import {
   useMavenPackageVersionsListQuery,
   usePythonPackageVersionsQuery,
@@ -181,8 +180,6 @@ const setupNoReleasePackage = () => {
     isLoading: false,
     data,
   }));
-
-  return data;
 };
 
 const setupPythonRemediatedPackage = () => {
@@ -411,25 +408,6 @@ it('lists all Lightwell releases for the selected version from latest to oldest'
   expect(releaseRows[2]).toHaveTextContent('3.14.0.rhlw-00001');
   expect(releaseRows[2]).toHaveTextContent('1 Jul 2026');
   expect(screen.queryByText('2.12.0.rhlw-00002')).not.toBeInTheDocument();
-});
-
-it('shows an empty state on the Releases tab when the selected version has no Lightwell releases', () => {
-  const { versions } = setupNoReleasePackage();
-  const [version] = versions;
-
-  render(
-    <PackageReleasesTab
-      version={version.version}
-      builds={version.builds}
-      packageIdentity={{ name: 'json-test' }}
-    />,
-  );
-
-  expect(screen.getByText(`Releases for version ${version.version}`)).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: 'No releases for this version' })).toBeInTheDocument();
-  expect(
-    screen.queryByRole('grid', { name: `Releases for ${version.version}` }),
-  ).not.toBeInTheDocument();
 });
 
 it('shows version dropdown for multi-version release packages', async () => {

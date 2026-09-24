@@ -48,10 +48,10 @@ import {
 import RemediatedDataWarning from '../RemediatedDataWarning';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
-import PackageOverviewTab from './components/PackageOverviewTab';
-import PackageReleasesTab from './components/PackageReleasesTab';
+import PackageOverviewTab from './tabs/PackageOverviewTab';
+import PackageReleasesTab from './tabs/PackageReleasesTab';
 import PackageSidebar from './components/PackageSidebar';
-import PackageVersionsTab from './components/PackageVersionsTab';
+import PackageVersionsTab from './tabs/PackageVersionsTab';
 import {
   lightwellReleaseNum,
   pythonLightwellRelease,

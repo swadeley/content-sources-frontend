@@ -2,8 +2,8 @@ import { Flex, Label, Title } from '@patternfly/react-core';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { useMemo } from 'react';
 
-import { RepositoryPackageReleaseInfo } from 'services/Content/ContentApi';
-import CopyLabel from './CopyLabel';
+import { RepositoryPackageReleaseInfo } from '../../../../services/Content/ContentApi';
+import CopyLabel from '../components/CopyLabel';
 import LightwellEmptyState from '../../components/LightwellEmptyState';
 import { formatReleaseCopyText, formatReleaseDate, type PackageIdentity } from '../utils/format';
 import { lightwellReleaseNum, toLightwellVersion } from '../utils/versions';
@@ -26,7 +26,7 @@ const PackageReleasesTab = ({ version, builds, packageIdentity }: PackageRelease
   return (
     <Flex direction={{ default: 'column' }} gap={{ default: 'gapMd' }}>
       <Title headingLevel='h2' size='xl'>
-        Releases for version {version}
+        Releases for: version {version}
       </Title>
       {releases.length === 0 ? (
         <LightwellEmptyState

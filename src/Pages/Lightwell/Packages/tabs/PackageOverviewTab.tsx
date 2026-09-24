@@ -20,7 +20,7 @@ import { ConnectSnippetTab } from '../../Repositories/components/connectSnippets
 import {
   getMavenPackageUsageSnippetTabs,
   getPythonPackageUsageSnippetTabs,
-} from './packageDependencySnippets';
+} from '../components/packageDependencySnippets';
 
 type PackageOverviewTabProps = {
   isMaven: boolean;
