@@ -1,10 +1,31 @@
+// Lightwell chrome overrides (TrustArc is hosted in chrome LightwellFooter / PageFooter).
+// Page atmosphere — follows HCC color scheme via pf-v6-theme-dark on <html>.
 
 // TrustArc "Cookie preferences" link is injected by Chrome and pushed off-screen,
 // causing an unwanted scrollbar. Fix it in the bottom-left corner instead.
-.truste_caIcon_display {
-    position: fixed !important;
-    bottom: 16px !important;
-    left: 16px !important;
-    z-index: 1000 !important;
-    overflow: visible !important;
+// .truste_caIcon_display {
+//   position: fixed !important;
+//   bottom: 16px !important;
+//   left: 16px !important;
+//   z-index: 1000 !important;
+//   overflow: visible !important;
+// }
+
+html.pf-v6-theme-felt {
+  --pf-t--global--background--image--default: url('../src/kit/assets/background-16-9__light.png');
+
+  background-image: url('../src/kit/assets/background-16-9__light.png');
+  background-repeat: no-repeat;
+  background-position: top right;
+  background-size: 135%;
+  background-position-x: 70%;
+  background-position-y: -4rem;
+  background-color: #e5e0df;
+}
+
+html.pf-v6-theme-felt.pf-v6-theme-dark {
+  --pf-t--global--background--image--default--dark: url('../src/kit/assets/background-16-9__dark.png');
+
+  background-image: url('../src/kit/assets/background-16-9__dark.png');
+  background-color: black;
 }

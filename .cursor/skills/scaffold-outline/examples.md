@@ -4,7 +4,7 @@ Companion to [perspective.md](perspective.md) (why) and [SKILL.md](SKILL.md) (ho
 
 ## Perspective
 
-**Operating question:** “Am I configuring a harness, or re-building PF?”
+**Operating question:** "Am I configuring a harness, or re-building PF?"
 
 If the latter, you are outside the perspective — see
 [perspective.md § When you are outside](perspective.md#when-you-are-outside-the-perspective).
@@ -13,52 +13,66 @@ Demo proof page — each layer pays once:
 
 | Layer | Pays once | Demo instance |
 | ----- | --------- | ------------- |
-| Data | One matrix key | `apiMatrix.beaconVulnerabilities` |
 | PF table shell | One harness | `LwDataView` (scroll, toolbar, manage columns, pagination) |
-| Demo wiring | One composition config | `DemoVulnerabilityDataView` + `data-view-config.ts` |
+| Demo wiring | One config | `DemoVulnerabilityDataView` + `data-view-config.ts` |
 | Domain columns | One catalog + row builder | `VULNERABILITY_COLUMN_CATALOG`, `buildVulnerabilityRows` |
 | Page | Outline only | `Demo.tsx` — customer select + conditional table slot |
 
 **Wrong perspective:** `Demo.tsx` inlines `DataView` + `ColumnManagementModal` +
-sticky CSS because “it’s just the demo.” That demo becomes the tax every
+sticky CSS because "it's just the demo." That demo becomes the tax every
 production page pays later.
 
-**Right perspective:** demo proves the same stack production will use — matrix →
-composition → harness → PF. Demo-only files hold **demo config** (ouia ids,
+**Right perspective:** demo proves the same stack production will use — page/domain
+→ kit assembly → primitive/PF. Demo-only files hold **demo config** (ouia ids,
 storage keys), not a second PF integration.
 
-**Semantic map (future `LwLabel`):**
+**Logic passthrough (page chrome):**
 
 ```tsx
-// config or LwLabel — once
+// Slot build — harness owns title stack
+<LwPageHeader title="Beacon" description="…" actions={<ExportMenu />} />
+
+// Passthrough — caller owns interior
+<LwPageHero isGlass>
+  <CustomChrome />
+</LwPageHero>
+
+// Sibling choice — never variant="hero" on Header
+<LwPageHero title="…" backgroundImage />
+```
+
+Shared padding from `assemblies/page/page.config.css`. Prop defaults
+(`isGlass`, …) from `components.config.ts`.
+
+**Semantic map (future `LwLabel` primitive):**
+
+```tsx
+// components.config.ts or LwLabel primitive — once
 const severityToLabel = {
   critical: { color: 'red', … },
-  neat: { color: 'blue', … },
   payAttention: { color: 'orange', … },
 };
 
-// composition / column renderer — many times, zero PF tokens
+// domain / page — many times, zero PF tokens
 <LwLabel severity="payAttention">{text}</LwLabel>
 ```
 
-PF v7 renames `color` → callers unchanged; harness updated once.
+PF v7 renames `color` → callers unchanged; primitive updated once.
 
 ---
 
 ## Lightwell Demo
 
-Proof page stack (matrix → composition → demo data-view → Lw\*):
+Proof page stack (page/domain → kit assembly → PF):
 
 ```
-api-matrix.beaconVulnerabilities(...)
-        ↓
 Demo.tsx                    ← async outline only
         ↓
-TableVulnerabilities        ← body states + pagination props
+TableVulnerabilities        ← domain: body states + pagination props
         ↓
-DemoVulnerabilityDataView   ← demo shell config (ouia, manageColumns, sticky)
+DemoVulnerabilityDataView   ← demo config (ouia, manageColumns, sticky)
         ↓
-LwDataView                  ← columnCatalog + manageColumns + PF table
+LwDataView                  ← kit assembly: columnCatalog + manageColumns + PF
 ```
 
 **Page outline** (`Demo.tsx`) — customer select + one conditional slot for the table:
@@ -73,7 +87,7 @@ LwDataView                  ← columnCatalog + manageColumns + PF table
 )}
 ```
 
-**Composition** owns empty/error chrome; **does not** fetch:
+**Domain wiring** owns empty/error chrome; **does not** fetch:
 
 ```tsx
 export function TableVulnerabilities({ data, isLoading, isError, … }) {
@@ -129,12 +143,18 @@ return <Flex>{introContent}{card}{tailContent}</Flex>;
 # Bad
 features/container-entry/          # fake layer
 container-details-panel.tsx        # shell stem on section
-app-drawer-panel-content.tsx      # slot router → double titles
+assemblies/page-header/            # Hero + plain chrome in one God unit
 
 # Good
-pages/hardened-images/image-entry/sections/image-detail-overview.tsx
-compositions/table-vulnerabilities/
-Demo/components/data-view/         # demo-scoped LwDataView wiring only
+src/kit/components/primitives/label/label.tsx
+src/kit/components/assemblies/page/
+  page.config.css                  # page spacers / type (CSS, not YAML)
+  page-header/                     # plain chrome — kit invention
+  page-hero/                       # PF Hero harness
+src/kit/components/components.config.ts    # prop defaults
+src/kit/components/components.config.css   # domain presentational baseline
+# domain wiring — stays with product, not in src/kit/
+src/Pages/Lightwell/Beacon/components/pipeline-view.tsx
 ```
 
 ---
@@ -144,13 +164,15 @@ Demo/components/data-view/         # demo-scoped LwDataView wiring only
 | Anti-pattern | Fix |
 | ------------ | --- |
 | Chrome title + document `h2` same string | Header null or one outline owns title |
-| `app-drawer-panel-content.tsx` | Delete — extend panel/caller |
 | Per-tab Spinner dialect | Shared status primitive |
 | `catalog-browse-toolbar` (type last) | `toolbar/toolbar.tsx` |
 | `HbCardCatalog` usage-named kit | `HbCard` + page `ImageCard` |
 | Hand-copied PF `color` unions | `Pick<LabelProps, …>` + app-only fields |
-| One-call-site table extraction | Table scaffolding stays in section/composition return |
+| One-call-site table extraction | Table scaffolding stays in domain/return |
 | JS mount section trees on click | Scaffold mounted with surface; hydrate values only |
+| Domain wiring labeled "assembly" in kit | Keep with product until extracted |
+| `LwPageHeader variant="hero"` | Sibling `LwPageHero` — shared slots, separate hosts |
+| Spacers in YAML or TS prop config | `page.config.css` / `components.config.css` |
 
 ---
 

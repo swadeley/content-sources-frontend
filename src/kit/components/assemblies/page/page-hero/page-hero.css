@@ -1,0 +1,13 @@
+/* LwPageHero — PF Hero harness (logic wrap, not a DOM wrap).
+ * Do NOT override Hero padding — PF defaults (spacer--3xl) stay.
+ * LwPageHeader mirrors those defaults so titles don't jump header ↔ hero.
+ */
+
+.lw-c-page-hero.pf-v6-c-hero {
+  transition: var(--pf-t--global--transition--duration--base)
+    var(--pf-t--global--transition--timing-function--base);
+
+  .pf-v6-c-hero__body {
+    flex: 1 1 auto;
+  }
+}

@@ -1,0 +1,15 @@
+/**
+ * Page family — presentational notes (source of truth).
+ *
+ * Padding contract:
+ *   - LwPageHero  → PF Hero defaults (do not override Padding* tokens)
+ *   - LwPageHeader → mirrors those defaults (spacer--3xl) so titles don't jump
+ *     when some routes use hero (interactive chrome) and others use plain header
+ *
+ * Unit CSS inlines the header mirror — webpack `@import` under KitCssScopePlugin
+ * does not reliably emit shared rules. When PF changes Hero padding defaults,
+ * update page-header.css to match.
+ *
+ * --lw-space--page-inline: var(--pf-t--global--spacer--3xl);  /* = Hero default */
+ * --lw-space--page-block:  var(--pf-t--global--spacer--3xl);
+ */

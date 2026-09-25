@@ -1,0 +1,14 @@
+/**
+ * Lightwell components domain — presentational baseline.
+ *
+ * Cascade: this file → assemblies/page/page.config.css → unit *.css
+ *
+ * KitCssScopePlugin wraps this file in `html.lightwell-v1-theme { … }`.
+ * Use `& { }` for host-level tokens — never `:root`, bare props, or
+ * re-stating `html.lightwell-v1-theme` (that double-nests and matches nothing).
+ */
+
+& {
+  --lw-font-size--page-title: var(--pf-t--global--font--size--3xl);
+  --lw-font-weight--page-title: var(--pf-t--global--font--weight--heading--bold);
+}

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
-import LightwellPageHeader from '../components/LightwellPageHeader';
+import { LwPageHero } from 'kit/components/assemblies';
 import {
   Alert,
   Button,
@@ -93,7 +93,7 @@ const CoverageReport = () => {
 
   return (
     <>
-      <LightwellPageHeader
+      <LwPageHero
         title={matchAnalysisTitle}
         description={
           skippedEntries > 0 ? (
@@ -136,7 +136,7 @@ const CoverageReport = () => {
           </Flex>
         }
       />
-      {/* plXs matches the mXs margin LightwellPageHeader applies to its inner title flex, keeping content left-aligned */}
+      {/* plXs matches the mXs margin LwPageHero applies to its inner title flex, keeping content left-aligned */}
       <PageSection
         aria-label='Match analysis'
         hasBodyWrapper={false}

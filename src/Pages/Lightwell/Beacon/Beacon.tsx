@@ -2,11 +2,6 @@ import { useMemo, useCallback, useEffect, useState } from 'react';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
   Content,
   EmptyState,
   EmptyStateBody,
@@ -14,7 +9,6 @@ import {
   Flex,
   FlexItem,
   PageSection,
-  Popover,
   Skeleton,
   Stack,
   StackItem,
@@ -25,12 +19,13 @@ import {
   FilterSidePanelCategory,
   FilterSidePanelCategoryItem,
 } from '@patternfly/react-catalog-view-extension';
-import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import UserIcon from '@patternfly/react-icons/dist/esm/icons/user-icon';
 
 import useDebounce from 'Hooks/useDebounce';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
-import LightwellPageHeader from '../components/LightwellPageHeader';
+import { LwCard, LwPageHero } from 'kit/components/assemblies';
+import { LwStatItem } from 'kit/components/primitives';
+import { SlaInfoPopover } from './components/SlaInfoPopover';
 import {
   FILTER_STATUSES,
   NO_REMEDIATION_LABEL,
@@ -233,7 +228,7 @@ const Beacon = () => {
 
   return (
     <>
-      <LightwellPageHeader
+      <LwPageHero
         title='Beacon'
         ouiaId='lightwell-beacon-header'
         description={
@@ -345,94 +340,38 @@ const Beacon = () => {
                 {selectedCustomerId && !isLoading ? (
                   <Stack hasGutter>
                     <StackItem>
-                      <Card isGlass>
-                        <CardHeader>
-                          <CardTitle>
-                            <Flex
-                              gap={{ default: 'gapSm' }}
-                              alignItems={{ default: 'alignItemsCenter' }}
-                            >
-                              <FlexItem>
-                                <Title headingLevel='h3' size='md'>
-                                  Status Summary{activeFilterCount > 0 ? ' (filtered)' : ''}
-                                </Title>
-                              </FlexItem>
-                              <FlexItem>
-                                <Popover
-                                  headerContent='SLA Policy'
-                                  bodyContent={
-                                    <Content>
-                                      <p>
-                                        <strong>Submit</strong> vulnerabilities to the clearinghouse
-                                        at any time.
-                                      </p>
-                                      <p>
-                                        <strong>Triage within 48 hours.</strong>
-                                      </p>
-                                      <p>
-                                        <strong>Priority is yours.</strong> Your severity sets the
-                                        default order. Adjust at any time.
-                                      </p>
-                                      <p>
-                                        A fix is complete when a patched artifact is published in
-                                        the repository (or when it gets to the Lightwell Network).
-                                      </p>
-                                      <br />
-                                      <p>
-                                        SLA applies to up to 25 findings per member per week. All
-                                        other findings are worked continuously on a best-effort
-                                        basis.
-                                      </p>
-                                    </Content>
-                                  }
-                                >
-                                  <Button
-                                    variant='plain'
-                                    aria-label='SLA help'
-                                    className='lightwell-help-btn'
-                                  >
-                                    <HelpIcon />
-                                  </Button>
-                                </Popover>
-                              </FlexItem>
-                            </Flex>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardBody>
-                          <Flex
-                            justifyContent={{ default: 'justifyContentCenter' }}
-                            gap={{ default: 'gapXl' }}
-                            alignItems={{ default: 'alignItemsCenter' }}
-                            style={{ marginBottom: 'var(--pf-t--global--spacer--md)' }}
-                          >
-                            <FlexItem style={{ textAlign: 'center' }}>
-                              <span className='lightwell-stat-number'>
-                                {displayMeta?.count ?? filteredVulns.length}
-                              </span>
-                              <Content component='small' style={{ display: 'block' }}>
-                                Total
-                              </Content>
-                            </FlexItem>
-                            <FlexItem style={{ textAlign: 'center' }}>
-                              <span className='lightwell-stat-number lightwell-stat--critical'>
-                                {displayMeta?.criticalCount ?? 0}
-                              </span>
-                              <Content component='small' style={{ display: 'block' }}>
-                                Critical
-                              </Content>
-                            </FlexItem>
-                            <FlexItem style={{ textAlign: 'center' }}>
-                              <span className='lightwell-stat-number'>
-                                {displayMeta?.statusCounts?.[UNREMEDIATED_STATUS] ?? 0}
-                              </span>
-                              <Content component='small' style={{ display: 'block' }}>
-                                {NO_REMEDIATION_LABEL}
-                              </Content>
-                            </FlexItem>
-                          </Flex>
-                          <PipelineView statusCounts={displayMeta?.statusCounts} />
-                        </CardBody>
-                      </Card>
+                      <LwCard
+                        hasHeader={`Status Summary${activeFilterCount > 0 ? ' (filtered)' : ''}`}
+                        hasAction={<SlaInfoPopover />}
+                      >
+                        <Flex
+                          justifyContent={{ default: 'justifyContentCenter' }}
+                          gap={{ default: 'gapXl' }}
+                          alignItems={{ default: 'alignItemsCenter' }}
+                          style={{ marginBottom: 'var(--pf-t--global--spacer--md)' }}
+                        >
+                          <FlexItem>
+                            <LwStatItem
+                              value={displayMeta?.count ?? filteredVulns.length}
+                              label='Total'
+                            />
+                          </FlexItem>
+                          <FlexItem>
+                            <LwStatItem
+                              value={displayMeta?.criticalCount ?? 0}
+                              label='Critical'
+                              variant='danger'
+                            />
+                          </FlexItem>
+                          <FlexItem>
+                            <LwStatItem
+                              value={displayMeta?.statusCounts?.[UNREMEDIATED_STATUS] ?? 0}
+                              label={NO_REMEDIATION_LABEL}
+                            />
+                          </FlexItem>
+                        </Flex>
+                        <PipelineView statusCounts={displayMeta?.statusCounts} />
+                      </LwCard>
                     </StackItem>
                     <StackItem>
                       <VulnerabilityTable

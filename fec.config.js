@@ -5,6 +5,63 @@ const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
 const sassPrefix = insights.appname.replace(/-(\w)/g, (_, match) => match.toUpperCase());
 const srcDir = path.resolve(__dirname, './src');
+/** Must match chrome `useLightwellRouteSetup` / theme-bootstrap class on <html>. */
+const KIT_CSS_SCOPE = 'html.lightwell-v1-theme';
+const KIT_CSS_PATH_SEGMENT = `${path.sep}src${path.sep}kit${path.sep}`;
+
+/**
+ * Scope kit co-located CSS to Lightwell's html theme class instead of `.contentSources`.
+ * Chrome adds `lightwell-v1-theme` on <html> for /lightwell* only. Kit rules should stay
+ * under `.lw-*` hosts so bare PF selectors don't restyle Lightwell chrome chrome.
+ */
+class KitCssScopePlugin {
+  apply(compiler) {
+    // Do not put custom keys on sass-loader options — schema-utils rejects them.
+    const patchedOptions = new WeakSet();
+    const patchRules = (rules) => {
+      let patched = 0;
+      for (const rule of rules || []) {
+        if (rule.oneOf) patched += patchRules(rule.oneOf);
+        if (rule.rules) patched += patchRules(rule.rules);
+        const useEntries = Array.isArray(rule.use) ? rule.use : rule.use ? [rule.use] : [];
+        for (const entry of useEntries) {
+          if (!entry || typeof entry !== 'object') continue;
+          const loader = typeof entry.loader === 'string' ? entry.loader : '';
+          if (!loader.includes('sass-loader') || typeof entry.options?.additionalData !== 'function') {
+            continue;
+          }
+          if (patchedOptions.has(entry.options)) continue;
+          const originalAdditionalData = entry.options.additionalData;
+          entry.options.additionalData = (content, loaderContext) => {
+            const resourcePath = loaderContext.resourcePath || '';
+            if (resourcePath.includes(KIT_CSS_PATH_SEGMENT)) {
+              // One wrapper per file (not per rule). Skip comment-only sheets.
+              if (!content.includes('{')) {
+                return content;
+              }
+              return `${KIT_CSS_SCOPE} {\n${content}\n}`;
+            }
+            return originalAdditionalData(content, loaderContext);
+          };
+          patchedOptions.add(entry.options);
+          patched += 1;
+        }
+      }
+      return patched;
+    };
+
+    const run = () => {
+      const count = patchRules(compiler.options.module?.rules || []);
+      if (count > 0) {
+        console.log(`[KitCssScopePlugin] scoped ${count} sass-loader(s) → ${KIT_CSS_SCOPE} for src/kit/**`);
+      }
+    };
+
+    // Patch immediately and again after environment (covers late rule injection).
+    run();
+    compiler.hooks.afterEnvironment.tap('KitCssScopePlugin', run);
+  }
+}
 
 /**
  * Custom webpack plugin to add Istanbul coverage instrumentation.
@@ -84,6 +141,7 @@ module.exports = {
   useProxy: true,
   interceptChromeConfig: false,
   plugins: [
+    new KitCssScopePlugin(),
     // Istanbul coverage plugin (active when COVERAGE=true)
     new IstanbulCoveragePlugin(),
     ...(process.env.ENABLE_SENTRY
@@ -137,6 +195,12 @@ module.exports = {
     modules: [srcDir, path.resolve(__dirname, './node_modules')],
   },
   routes: {
+    // Local insights-chrome (PF 6.6.0-prerelease.48). Keep `npm run start` watching in
+    // insights-chrome, and serve dist over HTTP on 9997 (see scripts/serve-chrome-dist.mjs).
+    '/apps/chrome': {
+      host: 'http://127.0.0.1:9997',
+      is_chrome: true,
+    },
     ...(process.env.BACKEND_PORT && {
       '/api/content-sources/': {
         host: `http://127.0.0.1:${process.env.BACKEND_PORT}`,

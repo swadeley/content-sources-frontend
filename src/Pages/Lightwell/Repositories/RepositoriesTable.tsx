@@ -62,7 +62,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import { useLightwellRootPath } from 'Hooks/Lightwell/navigation/useLightwellRootPath';
 import NotificationPreferencesModal from './components/NotificationPreferencesModal';
-import LightwellPageHeader from '../components/LightwellPageHeader';
+import { LwPageHeader } from 'kit/components/assemblies';
 import { useLightwellNotificationPrefs } from './hooks/useLightwellNotificationPrefs';
 import {
   mapSeveritiesToApi,
@@ -209,7 +209,7 @@ const RepositoriesTable = () => {
 
   return (
     <>
-      <LightwellPageHeader
+      <LwPageHeader
         title='Repositories'
         ouiaId='lightwell-header'
         description='Browse Lightwell repositories by ecosystem and security level.'

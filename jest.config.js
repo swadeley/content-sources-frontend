@@ -1,5 +1,5 @@
 module.exports = {
-  roots: ['<rootDir>/src/', '<rootDir>/src-migration/'],
+  roots: ['<rootDir>/src/'],
   preset: 'ts-jest',
   maxWorkers: '50%',
   testResultsProcessor: 'jest-junit',
@@ -12,7 +12,7 @@ module.exports = {
   },
   setupFiles: [],
   setupFilesAfterEnv: ['<rootDir>/config/setupAfterEnv.ts'],
-  moduleDirectories: ['<rootDir>/node_modules', '<rootDir>/src', '<rootDir>/src-migration'],
+  moduleDirectories: ['<rootDir>/node_modules', '<rootDir>/src'],
   // Below replaces things for speed
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
@@ -30,12 +30,9 @@ module.exports = {
   // Coverage configuration
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
-    'src-migration/**/*.{ts,tsx}',
     '!src/**/*.test.{ts,tsx}',
     '!src/**/*.spec.{ts,tsx}',
     '!src/**/index.{ts,tsx}',
-    '!src-migration/**/*.test.{ts,tsx}',
-    '!src-migration/**/*.spec.{ts,tsx}',
     '!src/testingHelpers.tsx',
     '!src/index.html',
   ],

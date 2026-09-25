@@ -1,0 +1,14 @@
+/* LwPageHeader — plain page chrome (kit invention).
+ * Padding mirrors PF Hero defaults so titles don't jump when a route uses
+ * LwPageHero (interactive / Hero surface) vs LwPageHeader (plain).
+ * Source: --pf-v6-c-hero--Padding* → spacer--3xl. Do not invent a second scale.
+ */
+
+.lw-c-page-header {
+  /* Same values PF sets on .pf-v6-c-hero — keep in sync with Hero defaults. */
+  --lw-space--page-inline: var(--pf-t--global--spacer--3xl);
+  --lw-space--page-block: var(--pf-t--global--spacer--3xl);
+
+  padding-inline: var(--lw-space--page-inline);
+  padding-block: var(--lw-space--page-block);
+}
