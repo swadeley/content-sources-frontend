@@ -42,15 +42,24 @@ export function LwPopover({
   className,
   ...rest
 }: LwPopoverProps) {
+  // `headerContent` / `bodyContent` / `footerContent` are excluded from
+  // LwPopoverPassthroughProps (they are owned by `has*`). Merge only what the
+  // config type allows, then spread the content slots directly onto the host.
   const popoverProps = mergeComponentProps(getLwPopoverDefaults(), {
     ...rest,
-    headerContent: hasHeader,
-    bodyContent: hasBody,
-    footerContent: hasFooter,
     className: mergeClassNames('lw-c-popover', className),
   });
 
-  return <Popover {...popoverProps}>{hasTrigger}</Popover>;
+  return (
+    <Popover
+      {...popoverProps}
+      headerContent={hasHeader}
+      bodyContent={hasBody}
+      footerContent={hasFooter}
+    >
+      {hasTrigger}
+    </Popover>
+  );
 }
 
 export default LwPopover;

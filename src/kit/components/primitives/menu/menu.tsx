@@ -122,11 +122,13 @@ export function LwMenu({
     </MenuToggle>
   );
 
+  // `toggle` is required by DropdownProps but excluded from LwMenuPassthroughProps
+  // (it is caller-owned or harness-built). Merge only what the config type allows,
+  // then spread `toggle` directly onto the host.
   const dropdownProps = mergeComponentProps(getLwMenuDefaults(), {
     ...rest,
     isOpen,
     onOpenChange: handleOpenChange,
-    toggle: toggleProp ?? defaultToggle,
     className: mergeClassNames('lw-c-menu', className),
   });
 
@@ -154,7 +156,11 @@ export function LwMenu({
     );
   }
 
-  return <Dropdown {...dropdownProps}>{interior}</Dropdown>;
+  return (
+    <Dropdown {...dropdownProps} toggle={toggleProp ?? defaultToggle}>
+      {interior}
+    </Dropdown>
+  );
 }
 
 export default LwMenu;
