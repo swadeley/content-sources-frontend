@@ -10,14 +10,14 @@ into `src/` via `git mv`.
 src/kit/
   assets/                             Shared kit artwork (logos, backgrounds)
   components/
-    primitives/                       Base units — one configured PF host
-                                      (LwButton, LwLabel, LwBrand, …)
-    assemblies/                       Structured slots; use primitives
+    primitives/                       Base units — one PF host + Lightwell config
+                                      (LwButton, LwCard, LwMenu, LwPopover, LwStatItem, …)
+    assemblies/                       Multi-region slots; use primitives
       page/                           Page-family assemblies (anti-God siblings)
         page.config.css               Page presentational defaults (spacers, type)
         page-header/                  Kit invention — plain chrome
         page-hero/                    PF Hero harness — passthrough + slots
-      …                               (LwCard, LwDataView, …)
+      …                               (LwDataView, …)
     components.config.ts              Prop / behavior defaults for both tiers
     components.config.css             Domain presentational baseline
   lightwell.config.ts                 Tenant root config — cascade top
@@ -30,7 +30,7 @@ src/kit/
 import { LwPageHeader, LwPageHero } from 'kit/components/assemblies';
 
 // Kit primitives (barrel)
-import { LwLabel } from 'kit/components/primitives';
+import { LwButton, LwCard, LwMenu, LwPopover, LwStatItem } from 'kit/components/primitives';
 
 // Config utilities
 import { mergeComponentProps } from 'kit/components/components.config';

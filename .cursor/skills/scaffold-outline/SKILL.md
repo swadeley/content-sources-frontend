@@ -41,9 +41,12 @@ pages pass domain names (`payAttention`), not PF tokens (`color="orange"`).
 
 | Tier | Role | Path |
 | ---- | ---- | ---- |
-| **Primitive** | Base unit — one configured PF host | `src/kit/components/primitives/` |
-| **Assembly** | Structured slots; **uses primitives** | `src/kit/components/assemblies/` |
+| **Primitive** | Base unit — one PF host + Lightwell config | `src/kit/components/primitives/` |
+| **Assembly** | Multi-region slots; **uses primitives** | `src/kit/components/assemblies/` |
 | **Page / domain** | Product outline + domain wiring | app pages; stays with product until extracted |
+
+Primitive test: (A) single unit (B) standard presentation (C) PF-shaped control.
+Lightwell-owned props on that host stay primitive — kit invention ≠ assembly.
 
 **Config cascade** — see [perspective.md](perspective.md#config-cascade):
 
@@ -73,12 +76,15 @@ never `variant="hero"` on Header. See [perspective.md](perspective.md#page-famil
 
 1. Does this **node** earn its place? (Rule 0)
 2. Does **PF** already own this? (subtract)
-3. **Primitive or assembly?** (base unit vs slot contract)
+3. **Primitive or assembly?** (A/B/C single PF unit vs multi-region / composing `Lw*`)
 4. Does a **harness** exist? (configure `Lw*`; do not copy the PF tree)
 5. **Domain name or PF token?** (map once in harness)
 6. Is this a **second job** on an existing assembly? (split — anti-God)
 7. **Prop default or presentational?** (TS config vs CSS config)
 8. Is the **return** still the spec? (no hidden sections)
+
+Do **not** promote to assembly only because the primitive adds Lightwell props
+(`isBusy`, `items`, semantic maps). That is base-unit configuration.
 
 ---
 
@@ -157,8 +163,9 @@ PF component must not.
 **Flex / grid:** wrappers re-parent direct children — wrong flex item, `gap`,
 sticky, and `overflow` context.
 
-**Harness once:** one integration per surface type — primitives for base units,
-assemblies for slot contracts. Upgrades and semantic maps live in the harness.
+**Harness once:** one integration per surface type — primitives for single PF units
+(with Lightwell-owned config), assemblies for multi-region slots. Upgrades and
+semantic maps live in the harness.
 
 ---
 
@@ -168,8 +175,8 @@ assemblies for slot contracts. Upgrades and semantic maps live in the harness.
 | ----- | ---------- | -------------- |
 | **Scaffolding** | Sections, headings, layout, conditionals, ARIA | Visible in the JSX return |
 | **Hydration** | Flags, copy, API data, domain row builders | Above the return; injected as slots |
-| **Primitive** | Base PF harness + defaults + passthrough | `components/primitives/` |
-| **Assembly** | Slot contract; uses primitives; logic passthrough | `components/assemblies/` |
+| **Primitive** | One PF host + Lightwell config / owned props | `components/primitives/` |
+| **Assembly** | Multi-region slots; uses primitives | `components/assemblies/` |
 | **Page family** | Shared page chrome + presentational config | `assemblies/page/` (`page.config.css`, header, hero) |
 | **Page / domain** | Async outline + product wiring | app pages / domain wiring |
 
@@ -181,8 +188,8 @@ assemblies for slot contracts. Upgrades and semantic maps live in the harness.
 
 | Layer owns | Does not own |
 | ---------- | ------------ |
-| Primitive | single PF host, maps, defaults | fetch, multi-slot chrome |
-| Assembly | slot grammar, layout of slots, primitives inside | route params, direct `services/*` |
+| Primitive | single PF host, Lightwell-owned props, maps, defaults | multi-region chrome, other `Lw*` composition, fetch |
+| Assembly | multi-region slot grammar, primitives inside | route params, direct `services/*` |
 | Page / domain | state, async branches, catalogs, filter UI | inline PF config |
 
 **No `features/` layer.** Domain wiring is not an assembly in kit paths.
@@ -220,10 +227,14 @@ Before a new file, wrapper, hook, or DTO:
 | New table shell | extend kit assembly `LwDataView` |
 | New columns | domain catalog + keyed rows; shell owns `manageColumns` |
 | `color="orange"` in page | `severity` on `LwLabel`; map in primitive harness |
+| Dropdown / MenuToggle tree copied in a page | extract or reuse primitive `LwMenu`; domain keeps handlers |
+| Export / kebab / actions menu with product fetch | `LwMenu` + domain shell — do not kit-ify fetch/PDF |
+| Lightwell props on one PF host (`isBusy`, `items`) | Stay **primitive** — do not promote for kit invention alone |
 | Tenant token / brand value | `lightwell.config.ts` |
 | Component/assembly **prop** default | `components/components.config.ts` |
 | Domain **presentational** default (padding, type) | `components/components.config.css` |
-| Page-family spacer / type | `assemblies/page/page.config.css` |
+| Page-family spacer / type | `assemblies/page/page.config.css` or unit `.css` |
+| Reach for `spacing.mMd` / `pf-v6-u-*` | Stop — utility classes are last resort; write co-located CSS |
 | Header needs Hero look | use `LwPageHero` — do not add `variant` to Header |
 | Assembly growing a second visual job | split into sibling assemblies (anti-God) |
 
@@ -315,6 +326,9 @@ When PF has no equivalent (`LwPageHeader`), the kit host still must earn its pla
 | Host first | Prefer PF host when it owns the job (`Hero` → `LwPageHero`); kit invents only when PF has no equivalent (`LwPageHeader`) |
 | Theme | Use host's light/dark API when present (`Hero` → `backgroundSrcLight` / `backgroundSrcDark`); otherwise `:where(.pf-v6-theme-dark)` |
 | Assets | Under `src/kit/assets/`; optional props enable kit defaults; call-site PF props win |
+| **Utility classes** | **Last resort.** Do not use PF utility classes (`spacing.*`, `pf-v6-u-*`, etc.) casually for layout or polish. Prefer co-located CSS + design tokens (`--pf-t--global--spacer--*`). Utilities only when a one-off cannot earn a kit rule and you have checked first. |
+
+**Utility classes = last resort** — not a shortcut for kit spacing. If the same space appears twice, it belongs in CSS (unit or `*.config.css`), not `className={spacing.mMd}`.
 
 Example — sibling page assemblies:
 
@@ -338,8 +352,13 @@ Example — sibling page assemblies:
 | Slot assembly in `primitives/` | Rehome to `assemblies/` |
 | Base unit in `assemblies/` | Rehome to `primitives/` |
 | Domain wiring labeled "assembly" in kit | Keep with product until extracted |
+| Page copies `Dropdown` + `MenuToggle` + busy lock | Primitive `LwMenu`; page passes `items` / handlers |
+| Treat Lightwell-owned props as “assembly” | Still primitive if A/B/C (one PF host) hold |
+| Kit assembly that calls `services/*` or chrome PDF | Domain shell — harness has no product fetch |
+| Mid-layer `LwExportMenu` with one consumer | Skip until ≥2 surfaces share export UX |
 | Tenant token in `components.config.ts` | Move to `lightwell.config.ts` |
 | Padding / font-size in `components.config.ts` | Move to `components.config.css` or `page.config.css` |
+| Casual PF utility classes (`spacing.*`, `pf-v6-u-*`) | Co-located CSS + tokens; utilities only as last resort |
 | `page.config.yaml` for spacers | Use `page.config.css` — presentational track |
 | Header + Hero in one assembly / `variant` | Split `LwPageHeader` / `LwPageHero` |
 | PF tokens in pages | Domain name + harness map |
@@ -373,6 +392,7 @@ Structure review without smoke is incomplete.
 - [ ] `git mv` for rehomes
 - [ ] Correct tier: primitive vs assembly vs page/domain
 - [ ] Config cascade: tenant → `lightwell.config.ts`; prop default → `components.config.ts`; presentational → `components.config.css` / `page.config.css`
+- [ ] No casual PF utility classes — co-located CSS + tokens first
 - [ ] Anti-God: one visual job per assembly; header vs hero are siblings
 - [ ] Logic passthrough: children compose **or** slot args build
 - [ ] CHECK FIRST: extended or proved absent

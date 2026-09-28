@@ -137,7 +137,9 @@ module.exports = {
   sassPrefix: `.${sassPrefix}`,
   appUrl: '/insights/content',
   debug: true,
-  devtool: 'hidden-source-map',
+  // Local serve: inline maps via eval (avoids /apps/.../index.js.map 404 noise).
+  // Production builds: hidden maps for Sentry/error tooling without exposing map URLs.
+  devtool: process.env.NODE_ENV === 'production' ? 'hidden-source-map' : 'eval-source-map',
   useProxy: true,
   interceptChromeConfig: false,
   plugins: [

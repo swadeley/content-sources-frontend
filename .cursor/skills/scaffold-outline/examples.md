@@ -31,6 +31,8 @@ storage keys), not a second PF integration.
 ```tsx
 // Slot build — harness owns title stack
 <LwPageHeader title="Beacon" description="…" actions={<ExportMenu />} />
+// Domain ExportMenu stays page-local until a migration pass; kit LwMenu is ready when rewired.
+// See "Extract trace — Beacon ExportMenu"
 
 // Passthrough — caller owns interior
 <LwPageHero isGlass>
@@ -173,6 +175,82 @@ src/Pages/Lightwell/Beacon/components/pipeline-view.tsx
 | Domain wiring labeled "assembly" in kit | Keep with product until extracted |
 | `LwPageHeader variant="hero"` | Sibling `LwPageHero` — shared slots, separate hosts |
 | Spacers in YAML or TS prop config | `page.config.css` / `components.config.css` |
+| Beacon `ExportMenu` re-implements Dropdown | Primitive `LwMenu` + thin domain shell (see extract trace) |
+| `LwExportMenu` before a second consumer | Configure `LwMenu` from domain; promote assembly later |
+| Call `LwMenu` an assembly because of `isBusy` / `items` | Still primitive — Lightwell config on one Dropdown |
+
+---
+
+## Extract trace — Beacon ExportMenu → `LwMenu` (primitive)
+
+**Problem:** `Pages/Lightwell/Beacon/components/ExportMenu.tsx` mixed (1) PF
+Dropdown / MenuToggle / busy lock chrome with (2) Beacon fetch, PDF chrome,
+CSV/JSON, notifications.
+
+**Tier — why primitive, not assembly:**
+
+| # | Criterion | `LwMenu` |
+| - | --------- | -------- |
+| A | Single unit | One host: PF `Dropdown` |
+| B | Not a special composition | Standard toggle + menu presentation |
+| C | PF-shaped | Same job as PatternFly Dropdown |
+
+Lightwell-owned props (`label`, `isBusy`, `items`, …) **configure** that base unit.
+Kit invention does not promote to assembly. Assembly would be multi-region chrome
+or composing other `Lw*` (e.g. a future `LwExportMenu` that wraps `LwMenu`).
+
+**CHECK FIRST:**
+
+| Question | Answer |
+| -------- | ------ |
+| Does a harness exist? | No `LwMenu` yet — Dropdown tax paid in the page |
+| What is reusable? | Open/close, toggle, items, `isBusy` lock + spinner |
+| What stays domain? | `getVulnerabilities`, `buildBeaconPdfPayload`, filenames, notify |
+| Promote `LwExportMenu` now? | No — one consumer; middle layer would be empty ceremony |
+
+**Stack after extract (kit ready; domain rewire optional):**
+
+```
+Beacon ExportMenu (domain)     ← may still own PF Dropdown until a migration pass
+        ↓ (when rewired) label, isBusy, items[{ id, children, onSelect }]
+LwMenu (primitive)             ← PF Dropdown + Lightwell config once
+        ↓
+PF Dropdown / MenuToggle / DropdownList
+```
+
+Do **not** rewire page-specific Beacon shells (`ExportMenu`, `SlaInfoPopover`) in the
+same pass as landing the primitive — leave pre-existing domain files untouched;
+call sites migrate later.
+
+**Return-as-spec (domain shell):**
+
+```tsx
+return (
+  <LwMenu
+    label="Export"
+    busyLabel="Exporting"
+    isBusy={isExporting}
+    isDisabled={!customerId}
+    toggleVariant="secondary"
+    items={[
+      { id: 'csv', children: 'Export as CSV', onSelect: () => void handleExport('csv') },
+      { id: 'json', children: 'Export as JSON', onSelect: () => void handleExport('json') },
+      { id: 'pdf', children: 'Export as PDF', onSelect: () => void handleExport('pdf') },
+    ]}
+  />
+);
+```
+
+**Interior cascade on `LwMenu`:** `children` passthrough wins; else `items`
+build; else empty menu shell. Explicit PF `toggle` wins over harness-built
+toggle from `label` / busy props.
+
+**Do not kit-ify:** `fetchAllFilteredVulnerabilities`, PDF payload builders, or
+chrome `requestPdf` — that fails promotion (domain, not base-unit config).
+
+**When to add `LwExportMenu`:** a second product surface needs the same Export
+busy/format UX defaults — that assembly would **consume** primitive `LwMenu`.
+Until then, domain configures `LwMenu` directly.
 
 ---
 

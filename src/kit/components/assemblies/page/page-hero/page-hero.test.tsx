@@ -78,14 +78,42 @@ it('lets explicit Hero backgroundSrc props win over backgroundImage', () => {
   );
 });
 
-it('passthrough mode renders children and skips slots', () => {
+it('passthrough mode renders children when no owned slots are set', () => {
   render(
-    <LwPageHero title={title} description={description} actions={actions}>
+    <LwPageHero>
       <p>Custom hero chrome</p>
     </LwPageHero>,
   );
 
   expect(screen.getByText('Custom hero chrome')).toBeInTheDocument();
   expect(screen.queryByRole('heading', { name: title })).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: actionLabel })).not.toBeInTheDocument();
+});
+
+it('places actions beside supporting controls under the title', () => {
+  render(
+    <LwPageHero title={title} actions={actions}>
+      <label htmlFor='customer-control'>Customer ID</label>
+      <input id='customer-control' />
+    </LwPageHero>,
+  );
+
+  const controls = document.querySelector('.lw-c-page-hero__controls');
+  expect(controls).toBeTruthy();
+  expect(controls).toContainElement(screen.getByLabelText('Customer ID'));
+  expect(controls).toContainElement(screen.getByRole('button', { name: actionLabel }));
+});
+
+it('renders hasAside as a second column beside primary content', () => {
+  const { container } = render(
+    <LwPageHero title={title} hasAside={<p>Select a customer first</p>}>
+      <span>Primary control</span>
+    </LwPageHero>,
+  );
+
+  expect(container.querySelector('.lw-c-page-hero--split')).toBeTruthy();
+  expect(container.querySelector('.lw-c-page-hero__aside')).toHaveTextContent(
+    'Select a customer first',
+  );
+  expect(screen.getByRole('heading', { name: title })).toBeInTheDocument();
+  expect(screen.getByText('Primary control')).toBeInTheDocument();
 });

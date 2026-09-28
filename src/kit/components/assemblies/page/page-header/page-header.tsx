@@ -42,9 +42,7 @@ export function LwPageHeader({
   className,
   ...rest
 }: LwPageHeaderProps) {
-  const { titleStackClassName, ...flexDefaults } = getLwPageHeaderDefaults();
-
-  const flexProps = mergeComponentProps(flexDefaults, {
+  const flexProps = mergeComponentProps(getLwPageHeaderDefaults(), {
     ...rest,
     className: mergeClassNames('lw-c-page-header', className),
   });
@@ -56,12 +54,7 @@ export function LwPageHeader({
   return (
     <Flex {...flexProps}>
       <FlexItem>
-        <PageTitleStack
-          title={title}
-          description={description}
-          ouiaId={ouiaId}
-          titleStackClassName={titleStackClassName}
-        />
+        <PageTitleStack title={title} description={description} ouiaId={ouiaId} />
       </FlexItem>
       {actions ? <FlexItem>{actions}</FlexItem> : null}
     </Flex>

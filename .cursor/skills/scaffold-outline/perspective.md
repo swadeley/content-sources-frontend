@@ -20,13 +20,27 @@ and **configured** at call sites — not reimplemented per page.
 
 | Tier | What it is | Path | Examples |
 | ---- | ---------- | ---- | -------- |
-| **Primitive** | Base unit — one configured PF host | `components/primitives/` | `LwButton`, `LwLabel`, `LwBrand`, `LwBadge` |
-| **Assembly** | Structured / movable slots; **uses primitives** | `components/assemblies/` | `LwPageHeader`, `LwPageHero`, `LwCard`, `LwDataView` |
+| **Primitive** | Base unit — one configured PF host | `components/primitives/` | `LwButton`, `LwCard`, `LwMenu`, `LwPopover`, `LwStatItem` |
+| **Assembly** | Structured / movable multi-region slots; **uses primitives** | `components/assemblies/` | `LwPageHeader`, `LwPageHero`, `LwDataView` |
 
-**Promotion rule:** a primitive becomes an assembly when it owns a **slot contract**
-(title / description / actions / …), content that rearranges, and/or begins composing
-other `Lw*` units. Example: `LwCard` starts as a primitive; grows a header/body/actions
-slot grammar → promotes to assembly.
+**Primitive test (all three):**
+
+| # | Criterion |
+| - | --------- |
+| A | **Single unit** — one PF host as the tree root |
+| B | **Not a special composition** — standard presentation of that PF control |
+| C | **PF-shaped** — same job PatternFly already names (Button, Dropdown, Label, …) |
+
+Lightwell-owned props on that host (`label` / `isBusy` / `items` on `LwMenu`,
+future `intent` on `LwButton`) are **configuration of the base unit**. They do
+**not** promote to assembly. Kit invention ≠ assembly.
+
+**Promotion rule:** a primitive becomes an assembly when it owns a **multi-region
+slot contract** (title / description / actions / … that rearrange chrome), and/or
+begins **composing other `Lw*` units**. Example: a future composed status card that
+nests `LwStatItem` + `LwMenu` inside `LwCard` would be an assembly. `LwCard` /
+`LwMenu` / `LwPopover` stay primitive: one PF host each, Lightwell props map onto
+that host.
 
 **Domain wiring** (Beacon table, column catalogs, pipeline views) is not a kit tier.
 It stays with the product until it earns extraction. Never call domain code an "assembly"
@@ -58,7 +72,7 @@ them into one format.
 
 Add to `lightwell.config.ts` when a value must be shared across domains (brand tokens, palette).
 Add to `components.config.ts` when a value is component/assembly-specific **prop** default
-(`isGlass`, variant, title-stack utility classes that merge as props).
+(`isGlass`, variant). Do not put presentational spacing in TS via utility class strings.
 Do not put tenant identity in `components.config.ts`.
 
 **No YAML.** Prop defaults already live in TS; a YAML file would need a build step and
@@ -75,6 +89,11 @@ would fork the cascade.
 Presentational values (padding, font-size, font-weight, spacers) belong in **CSS**,
 not in `components.config.ts`. Use CSS custom properties so page chrome and body can
 share one spacer scale without prop plumbing.
+
+**Utility classes are a last resort.** Do not casually apply PatternFly utilities
+(`@patternfly/react-styles` spacing maps, `pf-v6-u-*`) for kit layout. Prefer
+co-located unit CSS and global spacer tokens. Reach for a utility only after
+CHECK FIRST proves no host token or kit rule fits — and only for a true one-off.
 
 ```
 components.config.css          ← Lightwell domain presentational baseline
@@ -182,8 +201,8 @@ Rule 0 applies at both primitive and assembly tiers.
 | ------- | -------------- | ------------------- |
 | **Prop defaults** | `components.config.ts` | passthrough on `Lw*` |
 | **Presentational defaults** | `components.config.css` → `page.config.css` | tokens / unit CSS |
-| **Primitive** | `LwLabel`, `LwButton`, … | props / semantic names |
-| **Assembly** | `LwPageHeader`, `LwPageHero`, `LwCard`, … | slots or children |
+| **Primitive** | `LwButton`, `LwCard`, `LwMenu`, `LwPopover`, `LwStatItem`, … | props / Lightwell-owned config on one host |
+| **Assembly** | `LwPageHeader`, `LwPageHero`, … | multi-region slots or children |
 | **Page / domain** | async outline + domain wiring | assembly slots + product data |
 
 **One source → many consumers. Find the harness; do not fork.**
@@ -218,7 +237,8 @@ lightwell.config.ts
 
 1. Return is the spec.
 2. Rule 0 — refuse expedient/inert/ceremonial DOM; logic wrap ≠ DOM wrap.
-3. Three-tier kit — primitive (base unit) → assembly (slots; uses primitives) → page/domain.
+3. Three-tier kit — primitive (A/B/C: one PF host + Lightwell config) → assembly
+   (multi-region slots; uses primitives) → page/domain. Kit invention ≠ assembly.
 4. Config cascade — TS for props; CSS for presentational. No YAML. Page family uses `page.config.css`.
 5. Logic passthrough — children compose; slot args build; one cascade per assembly.
 6. Split page-header vs page-hero — siblings, shared slots, no God component.

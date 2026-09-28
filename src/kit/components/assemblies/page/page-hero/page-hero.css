@@ -10,4 +10,27 @@
   .pf-v6-c-hero__body {
     flex: 1 1 auto;
   }
+
+  /* Slot 1 supporting controls — customer select + actions (e.g. Export) share a row. */
+  .lw-c-page-hero__controls .pf-v6-c-form__group {
+    max-width: 20rem;
+  }
+}
+
+/* Slot 1 | Slot 2 (hasAside) — full-width body for the split. */
+.lw-c-page-hero--split.pf-v6-c-hero {
+  .pf-v6-c-hero__body {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Aside footprint stays fixed so empty state ↔ Status Summary don't reflow the primary column. */
+  .lw-c-page-hero__aside {
+    /* flex: 0 0 auto; */
+    display: flex;
+    justify-content: center;
+    /* flex: 0 0 auto;
+    width: min(24rem, 40%);
+    max-width: min(24rem, 40%); */
+  }
 }

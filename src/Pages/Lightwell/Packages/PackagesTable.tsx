@@ -73,20 +73,9 @@ import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellReposit
 import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
 import { useLightwellPackagesParams } from '../../../Hooks/Lightwell/useLightwellPackagesParams';
+import { LwPageHeader } from 'kit/components/assemblies';
 
 const useStyles = createUseStyles({
-  topContainer: {
-    padding: '16px 24px',
-  },
-  titleWrapper: {
-    padding: '16px 0 0',
-  },
-  packagesList: {
-    paddingTop: '16px',
-  },
-  bottomContainer: {
-    justifyContent: 'space-between',
-  },
   filterToolbarItem: {
     minWidth: '18rem',
     '& .pf-v6-c-search-input': {
@@ -361,69 +350,61 @@ const PackagesTable = () => {
 
   return (
     <>
-      <Grid className={classes.topContainer}>
-        <Stack>
-          {!appBreadcrumbsEnabled && (
-            <StackItem>
+      <LwPageHeader
+        title={
+          <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsMd' }}>
+            {!appBreadcrumbsEnabled && (
               <Breadcrumb ouiaId='lightwell-packages-breadcrumb'>
                 <BreadcrumbItem component='button' onClick={() => navigateTo('repositories')}>
                   Lightwell Repositories
                 </BreadcrumbItem>
                 <BreadcrumbItem isActive>{breadcrumbRepoName}</BreadcrumbItem>
               </Breadcrumb>
-            </StackItem>
-          )}
-          <StackItem className={classes.titleWrapper}>
-            <Flex
-              alignItems={{ default: 'alignItemsCenter' }}
-              justifyContent={{ default: 'justifyContentSpaceBetween' }}
-              gap={{ default: 'gapMd' }}
-            >
-              <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
-                <FlexItem>
-                  <Icon size='xl'>{getEcosystemIcon(repository?.content_type)}</Icon>
-                </FlexItem>
-                <FlexItem>
-                  <Title headingLevel='h1' ouiaId='lightwell-packages-header'>
-                    {repositoryName}
-                  </Title>
-                </FlexItem>
-                <FlexItem>
-                  <CopyLabel
-                    copyText={formatDistributionUrl(repository.published_distribution_url || '')}
-                  >
-                    {formatDistributionUrl(repository.published_distribution_url || '')}
-                  </CopyLabel>
-                </FlexItem>
-              </Flex>
-              <FlexItem align={{ default: 'alignRight' }}>
-                <ConnectRepositoryModal
-                  repository={{
-                    uuid: repository.uuid,
-                    name: repository.name,
-                    published_distribution_url: formatDistributionUrl(
-                      repository.published_distribution_url || '',
-                    ),
-                    content_type: repository.content_type,
-                  }}
+            )}
+            <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
+              <FlexItem>
+                <Icon size='xl'>{getEcosystemIcon(repository?.content_type)}</Icon>
+              </FlexItem>
+              <FlexItem>
+                <Title headingLevel='h1' ouiaId='lightwell-packages-header'>
+                  {repositoryName}
+                </Title>
+              </FlexItem>
+              <FlexItem>
+                <CopyLabel
+                  copyText={formatDistributionUrl(repository.published_distribution_url || '')}
                 >
-                  <Button size='sm' variant='secondary' icon={<CodeIcon />}>
-                    Connect
-                  </Button>
-                </ConnectRepositoryModal>
+                  {formatDistributionUrl(repository.published_distribution_url || '')}
+                </CopyLabel>
               </FlexItem>
             </Flex>
-            <Content className={spacing.ptSm}>
+          </Flex>
+        }
+        description={
+          <>
+            <Content component='p'>
               {getRepositoryDescription(repository.content_type, repository.security_level)}
             </Content>
-          </StackItem>
-          {(isRemediated || isPredisclosure) && (
-            <StackItem className={spacing.ptSm}>
-              <RemediatedDataWarning />
-            </StackItem>
-          )}
-        </Stack>
-      </Grid>
+            {(isRemediated || isPredisclosure) && <RemediatedDataWarning />}
+          </>
+        }
+        actions={
+          <ConnectRepositoryModal
+            repository={{
+              uuid: repository.uuid,
+              name: repository.name,
+              published_distribution_url: formatDistributionUrl(
+                repository.published_distribution_url || '',
+              ),
+              content_type: repository.content_type,
+            }}
+          >
+            <Button size='sm' variant='secondary' icon={<CodeIcon />}>
+              Connect
+            </Button>
+          </ConnectRepositoryModal>
+        }
+      />
 
       <Grid className={`${spacing.pxLg} ${spacing.pbLg}`}>
         <Toolbar ouiaId='lightwell-packages-toolbar'>

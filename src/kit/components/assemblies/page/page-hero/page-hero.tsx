@@ -1,4 +1,4 @@
-import { Hero, type HeroProps } from '@patternfly/react-core';
+import { Flex, FlexItem, Hero, type HeroProps } from '@patternfly/react-core';
 import type { ReactNode } from 'react';
 
 import backgroundSrcDarkDefault from '../../../../assets/background-16-9__dark.png';
@@ -20,14 +20,21 @@ export type LwPageHeroBackgroundImage =
     };
 
 type LwPageHeroOwnedProps = {
-  /** Slot: page title. Ignored when `children` is provided (passthrough mode). */
+  /** Slot 1 — page title. Ignored in full passthrough (children only, no owned slots). */
   title?: ReactNode;
+  /** Slot 1 — supporting copy under the title. */
   description?: ReactNode;
+  /** Slot 1 — actions (e.g. Export), beside supporting controls under the title. */
   actions?: ReactNode;
+  /**
+   * Slot 2 — secondary column (e.g. empty state).
+   * When set, hero lays out primary column | aside.
+   */
+  hasAside?: ReactNode;
   ouiaId?: string;
   /**
-   * Passthrough mode: caller owns the full interior.
-   * When set, owned slots (`title` / `description` / `actions`) are not rendered.
+   * Slot 1 — supporting controls under the title (e.g. Beacon customer select).
+   * Without owned slots → full passthrough; caller owns the Hero interior.
    */
   children?: ReactNode;
   /**
@@ -39,8 +46,10 @@ type LwPageHeroOwnedProps = {
   backgroundImage?: LwPageHeroBackgroundImage;
 };
 
-/** Owned slots + PF `Hero` passthrough — `className` / `style` / rest merge onto the Hero root. */
-export type LwPageHeroProps = LwPageHeroOwnedProps & Omit<HeroProps, 'children' | 'content'>;
+/** Owned slots + PF `Hero` passthrough — `className` / `style` / rest merge onto the Hero root.
+ * `title` omitted: kit owns the title slot (ReactNode); HTML `title` would narrow it to string. */
+export type LwPageHeroProps = LwPageHeroOwnedProps &
+  Omit<HeroProps, 'children' | 'content' | 'title'>;
 
 const resolveBackgroundSrcs = (
   backgroundImage: LwPageHeroBackgroundImage | undefined,
@@ -67,46 +76,93 @@ const resolveBackgroundSrcs = (
 
 /**
  * Kit **assembly** — structured slots on PatternFly `Hero`.
- * Logic harness, not a DOM wrapper: root = `Hero`; slots hydrate as children.
- * Sibling of `LwPageHeader` — same slots, Hero surface. Shared padding from `page.config.css`.
+ * Logic harness, not a DOM wrapper: root = `Hero`.
  *
- * Composition: `children` → passthrough; otherwise slot args build the interior.
+ * Slots (slot mode):
+ *   1. Primary — `title` / `description` / `actions` / `children` (supporting controls)
+ *   2. Aside — `hasAside` (e.g. empty state), second column when set
+ *
+ * Passthrough: `children` only, no owned slots → caller owns the interior.
  */
 export function LwPageHero({
   title,
   description,
   actions,
+  hasAside,
   ouiaId,
   children,
   backgroundImage,
   backgroundSrcLight,
   backgroundSrcDark,
   className,
+  bodyWidth,
+  bodyMaxWidth,
   ...rest
 }: LwPageHeroProps) {
-  const { titleStackClassName, ...heroDefaults } = getLwPageHeroDefaults();
+  const heroDefaults = getLwPageHeroDefaults();
+  const hasAsideSlot = hasAside != null && hasAside !== false;
 
   const heroProps = mergeComponentProps(heroDefaults, {
     ...rest,
     ...resolveBackgroundSrcs(backgroundImage, backgroundSrcLight, backgroundSrcDark),
-    className: mergeClassNames('lw-c-page-hero', className),
+    // Split layout needs the full hero width — call-site body* props still win.
+    bodyWidth: bodyWidth ?? (hasAsideSlot ? '100%' : undefined),
+    bodyMaxWidth: bodyMaxWidth ?? (hasAsideSlot ? '100%' : undefined),
+    className: mergeClassNames(
+      'lw-c-page-hero',
+      hasAsideSlot ? 'lw-c-page-hero--split' : undefined,
+      className,
+    ),
   });
 
-  if (children != null) {
+  const hasOwnedSlots = title != null || description != null || actions != null || hasAsideSlot;
+
+  // Full passthrough — caller owns the interior.
+  if (children != null && !hasOwnedSlots) {
     return <Hero {...heroProps}>{children}</Hero>;
   }
 
-  return (
-    <Hero {...heroProps}>
-      <PageTitleStack
-        title={title}
-        description={description}
-        ouiaId={ouiaId}
-        titleStackClassName={titleStackClassName}
-      />
-      {actions ?? null}
-    </Hero>
+  const primaryColumn = (
+    <Flex
+      direction={{ default: 'column' }}
+      gap={{ default: 'gap2xl' }}
+      className='lw-c-page-hero__primary'
+    >
+      <PageTitleStack title={title} description={description} ouiaId={ouiaId} />
+      {children != null || actions != null ? (
+        <Flex
+          alignItems={{ default: 'alignItemsFlexEnd' }}
+          gap={{ default: 'gapMd' }}
+          flexWrap={{ default: 'nowrap' }}
+          className='lw-c-page-hero__controls'
+        >
+          {children != null ? <FlexItem>{children}</FlexItem> : null}
+          {actions != null ? <FlexItem>{actions}</FlexItem> : null}
+        </Flex>
+      ) : null}
+    </Flex>
   );
+
+  if (hasAsideSlot) {
+    return (
+      <Hero {...heroProps}>
+        <Flex
+          // justifyContent={{ default: 'justifyContentSpaceBetween' }}
+          alignItems={{ default: 'alignItemsFlexStart' }}
+          gap={{ default: 'gapXl' }}
+          className='lw-c-page-hero__split'
+          flexWrap={{ default: 'nowrap' }}
+        >
+          <FlexItem flex={{ default: 'flex_1' }}>{primaryColumn}</FlexItem>
+          <FlexItem flex={{ default: 'flex_2' }} className='lw-c-page-hero__aside'>
+            {hasAside}
+          </FlexItem>
+        </Flex>
+      </Hero>
+    );
+  }
+
+  return <Hero {...heroProps}>{primaryColumn}</Hero>;
 }
 
 export default LwPageHero;

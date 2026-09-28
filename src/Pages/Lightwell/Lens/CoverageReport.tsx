@@ -137,11 +137,7 @@ const CoverageReport = () => {
         }
       />
       {/* plXs matches the mXs margin LwPageHero applies to its inner title flex, keeping content left-aligned */}
-      <PageSection
-        aria-label='Match analysis'
-        hasBodyWrapper={false}
-        className={`${spacing.pt_0} ${spacing.pbLg} ${spacing.pxLg} ${spacing.plXs}`}
-      >
+      <PageSection aria-label='Match analysis' hasBodyWrapper={false}>
         <Stack hasGutter style={{ maxWidth: 1200, gap: '3rem' }}>
           <StackItem>
             <CoverageSummaryBlock report={report} />

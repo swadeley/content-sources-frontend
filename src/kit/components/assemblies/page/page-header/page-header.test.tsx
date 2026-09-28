@@ -43,3 +43,21 @@ it('passthrough mode renders children and skips slots', () => {
   expect(screen.queryByRole('heading', { name: title })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: actionLabel })).not.toBeInTheDocument();
 });
+
+it('renders ReactNode description without wrapping it in a paragraph', () => {
+  render(
+    <LwPageHeader
+      title={title}
+      description={
+        <>
+          <p>Intro copy</p>
+          <div role='status'>Trailing note</div>
+        </>
+      }
+    />,
+  );
+
+  expect(screen.getByText('Intro copy')).toBeInTheDocument();
+  expect(screen.getByText('Trailing note')).toBeInTheDocument();
+  expect(screen.getByRole('status')).toHaveTextContent('Trailing note');
+});

@@ -10,6 +10,6 @@
  * does not reliably emit shared rules. When PF changes Hero padding defaults,
  * update page-header.css to match.
  *
- * --lw-space--page-inline: var(--pf-t--global--spacer--3xl);  /* = Hero default */
+ * --lw-space--page-inline: var(--pf-t--global--spacer--3xl); = Hero default
  * --lw-space--page-block:  var(--pf-t--global--spacer--3xl);
  */

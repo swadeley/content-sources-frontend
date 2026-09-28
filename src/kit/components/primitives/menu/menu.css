@@ -1,0 +1,4 @@
+/* LwMenu — kit composition, co-located CSS (plain .css; no layers yet).
+ * Presentational defaults live in components.config.css when needed.
+ * Host = PF Dropdown (pf-v6-c-menu); kit class merges onto that root.
+ */

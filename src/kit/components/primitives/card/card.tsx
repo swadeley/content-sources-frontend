@@ -43,18 +43,17 @@ const LwCardEmptyState = () => (
 );
 
 /**
- * Kit **assembly** — composable glass Card with cascading slots.
+ * Kit **primitive** — configured PF `Card` (glass by default).
  *
- * Cascade per slot:
- *   1. `has*` prop provided → that slot renders with the passed value.
- *   2. `children` provided → renders in body (alongside any `has*`-driven header).
- *   3. Neither → empty state fills the body.
+ * One base unit: host = `Card`. Lightwell-owned props (`hasHeader`, `hasAction`, empty body)
+ * configure that host; they do not promote this to an assembly.
  *
- * Composition mode (no `hasHeader`/`hasAction`): children pass through as direct Card
- * children — callers may compose `CardHeader`, `CardBody`, etc. themselves.
+ * Cascade:
+ *   1. `hasHeader` / `hasAction` → kit builds header + `CardBody` (children or empty state)
+ *   2. neither → children passthrough as direct Card children
  *
- * Modifier booleans (e.g. `isSummary`) pass through `...rest` onto the Card root,
- * applying `pf-m-*` classes per PF convention.
+ * Defaults live in `components.config.ts` → `componentsConfig.card` (`isGlass: true`).
+ * Modifier booleans (e.g. `isSummary`) pass through `...rest` onto the Card root.
  */
 export function LwCard({ hasHeader, hasAction, children, className, ...rest }: LwCardProps) {
   const cardProps = mergeComponentProps(getLwCardDefaults(), {

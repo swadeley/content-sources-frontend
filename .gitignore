@@ -43,3 +43,6 @@ bin
 dist-coverage
 
 creds*
+
+# Local TLS (mkcert / stage.foo.redhat.com, etc.) — never commit
+*.pem

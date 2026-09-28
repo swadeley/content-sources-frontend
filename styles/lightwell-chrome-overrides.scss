@@ -17,8 +17,8 @@ html.pf-v6-theme-felt {
   background-image: url('../src/kit/assets/background-16-9__light.png');
   background-repeat: no-repeat;
   background-position: top right;
-  background-size: 135%;
-  background-position-x: 70%;
+  background-size: 120%;
+  background-position-x: 50%;
   background-position-y: -4rem;
   background-color: #e5e0df;
 }
@@ -27,5 +27,30 @@ html.pf-v6-theme-felt.pf-v6-theme-dark {
   --pf-t--global--background--image--default--dark: url('../src/kit/assets/background-16-9__dark.png');
 
   background-image: url('../src/kit/assets/background-16-9__dark.png');
-  background-color: black;
+  background-color: #000000;
+}
+
+html.pf-v6-theme-felt {
+  .pf-v6-c-page {
+    --pf-v6-c-page__main-container--MarginBlockStart: var(--pf-t--global--spacer--lg);
+    --pf-v6-c-page__main-container--MarginBlockEnd: var(--pf-t--global--spacer--lg);
+    --pf-v6-c-page__main-container--MarginInlineStart: var(--pf-t--global--spacer--3xl);
+    --pf-v6-c-page__main-container--MarginInlineEnd: var(--pf-t--global--spacer--3xl);
+  }
+
+  // page main section padding is removed to center the content
+  .pf-v6-c-page__main-section {
+    --pf-v6-c-page__main-section--PaddingInlineStart: 0;
+    --pf-v6-c-page__main-section--PaddingInlineEnd: 0;
+    --pf-v6-c-page__main-section--PaddingBlockStart: 0;
+    --pf-v6-c-page__main-section--PaddingBlockEnd: 0;
+  }
+
+  .pf-v6-c-page__main__container {
+    align-items: center;
+  }
+
+  .pf-v6-c-page__main {
+    max-width: 1800px;
+  }
 }

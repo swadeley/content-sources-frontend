@@ -1,6 +1,12 @@
 import type { CSSProperties } from 'react';
-import type { ButtonProps, CardProps, FlexProps, HeroProps } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import type {
+  ButtonProps,
+  CardProps,
+  DropdownProps,
+  FlexProps,
+  HeroProps,
+  PopoverProps,
+} from '@patternfly/react-core';
 
 import { lightwellConfig } from '../lightwell.config';
 
@@ -12,12 +18,13 @@ import { lightwellConfig } from '../lightwell.config';
  *   Presentational:   components.config.css → assemblies/page/page.config.css → unit *.css
  *
  * Covers both tiers within components/:
- *   - primitives/ (LwButton, LwLabel, LwBrand, …)
+ *   - primitives/ (LwButton, LwCard, LwMenu, LwPopover, LwStatItem, …)
  *   - assemblies/ (LwPageHeader, LwPageHero, LwDataView, …)
  *
  * Tenant identity (cssPrefix, exportPrefix, brand tokens) comes from lightwell.config.ts.
  * Add component/assembly-specific **prop** defaults here.
  * Padding, font-size, font-weight, spacers → CSS track (not this file; not YAML).
+ * PF utility classes → last resort; prefer co-located CSS + tokens.
  */
 
 // Re-export tenant identity so consumers can reference it from one place.
@@ -36,37 +43,48 @@ interface MergeableProps {
 /** Defaults for `LwButton` — add variant / size here when Lightwell baseline is decided. */
 export type LwButtonConfig = Partial<ButtonProps>;
 
-// ─── Assembly: LwCard ────────────────────────────────────────────────────────
+// ─── Primitive: LwCard ───────────────────────────────────────────────────────
 
-/** PF `Card` props forwarded by `LwCard` (excluding children and action — kit owns those slots). */
+/** PF `Card` props forwarded by `LwCard` (excluding children and action — kit may own those). */
 export type LwCardPassthroughProps = Omit<CardProps, 'children' | 'action'>;
 
 /** Defaults for `LwCard`. Lightwell surfaces use glass by default. */
 export type LwCardConfig = Partial<LwCardPassthroughProps>;
 
-// ─── Page family: shared title-stack utility (prop track; padding is CSS) ─────
+// ─── Primitive: LwMenu (PF Dropdown) ─────────────────────────────────────────
 
-const pageTitleStackClassName = `${spacing.mXs} ${spacing.pbSm}`;
+/** PF `Dropdown` props forwarded by `LwMenu` (excluding children / toggle — kit may own those). */
+export type LwMenuPassthroughProps = Omit<DropdownProps, 'children' | 'toggle'>;
+
+/** Defaults for `LwMenu` — Dropdown host; call-site wins via merge. */
+export type LwMenuConfig = Partial<LwMenuPassthroughProps>;
+
+// ─── Primitive: LwPopover ────────────────────────────────────────────────────
+
+/** PF `Popover` props forwarded by `LwPopover` (excluding children / content slots — kit may own those). */
+export type LwPopoverPassthroughProps = Omit<
+  PopoverProps,
+  'children' | 'headerContent' | 'bodyContent' | 'footerContent'
+>;
+
+/** Defaults for `LwPopover` — call-site wins via merge. */
+export type LwPopoverConfig = Partial<LwPopoverPassthroughProps>;
 
 // ─── Assembly: LwPageHeader (plain chrome) ───────────────────────────────────
 
 /** PF `Flex` props forwarded by `LwPageHeader` (excluding children). */
 export type LwPageHeaderPassthroughProps = Omit<FlexProps, 'children' | 'title' | 'ref'>;
 
-/** Defaults for `LwPageHeader` — Flex host + title stack spacing; call-site wins via merge. */
-export interface LwPageHeaderConfig extends Partial<LwPageHeaderPassthroughProps> {
-  titleStackClassName?: string;
-}
+/** Defaults for `LwPageHeader` — Flex host; call-site wins via merge. */
+export type LwPageHeaderConfig = Partial<LwPageHeaderPassthroughProps>;
 
 // ─── Assembly: LwPageHero (PF Hero) ──────────────────────────────────────────
 
-/** PF `Hero` props forwarded by `LwPageHero` (excluding children / content). */
-export type LwPageHeroPassthroughProps = Omit<HeroProps, 'children' | 'content'>;
+/** PF `Hero` props forwarded by `LwPageHero` (excluding children / content / title — kit owns title slot). */
+export type LwPageHeroPassthroughProps = Omit<HeroProps, 'children' | 'content' | 'title'>;
 
-/** Defaults for `LwPageHero` — Hero host + title stack spacing; call-site wins via merge. */
-export interface LwPageHeroConfig extends Partial<LwPageHeroPassthroughProps> {
-  titleStackClassName?: string;
-}
+/** Defaults for `LwPageHero` — Hero host; call-site wins via merge. */
+export type LwPageHeroConfig = Partial<LwPageHeroPassthroughProps>;
 
 // ─── Domain config shape ─────────────────────────────────────────────────────
 
@@ -74,6 +92,8 @@ export interface LwPageHeroConfig extends Partial<LwPageHeroPassthroughProps> {
 export interface LwComponentsConfig {
   button: LwButtonConfig;
   card: LwCardConfig;
+  menu: LwMenuConfig;
+  popover: LwPopoverConfig;
   pageHeader: LwPageHeaderConfig;
   pageHero: LwPageHeroConfig;
 }
@@ -86,15 +106,19 @@ export const componentsConfig: LwComponentsConfig = {
     // Lightwell surfaces use glass cards by default.
     isGlass: true,
   },
+  menu: {
+    // No Lightwell-specific Dropdown defaults yet — position / plain land here when decided.
+  },
+  popover: {
+    // No Lightwell-specific Popover defaults yet — position / animation land here when decided.
+  },
   pageHeader: {
-    titleStackClassName: pageTitleStackClassName,
     justifyContent: { default: 'justifyContentSpaceBetween' },
     alignItems: { default: 'alignItemsFlexStart' },
   },
   pageHero: {
     // Lightwell chrome uses glass theme — keep Hero glass-capable by default.
     isGlass: true,
-    titleStackClassName: pageTitleStackClassName,
   },
 };
 
@@ -104,6 +128,14 @@ export function getLwButtonDefaults(): LwButtonConfig {
 
 export function getLwCardDefaults(): LwCardConfig {
   return { ...componentsConfig.card };
+}
+
+export function getLwMenuDefaults(): LwMenuConfig {
+  return { ...componentsConfig.menu };
+}
+
+export function getLwPopoverDefaults(): LwPopoverConfig {
+  return { ...componentsConfig.popover };
 }
 
 export function getLwPageHeaderDefaults(): LwPageHeaderConfig {
