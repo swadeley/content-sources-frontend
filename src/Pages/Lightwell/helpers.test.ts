@@ -1,7 +1,9 @@
+import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
 import {
   formatDistributionUrl,
   formatRepositoryName,
   getEcosystemFromContentType,
+  getEcosystemIcon,
   getRepositoryDescription,
   getRepositoryNameFromPathSlug,
   getRepositoryPathSlug,
@@ -28,6 +30,22 @@ describe('getEcosystemFromContentType', () => {
   it('returns undefined for missing or unknown content type', () => {
     expect(getEcosystemFromContentType()).toBeUndefined();
     expect(getEcosystemFromContentType('unknown')).toBeUndefined();
+  });
+});
+
+describe('getEcosystemIcon', () => {
+  it('returns the icon for a known ecosystem or content type, regardless of case', () => {
+    expect(getEcosystemIcon('JAVA').type).toBe(JavaIcon);
+    expect(getEcosystemIcon('maven').type).toBe(JavaIcon);
+    expect(getEcosystemIcon('MAVEN').type).toBe(JavaIcon);
+    expect(getEcosystemIcon('Python').type).toBe(PythonIcon);
+    expect(getEcosystemIcon('python').type).toBe(PythonIcon);
+  });
+
+  it('returns the generic icon for a missing or unknown ecosystem or content type', () => {
+    expect(getEcosystemIcon().type).toBe(CodeIcon);
+    expect(getEcosystemIcon('rust').type).toBe(CodeIcon);
+    expect(getEcosystemIcon('npm').type).toBe(CodeIcon);
   });
 });
 

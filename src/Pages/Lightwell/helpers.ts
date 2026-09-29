@@ -1,14 +1,28 @@
+import { createElement, type ReactElement } from 'react';
+import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
 import { capitalize } from 'lodash';
 import { CONTENT_TYPE_PARAMETERS, LIGHTWELL_ORIGIN, REPOSITORY_DESCRIPTIONS } from './constants';
 
 const getContentTypeParameters = (contentType?: string) => {
   const normalized = contentType?.toLowerCase();
-  if (!normalized) return undefined;
+  if (!normalized || !Object.keys(CONTENT_TYPE_PARAMETERS).includes(normalized)) return undefined;
   return CONTENT_TYPE_PARAMETERS[normalized];
 };
 
 export const getEcosystemFromContentType = (contentType?: string): string | undefined =>
   getContentTypeParameters(contentType)?.ecosystem;
+
+export const getEcosystemIcon = (ecosystemOrContentType?: string): ReactElement => {
+  switch (ecosystemOrContentType?.toLowerCase()) {
+    case 'java':
+    case 'maven':
+      return createElement(JavaIcon);
+    case 'python':
+      return createElement(PythonIcon);
+    default:
+      return createElement(CodeIcon);
+  }
+};
 
 export const getRepositoryDescription = (
   contentType?: string,

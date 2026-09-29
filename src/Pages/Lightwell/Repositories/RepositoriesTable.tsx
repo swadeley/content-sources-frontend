@@ -13,7 +13,7 @@ import {
   Stack,
   Switch,
 } from '@patternfly/react-core';
-import { CodeIcon, JavaIcon, PythonIcon, BellIcon } from '@patternfly/react-icons';
+import { CodeIcon, BellIcon } from '@patternfly/react-icons';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import { SkeletonTable } from '@patternfly/react-component-groups';
@@ -49,6 +49,7 @@ import {
   getMockLightwellRepositoryList,
 } from '../mockRepositories';
 import {
+  getEcosystemIcon,
   getEcosystemFromContentType,
   getRepositoryDescription,
   formatRepositoryName,
@@ -295,9 +296,7 @@ const RepositoriesTable = () => {
                                   alignItems={{ default: 'alignItemsCenter' }}
                                   gap={{ default: 'gapSm' }}
                                 >
-                                  <Icon size='xl'>
-                                    {content_type === 'maven' ? <JavaIcon /> : <PythonIcon />}
-                                  </Icon>
+                                  <Icon size='xl'>{getEcosystemIcon(content_type)}</Icon>
                                   <Button
                                     variant='link'
                                     isInline
