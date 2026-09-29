@@ -25,6 +25,7 @@ import {
 import LatestReleaseFixes from '../components/LatestReleaseFixes';
 import { fixesCardHeight, fixesCardWidth } from '../components/FixesCard';
 import { useLatestReleaseFixes } from '../hooks/useLatestReleaseFixes';
+import { getPackageCoordinate } from '../utils/format';
 
 type PackageOverviewTabProps = {
   isMaven: boolean;
@@ -76,7 +77,7 @@ const PackageOverviewTab = ({
   const showLatestReleaseFixes =
     hasRelease && Boolean(latestRelease) && repository?.security_level === 'remediated';
 
-  const packageCoordinate = isMaven ? `${group}:${name}` : name;
+  const packageCoordinate = getPackageCoordinate({ name, group, isMaven });
 
   const { data: latestReleaseFixes, isLoading: isLoadingAdvisories } = useLatestReleaseFixes({
     repository: repository?.name,

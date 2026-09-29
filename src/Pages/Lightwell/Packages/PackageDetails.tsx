@@ -52,12 +52,13 @@ import PackageOverviewTab from './tabs/PackageOverviewTab';
 import PackageReleasesTab from './tabs/PackageReleasesTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './tabs/PackageVersionsTab';
+import { getPackageCoordinate } from './utils/format';
 import {
   lightwellReleaseNum,
   pythonLightwellRelease,
   sortVersionsDesc,
   stripLightwellVersionSuffix,
-  toLightwellVersion,
+  toLightwellRelease,
 } from './utils/versions';
 import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
@@ -105,12 +106,18 @@ const PackageDetails = () => {
   const isMaven = repository?.content_type === 'maven';
   const isPython = repository?.content_type === 'python';
 
+  const packageCoordinate = getPackageCoordinate({
+    name: packageName,
+    group: packageGroup,
+    isMaven,
+  });
+
   const appBreadcrumbsEnabled = useFlag('platform.chrome.app-breadcrumbs');
 
   const breadcrumbRepoName = repository
     ? formatRepositoryName(repository.content_type, repository.security_level, repository.name)
     : '';
-  const breadcrumbPackageName = isMaven ? `${packageGroup}:${packageName}` : packageName || '';
+  const breadcrumbPackageName = packageCoordinate || '';
   const breadcrumbPackagePath =
     isMaven && packageGroup
       ? `${rootPath}/${repoSlug}/${encodeURIComponent(packageGroup)}/${encodeURIComponent(packageName)}`
@@ -232,7 +239,7 @@ const PackageDetails = () => {
       pythonVersionsData?.versions.find(
         (version) =>
           version.version ===
-          (pythonBuilds[0] ? toLightwellVersion(pythonBuilds[0]) : activeVersion),
+          (pythonBuilds[0] ? toLightwellRelease(pythonBuilds[0]) : activeVersion),
       ),
     [pythonVersionsData?.versions, pythonBuilds, activeVersion],
   );
@@ -272,7 +279,7 @@ const PackageDetails = () => {
 
   const displayVersion = isMaven
     ? hasRelease && latestBuild
-      ? toLightwellVersion(latestBuild)
+      ? toLightwellRelease(latestBuild)
       : activeVersion
     : activeVersion;
 
@@ -482,7 +489,7 @@ const PackageDetails = () => {
                             <PackageReleasesTab
                               version={upstreamVersion}
                               builds={isPython ? pythonBuilds : mavenBuilds}
-                              packageIdentity={{
+                              packageCoordinate={{
                                 name: packageName,
                                 group: packageGroup,
                                 isPython,

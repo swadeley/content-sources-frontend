@@ -4,7 +4,7 @@ import {
   lightwellReleaseNum,
   sortVersionsDesc,
   stripLightwellVersionSuffix,
-  toLightwellVersion,
+  toLightwellRelease,
 } from './versions';
 
 describe('stripLightwellVersionSuffix', () => {
@@ -91,9 +91,9 @@ describe('compareReleasesDesc', () => {
   });
 });
 
-describe('toLightwellVersion', () => {
-  it('joins version and release into a Lightwell version string', () => {
-    expect(toLightwellVersion({ version: '5.3.18', release: 'rhlw-00007' })).toBe(
+describe('toLightwellRelease', () => {
+  it('joins version and release into a Lightwell release', () => {
+    expect(toLightwellRelease({ version: '5.3.18', release: 'rhlw-00007' })).toBe(
       '5.3.18.rhlw-00007',
     );
   });

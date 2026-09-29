@@ -1,4 +1,4 @@
-import { formatReleaseCopyText, formatReleaseDate } from './format';
+import { formatReleaseCopyText, formatReleaseDate, getPackageCoordinate } from './format';
 
 describe('formatReleaseDate', () => {
   it('formats an ISO date as DD MMM YYYY', () => {
@@ -11,11 +11,33 @@ describe('formatReleaseDate', () => {
   });
 });
 
+describe('getPackageCoordinate', () => {
+  it('formats Maven names with either ecosystem flag', () => {
+    expect(getPackageCoordinate({ name: 'json', group: 'org.json', isMaven: true })).toBe(
+      'org.json:json',
+    );
+    expect(getPackageCoordinate({ name: 'json', group: 'org.json', isPython: false })).toBe(
+      'org.json:json',
+    );
+    expect(getPackageCoordinate({ name: 'json', isMaven: true })).toBe('json');
+    expect(getPackageCoordinate({ name: 'json', group: '', isMaven: true })).toBe('json');
+  });
+
+  it('uses only the package name for Python, even when a group is present', () => {
+    expect(getPackageCoordinate({ name: 'requests', group: 'ignored', isPython: true })).toBe(
+      'requests',
+    );
+    expect(getPackageCoordinate({ name: 'requests', group: 'ignored', isMaven: false })).toBe(
+      'requests',
+    );
+  });
+});
+
 describe('formatReleaseCopyText', () => {
   it('formats maven coordinates', () => {
-    expect(formatReleaseCopyText({ name: 'json', group: 'org.json' }, '1.2.3.rhlw-00001')).toBe(
-      'org.json:json:1.2.3.rhlw-00001',
-    );
+    expect(
+      formatReleaseCopyText({ name: 'json', group: 'org.json', isMaven: true }, '1.2.3.rhlw-00001'),
+    ).toBe('org.json:json:1.2.3.rhlw-00001');
   });
 
   it('formats a pip install command for python packages', () => {

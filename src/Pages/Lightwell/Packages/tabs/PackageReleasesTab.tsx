@@ -5,16 +5,17 @@ import { useMemo } from 'react';
 import { RepositoryPackageReleaseInfo } from '../../../../services/Content/ContentApi';
 import CopyLabel from '../components/CopyLabel';
 import LightwellEmptyState from '../../components/LightwellEmptyState';
-import { formatReleaseCopyText, formatReleaseDate, type PackageIdentity } from '../utils/format';
-import { lightwellReleaseNum, toLightwellVersion } from '../utils/versions';
+import type { PackageCoordinate } from '../types';
+import { formatReleaseCopyText, formatReleaseDate } from '../utils/format';
+import { lightwellReleaseNum, toLightwellRelease } from '../utils/versions';
 
 type PackageReleasesTabProps = {
   version: string;
   builds: RepositoryPackageReleaseInfo[];
-  packageIdentity: PackageIdentity;
+  packageCoordinate: PackageCoordinate;
 };
 
-const PackageReleasesTab = ({ version, builds, packageIdentity }: PackageReleasesTabProps) => {
+const PackageReleasesTab = ({ version, builds, packageCoordinate }: PackageReleasesTabProps) => {
   const releases = useMemo(
     () =>
       [...builds]
@@ -44,13 +45,13 @@ const PackageReleasesTab = ({ version, builds, packageIdentity }: PackageRelease
           </Thead>
           <Tbody>
             {releases.map((build, index) => {
-              const fullVersion = toLightwellVersion(build);
+              const fullVersion = toLightwellRelease(build);
 
               return (
                 <Tr key={fullVersion}>
                   <Td dataLabel='Release'>
                     <Flex gap={{ default: 'gapSm' }} alignItems={{ default: 'alignItemsCenter' }}>
-                      <CopyLabel copyText={formatReleaseCopyText(packageIdentity, fullVersion)}>
+                      <CopyLabel copyText={formatReleaseCopyText(packageCoordinate, fullVersion)}>
                         {fullVersion}
                       </CopyLabel>
                       {index === 0 ? (

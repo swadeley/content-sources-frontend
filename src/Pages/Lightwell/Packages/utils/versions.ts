@@ -69,8 +69,8 @@ export const compareReleasesDesc = (
   return lightwellReleaseNum(b.release) - lightwellReleaseNum(a.release);
 };
 
-// Formats a release { version, release } into a Lightwell version string, e.g., 5.3.18.rhlw-00007
-export const toLightwellVersion = (
+// Formats a release { version, release } into a Lightwell release, e.g., 5.3.18.rhlw-00007
+export const toLightwellRelease = (
   release: Pick<RepositoryPackageReleaseInfo, 'version' | 'release'>,
 ) =>
   !release.release || release.release.startsWith('+') || release.release.startsWith('.')

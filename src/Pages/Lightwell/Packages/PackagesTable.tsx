@@ -53,13 +53,14 @@ import Loader from 'components/Loader';
 import LightwellNotFound from '../components/LightwellNotFound';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
 import CopyLabel from './components/CopyLabel';
-import { formatReleaseCopyText, type PackageIdentity } from './utils/format';
+import type { PackageCoordinate } from './types';
+import { formatReleaseCopyText, getPackageCoordinate } from './utils/format';
 import {
   compareReleasesDesc,
   pythonLightwellRelease,
   sortVersionsDesc,
   stripLightwellVersionSuffix,
-  toLightwellVersion,
+  toLightwellRelease,
 } from './utils/versions';
 import RemediatedDataWarning from '../RemediatedDataWarning';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
@@ -161,12 +162,12 @@ type StackedItemsCellProps<T> = {
 };
 
 type PackageCopyLabelProps = {
-  packageIdentity: PackageIdentity;
+  packageCoordinate: PackageCoordinate;
   version: string;
 };
 
-const PackageCopyLabel = ({ packageIdentity, version }: PackageCopyLabelProps) => (
-  <CopyLabel copyText={formatReleaseCopyText(packageIdentity, version)}>{version}</CopyLabel>
+const PackageCopyLabel = ({ packageCoordinate, version }: PackageCopyLabelProps) => (
+  <CopyLabel copyText={formatReleaseCopyText(packageCoordinate, version)}>{version}</CopyLabel>
 );
 
 const StackedItemsCell = <T,>({
@@ -477,10 +478,15 @@ const PackagesTable = () => {
                         const { name, group_id, versions, latest_releases, last_updated } = pkg;
                         const packageKey = `${group_id}-${name}`;
                         const isCollapsed = !expandedPackages.has(packageKey);
+                        const packageCoordinate = getPackageCoordinate({
+                          name,
+                          group: group_id,
+                          isMaven,
+                        });
 
                         const renderCopyLabel = (version: string) => (
                           <PackageCopyLabel
-                            packageIdentity={{ name, group: group_id, isPython }}
+                            packageCoordinate={{ name, group: group_id, isPython }}
                             version={version}
                           />
                         );
@@ -502,7 +508,7 @@ const PackagesTable = () => {
                                   })
                                 }
                               >
-                                {isMaven ? `${group_id}:${name}` : name}
+                                {packageCoordinate}
                               </Button>
                             </Td>
                             <Td dataLabel={columnHeaders[1].title}>
@@ -527,9 +533,9 @@ const PackagesTable = () => {
                                   isCollapsed={isCollapsed}
                                   onToggle={togglePackageExpanded}
                                   renderItem={(release) =>
-                                    renderCopyLabel(toLightwellVersion(release))
+                                    renderCopyLabel(toLightwellRelease(release))
                                   }
-                                  getItemKey={(release) => toLightwellVersion(release)}
+                                  getItemKey={(release) => toLightwellRelease(release)}
                                 />
                               </Td>
                             ) : null}

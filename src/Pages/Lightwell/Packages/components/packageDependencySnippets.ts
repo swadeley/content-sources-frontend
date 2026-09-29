@@ -1,6 +1,7 @@
 import { ConnectSnippetTab } from '../../Repositories/components/connectSnippets';
+import { getPackageCoordinate } from '../utils/format';
 
-interface PackageCoordinate {
+interface MavenPackageSnippetInput {
   group: string;
   name: string;
   release: string;
@@ -53,31 +54,37 @@ index-url = ${pkg.sourceUrl}`,
   },
 ];
 
-export const getMavenPackageUsageSnippetTabs = (pkg: PackageCoordinate): ConnectSnippetTab[] => [
-  {
-    eventKey: 'maven',
-    title: 'Maven',
-    snippets: [
-      {
-        label: 'Add to your pom.xml:',
-        code: `<!-- Source: ${pkg.sourceUrl} -->
+export const getMavenPackageUsageSnippetTabs = (
+  pkg: MavenPackageSnippetInput,
+): ConnectSnippetTab[] => {
+  const packageCoordinate = getPackageCoordinate({ ...pkg, isMaven: true });
+
+  return [
+    {
+      eventKey: 'maven',
+      title: 'Maven',
+      snippets: [
+        {
+          label: 'Add to your pom.xml:',
+          code: `<!-- Source: ${pkg.sourceUrl} -->
 <dependency>
   <groupId>${pkg.group}</groupId>
   <artifactId>${pkg.name}</artifactId>
   <version>${pkg.release}</version>
 </dependency>`,
-      },
-    ],
-  },
-  {
-    eventKey: 'gradle',
-    title: 'Gradle',
-    snippets: [
-      {
-        label: 'Add to your build.gradle:',
-        code: `// Source: ${pkg.sourceUrl}
-implementation("${pkg.group}:${pkg.name}:${pkg.release}")`,
-      },
-    ],
-  },
-];
+        },
+      ],
+    },
+    {
+      eventKey: 'gradle',
+      title: 'Gradle',
+      snippets: [
+        {
+          label: 'Add to your build.gradle:',
+          code: `// Source: ${pkg.sourceUrl}
+implementation("${packageCoordinate}:${pkg.release}")`,
+        },
+      ],
+    },
+  ];
+};
