@@ -38,8 +38,8 @@ const LightwellPageHeader = ({
             {/* Optional leading slot, such as an ecosystem icon. */}
             {titleStart ? <FlexItem flex={{ default: 'flexNone' }}>{titleStart}</FlexItem> : null}
 
-            {/* The title itself expands into the space between both slots. */}
-            <FlexItem grow={{ default: 'grow' }} style={{ minWidth: 0 }}>
+            {/* Keep the trailing slot beside the title while allowing long titles to shrink. */}
+            <FlexItem style={{ minWidth: 0 }}>
               {typeof title === 'string' ? <PageHeaderTitle title={title} /> : title}
             </FlexItem>
 
@@ -48,11 +48,14 @@ const LightwellPageHeader = ({
           </Flex>
 
           {/* Optional supporting description directly beneath the title row. */}
-          {description ? (
-            <Content component='p' ouiaId={ouiaId}>
-              {description}
-            </Content>
-          ) : null}
+          {description != null &&
+            (typeof description === 'string' ? (
+              <Content component='p' ouiaId={ouiaId}>
+                {description}
+              </Content>
+            ) : (
+              description
+            ))}
         </Flex>
       </FlexItem>
 

@@ -25,7 +25,7 @@ import {
 } from '@patternfly/react-core';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
-import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
+import { CodeIcon } from '@patternfly/react-icons';
 import { createUseStyles } from 'react-jss';
 import { createRef, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -39,7 +39,7 @@ import {
   usePythonPackageVersionsQuery,
 } from 'services/Content/ContentQueries';
 import { LIGHTWELL_USE_MOCK } from '../constants';
-import { formatDistributionUrl, formatRepositoryName } from '../helpers';
+import { formatDistributionUrl, formatRepositoryName, getEcosystemIcon } from '../helpers';
 import {
   getMockLightwellPackages,
   getMockMavenPackageVersionsList,
@@ -50,9 +50,12 @@ import ConnectRepositoryModal from '../Repositories/components/ConnectRepository
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
 import PackageOverviewTab from './tabs/PackageOverviewTab';
 import PackageReleasesTab from './tabs/PackageReleasesTab';
+import PackageRemediationsTab from './tabs/PackageRemediationsTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './tabs/PackageVersionsTab';
-import { getPackageCoordinate } from './utils/format';
+import AdvisoryDetailsDrawer from './AdvisoryDetailsDrawer';
+import { formatReleaseCopyText, getPackageCoordinate } from './utils/format';
+import { usePackageRemediations } from './hooks/usePackageRemediations';
 import {
   lightwellReleaseNum,
   pythonLightwellRelease,
@@ -92,6 +95,7 @@ const PackageDetails = () => {
   const overviewTabRef = createRef<HTMLElement>();
   const releasesTabRef = createRef<HTMLElement>();
   const versionsTabRef = createRef<HTMLElement>();
+  const remediationsTabRef = createRef<HTMLElement>();
 
   const useMock = LIGHTWELL_USE_MOCK;
 
@@ -111,6 +115,9 @@ const PackageDetails = () => {
     group: packageGroup,
     isMaven,
   });
+
+  const hasValidPackagePath =
+    Boolean(packageName) && ((isMaven && Boolean(packageGroup)) || (isPython && !packageGroup));
 
   const appBreadcrumbsEnabled = useFlag('platform.chrome.app-breadcrumbs');
 
@@ -177,11 +184,6 @@ const PackageDetails = () => {
     return mavenVersionsData.versions.flatMap((v) => v.builds);
   }, [isMaven, mavenVersionsData?.versions]);
 
-  const mavenHasRelease = useMemo(
-    () => mavenAllReleases.some((r) => !!r.release),
-    [mavenAllReleases],
-  );
-
   const pythonVersionsFromApi = useMemo(
     () => pythonVersionsData?.versions?.map((version) => version.version) ?? [],
     [pythonVersionsData?.versions],
@@ -204,16 +206,24 @@ const PackageDetails = () => {
     [pythonVersionsData?.versions],
   );
 
-  const hasRelease = isMaven
-    ? mavenHasRelease
-    : repository?.security_level === 'remediated' &&
-      pythonVersionReleases.some((release) => !!release.release);
-
   const packageVersion = isMaven ? (mavenVersions[0] ?? '') : (pythonVersions[0] ?? '');
 
   const activeVersion = selectedVersion || packageVersion;
 
   const mavenDetail = mavenVersionsData?.versions.find((v) => v.version === activeVersion);
+
+  const hasRelease = isMaven
+    ? (mavenDetail?.builds ?? []).some((build) => !!build.release)
+    : repository?.security_level === 'remediated' &&
+      pythonVersionReleases.some(
+        (release) => release.version === activeVersion && !!release.release,
+      );
+
+  useEffect(() => {
+    if (!hasRelease && activeTabKey === 2) {
+      setActiveTabKey(0);
+    }
+  }, [hasRelease, activeTabKey]);
 
   const mavenBuilds = useMemo(() => {
     if (!isMaven || !hasRelease || !mavenVersionsData?.versions) return [];
@@ -270,18 +280,59 @@ const PackageDetails = () => {
     !useMock &&
     Boolean(isMaven ? mavenVersionsListQuery.isError : pythonPackageVersionsQuery.isError);
 
+  const builds = isMaven ? (hasRelease ? mavenBuilds : (mavenDetail?.builds ?? [])) : pythonBuilds;
+  const latestBuild = builds[0];
+  const latestRelease = latestBuild?.release ? toLightwellRelease(latestBuild) : undefined;
+
+  const remediationsParams = {
+    name: packageName,
+    version: activeVersion,
+    repository: repository?.name ?? '',
+    group: packageGroup,
+    isPython,
+    latestPackageRelease: latestRelease,
+  };
+
+  const remediationsQueryEnabled = Boolean(
+    !isResolvingRepository &&
+    !isError &&
+    repository &&
+    repoUUID &&
+    hasValidPackagePath &&
+    !isLoadingDetail &&
+    !isErrorDetail &&
+    packageName &&
+    activeVersion &&
+    versionOptions.includes(activeVersion),
+  );
+
+  const releaseBuilds = isPython ? pythonBuilds : mavenBuilds;
+
+  const {
+    data: packageRemediations,
+    summary: remediationSummary,
+    hasData: hasRemediationsData,
+    isLoading: isLoadingRemediations,
+    isFetching: isFetchingRemediations,
+    isError: isRemediationsError,
+  } = usePackageRemediations(remediationsParams, { enabled: remediationsQueryEnabled });
+
+  const remediationsUnavailable = isRemediationsError && !hasRemediationsData;
+  const summaryUnavailable =
+    isLoadingRemediations || isFetchingRemediations || remediationsUnavailable;
+
+  const fixes = summaryUnavailable ? 0 : remediationSummary.fixes;
+  const releases = summaryUnavailable ? 0 : releaseBuilds.filter((build) => !!build.release).length;
+
   if (isResolvingRepository) {
     return <Loader />;
   }
 
-  if (!repository) {
+  if (isError) throw error;
+
+  if (!repository || !repoUUID || !hasValidPackagePath) {
     return <LightwellNotFound />;
   }
-
-  if (!repoUUID || isError) throw error;
-
-  const builds = isMaven ? (hasRelease ? mavenBuilds : (mavenDetail?.builds ?? [])) : pythonBuilds;
-  const latestBuild = builds[0];
 
   const upstreamVersion = isMaven ? (latestBuild?.version ?? activeVersion) : activeVersion;
 
@@ -321,7 +372,13 @@ const PackageDetails = () => {
   }
 
   return (
-    <>
+    <AdvisoryDetailsDrawer
+      preferredRecord={{
+        repository: repository.name,
+        packageName: packageCoordinate,
+        packageVersion: activeVersion,
+      }}
+    >
       {!appBreadcrumbsEnabled && (
         <PageBreadcrumb isWidthLimited>
           <Breadcrumb ouiaId='lightwell-package-details-breadcrumb'>
@@ -335,7 +392,7 @@ const PackageDetails = () => {
               {breadcrumbRepoName}
             </BreadcrumbItem>
             <BreadcrumbItem isActive>
-              <Truncate content={isMaven ? `${packageGroup}:${packageName}` : packageName || '—'} />
+              <Truncate content={packageCoordinate || '—'} />
             </BreadcrumbItem>
           </Breadcrumb>
         </PageBreadcrumb>
@@ -344,14 +401,10 @@ const PackageDetails = () => {
       <LightwellPageHeader
         title={
           <Title headingLevel='h1' ouiaId='lightwell-package-details-header'>
-            {isMaven ? `${packageGroup}:${packageName}` : packageName || 'Package details'}
+            {packageCoordinate || 'Package details'}
           </Title>
         }
-        titleStart={
-          <Icon size='xl'>
-            {repository.content_type === 'maven' ? <JavaIcon /> : <PythonIcon />}
-          </Icon>
-        }
+        titleStart={<Icon size='xl'>{getEcosystemIcon(repository.content_type)}</Icon>}
         titleEnd={
           <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
             {versionOptions.length === 1 && (selectedVersion || activeVersion) ? (
@@ -390,6 +443,14 @@ const PackageDetails = () => {
               </Dropdown>
             ) : null}
           </Flex>
+        }
+        description={
+          hasRelease ? (
+            <span data-ouia-component-id='lightwell-package-fix-summary'>
+              <strong>{fixes}</strong> {fixes === 1 ? 'fix' : 'fixes'} across{' '}
+              <strong>{releases}</strong> Lightwell {releases === 1 ? 'release' : 'releases'}
+            </span>
+          ) : null
         }
         actions={
           <ConnectRepositoryModal
@@ -454,6 +515,15 @@ const PackageDetails = () => {
                           ouiaId='lightwell-package-versions-tab'
                         />
                       )}
+                      {hasRelease && (
+                        <Tab
+                          eventKey={2}
+                          title={<TabTitleText>Remediations</TabTitleText>}
+                          isDisabled={remediationsUnavailable}
+                          tabContentRef={remediationsTabRef}
+                          ouiaId='lightwell-package-remediations-tab'
+                        />
+                      )}
                     </Tabs>
                     <>
                       <TabContent
@@ -497,7 +567,7 @@ const PackageDetails = () => {
                           <TabContentBody hasPadding>
                             <PackageReleasesTab
                               version={upstreamVersion}
-                              builds={isPython ? pythonBuilds : mavenBuilds}
+                              builds={releaseBuilds}
                               isLoading={isFetchingDetail}
                               packageCoordinate={{
                                 name: packageName,
@@ -522,6 +592,32 @@ const PackageDetails = () => {
                               versions={versionOptions}
                               latestReleases={isPython ? pythonVersionReleases : mavenAllReleases}
                               onVersionSelect={setSelectedVersion}
+                            />
+                          </TabContentBody>
+                        </TabContent>
+                      )}
+                      {hasRelease && (
+                        <TabContent
+                          eventKey={2}
+                          id='lightwell-package-remediations-panel'
+                          ref={remediationsTabRef}
+                          aria-label='Remediations'
+                          hidden
+                        >
+                          <TabContentBody hasPadding>
+                            <PackageRemediationsTab
+                              key={`${repository.name}-${packageName}-${activeVersion}`}
+                              name={packageName}
+                              version={activeVersion}
+                              remediations={packageRemediations}
+                              isLoading={isLoadingRemediations}
+                              isFetching={isFetchingRemediations}
+                              formatCopyText={(version) =>
+                                formatReleaseCopyText(
+                                  { name: packageName, group: packageGroup, isPython },
+                                  version,
+                                )
+                              }
                             />
                           </TabContentBody>
                         </TabContent>
@@ -552,7 +648,7 @@ const PackageDetails = () => {
           ) : null}
         </PageSection>
       ) : null}
-    </>
+    </AdvisoryDetailsDrawer>
   );
 };
 

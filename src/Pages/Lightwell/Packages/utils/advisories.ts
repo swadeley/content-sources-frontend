@@ -81,6 +81,13 @@ export const toPackageRemediations = (
     );
 };
 
+/** Counts unique advisories for one package version. */
+export const summarizePackageRemediations = (
+  remediations: Pick<PackageAdvisoryRemediation, 'advisoryName'>[],
+) => ({
+  fixes: new Set(remediations.map(({ advisoryName }) => advisoryName)).size,
+});
+
 const ecosystemFromRepository = (repository: string): string => {
   const withoutPrefix = repository.replace(/^lightwell\//, '');
   const [ecosystem] = withoutPrefix.split('/');

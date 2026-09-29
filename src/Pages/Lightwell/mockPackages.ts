@@ -3,10 +3,21 @@ import {
   PythonPackageVersionsResponse,
   RepositoryPackageItem,
 } from 'services/Content/ContentApi';
+import { stripLightwellVersionSuffix } from './Packages/utils/versions';
 
 const mockPackagesByRepository: Record<string, RepositoryPackageItem[]> = {
   // Python Remediated
   '33333333-3333-4333-8333-333333333333': [
+    {
+      name: 'protobuf',
+      group: '',
+      versions: ['4.25.7'],
+      latest_releases: [
+        { version: '4.25.7', release: '+rhlw.3', created_at: '2026-09-05T00:00:00Z' },
+        { version: '4.25.7', release: '+rhlw.2', created_at: '2026-08-25T00:00:00Z' },
+        { version: '4.25.7', release: '+rhlw.1', created_at: '2026-08-17T00:00:00Z' },
+      ],
+    },
     {
       name: 'python-requests',
       group: '',
@@ -102,8 +113,18 @@ const mockPackagesByRepository: Record<string, RepositoryPackageItem[]> = {
     },
   ],
 
-  // Java Remediated (11 packages)
+  // Java Remediated (12 packages)
   '22222222-2222-4222-8222-222222222222': [
+    {
+      name: 'protobuf-java',
+      group: 'com.google.protobuf',
+      versions: ['4.25.7'],
+      latest_releases: [
+        { version: '4.25.7', release: 'rhlw-00003', created_at: '2026-09-03T00:00:00Z' },
+        { version: '4.25.7', release: 'rhlw-00002', created_at: '2026-08-24T00:00:00Z' },
+        { version: '4.25.7', release: 'rhlw-00001', created_at: '2026-08-17T00:00:00Z' },
+      ],
+    },
     {
       name: 'json',
       group: 'org.json',
@@ -445,6 +466,26 @@ const mockMavenVersionsListByRepo: Record<
 
   // Java Remediated
   '22222222-2222-4222-8222-222222222222': {
+    'com.google.protobuf:protobuf-java': {
+      group: 'com.google.protobuf',
+      name: 'protobuf-java',
+      versions: [
+        {
+          group: 'com.google.protobuf',
+          name: 'protobuf-java',
+          version: '4.25.7',
+          builds: [
+            { version: '4.25.7', release: 'rhlw-00003', created_at: '2026-09-03T00:00:00Z' },
+            { version: '4.25.7', release: 'rhlw-00002', created_at: '2026-08-24T00:00:00Z' },
+            { version: '4.25.7', release: 'rhlw-00001', created_at: '2026-08-17T00:00:00Z' },
+          ],
+          summary: 'Protocol Buffers runtime for Java applications.',
+          license: 'BSD-3-Clause',
+          project_url: 'https://github.com/protocolbuffers/protobuf',
+          author: 'Red Hat',
+        },
+      ],
+    },
     'org.json:json': mavenRemediatedDetail(
       'org.json',
       'json',
@@ -640,7 +681,7 @@ export const getMockMavenPackageVersionsList = (
   return mockMavenVersionsListByRepo[repoUUID]?.[key];
 };
 
-const pythonValidatedDetail = (
+const pythonPackageDetail = (
   name: string,
   versions: { version: string; last_updated: string }[],
   summary: string,
@@ -657,16 +698,31 @@ const pythonValidatedDetail = (
     last_updated: v.last_updated,
     license,
     author: { name: authorName },
-    upstream_versions: [v.version],
+    upstream_versions: [stripLightwellVersionSuffix(v.version)],
     project_url: projectUrl,
     distributions: [],
   })),
 });
 
 const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersionsResponse>> = {
+  // Python Remediated
+  '33333333-3333-4333-8333-333333333333': {
+    protobuf: pythonPackageDetail(
+      'protobuf',
+      [
+        { version: '4.25.7+rhlw.3', last_updated: '2026-09-05T00:00:00Z' },
+        { version: '4.25.7+rhlw.2', last_updated: '2026-08-25T00:00:00Z' },
+        { version: '4.25.7+rhlw.1', last_updated: '2026-08-17T00:00:00Z' },
+      ],
+      'Protocol Buffers runtime for Python applications.',
+      'BSD-3-Clause',
+      'Google',
+      'https://github.com/protocolbuffers/protobuf',
+    ),
+  },
   // Python Validated
   '44444444-4444-4444-8444-444444444444': {
-    flask: pythonValidatedDetail(
+    flask: pythonPackageDetail(
       'flask',
       [
         { version: '3.1.1', last_updated: '2026-06-15T00:00:00Z' },
@@ -677,7 +733,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Pallets',
       'https://flask.palletsprojects.com/',
     ),
-    cryptography: pythonValidatedDetail(
+    cryptography: pythonPackageDetail(
       'cryptography',
       [
         { version: '43.0.1', last_updated: '2026-07-01T00:00:00Z' },
@@ -688,7 +744,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'The cryptography developers',
       'https://github.com/pyca/cryptography',
     ),
-    pyyaml: pythonValidatedDetail(
+    pyyaml: pythonPackageDetail(
       'pyyaml',
       [{ version: '6.0.3', last_updated: '2026-06-28T00:00:00Z' }],
       'YAML parser and emitter for Python.',
@@ -696,7 +752,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Kirill Simonov',
       'https://pyyaml.org/',
     ),
-    requests: pythonValidatedDetail(
+    requests: pythonPackageDetail(
       'requests',
       [{ version: '2.32.4', last_updated: '2026-06-25T00:00:00Z' }],
       'A simple, yet elegant, HTTP library.',
@@ -704,7 +760,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Kenneth Reitz',
       'https://requests.readthedocs.io/',
     ),
-    jinja2: pythonValidatedDetail(
+    jinja2: pythonPackageDetail(
       'jinja2',
       [
         { version: '3.1.5', last_updated: '2026-06-20T00:00:00Z' },
@@ -715,7 +771,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Pallets',
       'https://jinja.palletsprojects.com/',
     ),
-    pydantic: pythonValidatedDetail(
+    pydantic: pythonPackageDetail(
       'pydantic',
       [
         { version: '2.9.1', last_updated: '2026-07-05T00:00:00Z' },
@@ -726,7 +782,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Samuel Colvin',
       'https://docs.pydantic.dev/',
     ),
-    boto3: pythonValidatedDetail(
+    boto3: pythonPackageDetail(
       'boto3',
       [{ version: '1.35.12', last_updated: '2026-07-08T00:00:00Z' }],
       'The AWS SDK for Python.',
@@ -734,7 +790,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Amazon Web Services',
       'https://boto3.amazonaws.com/v1/documentation/api/latest/index.html',
     ),
-    sqlalchemy: pythonValidatedDetail(
+    sqlalchemy: pythonPackageDetail(
       'sqlalchemy',
       [
         { version: '2.0.33', last_updated: '2026-06-30T00:00:00Z' },
@@ -745,7 +801,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Mike Bayer',
       'https://www.sqlalchemy.org/',
     ),
-    certifi: pythonValidatedDetail(
+    certifi: pythonPackageDetail(
       'certifi',
       [{ version: '2024.8.15', last_updated: '2026-07-04T00:00:00Z' }],
       'Python package for providing Mozilla CA Bundle.',
@@ -753,7 +809,7 @@ const mockPythonVersionsByRepo: Record<string, Record<string, PythonPackageVersi
       'Kenneth Reitz',
       'https://github.com/certifi/python-certifi',
     ),
-    pillow: pythonValidatedDetail(
+    pillow: pythonPackageDetail(
       'pillow',
       [
         { version: '10.5.0', last_updated: '2026-06-22T00:00:00Z' },

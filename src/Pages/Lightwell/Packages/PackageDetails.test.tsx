@@ -1,12 +1,16 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 
 import PackageDetails from './PackageDetails';
 import {
   useMavenPackageVersionsListQuery,
   usePythonPackageVersionsQuery,
 } from 'services/Content/ContentQueries';
-import { usePackageAdvisoriesQuery } from 'services/Lightwell/AdvisoriesQueries';
+import {
+  useAdvisoryDetailsQuery,
+  usePackageAdvisoriesQuery,
+} from 'services/Lightwell/AdvisoriesQueries';
 import {
   defaultLightwellContentItem,
   defaultLightwellRepositoryPackageItem,
@@ -28,6 +32,7 @@ import {
   otherJavaRemediatedCopyCommand,
 } from 'testingHelpers';
 import { getRepositoryPathSlug } from '../helpers';
+import { getMockAdvisoriesForLatestRelease } from '../mockAdvisories';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
 
 jest.mock('services/Content/ContentQueries', () => ({
@@ -37,6 +42,12 @@ jest.mock('services/Content/ContentQueries', () => ({
 
 jest.mock('services/Lightwell/AdvisoriesQueries', () => ({
   usePackageAdvisoriesQuery: jest.fn(() => ({ isLoading: false, data: undefined })),
+  useAdvisoryDetailsQuery: jest.fn(),
+}));
+
+jest.mock('../constants', () => ({
+  ...jest.requireActual('../constants'),
+  LIGHTWELL_USE_MOCK: false,
 }));
 
 jest.mock('Hooks/Lightwell/useLightwellRepository');
@@ -54,11 +65,9 @@ const mockUseParams = jest.fn<
   []
 >();
 
-let searchParams = new URLSearchParams();
-
 jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useParams: () => mockUseParams(),
-  useSearchParams: () => [searchParams],
 }));
 
 jest.mock('Hooks/Lightwell/navigation/useLightwellRootPath', () => ({
@@ -111,12 +120,23 @@ const mockVersionsListQuery = (
   },
 });
 
-const renderPackageDetails = () =>
+const renderPackageDetails = (search = '') =>
   render(
-    <ReactQueryTestWrapper>
-      <PackageDetails />
-    </ReactQueryTestWrapper>,
+    <MemoryRouter initialEntries={[`/package${search}`]}>
+      <ReactQueryTestWrapper>
+        <PackageDetails />
+      </ReactQueryTestWrapper>
+    </MemoryRouter>,
   );
+
+const threeLatestVersionBuilds = [
+  { version: '3.14.0', release: 'rhlw-00001', created_at: '2026-07-01T00:00:00Z' },
+  { version: '3.14.0', release: 'rhlw-00002', created_at: '2026-07-02T00:00:00Z' },
+  { version: '3.14.0', release: 'rhlw-00003', created_at: '2026-07-03T00:00:00Z' },
+];
+
+const expectFixSummary = async (text: string) =>
+  expect((await screen.findByTestId('lightwell-package-fix-summary')).textContent).toBe(text);
 
 const latestReleaseAdvisory = {
   advisory_name: 'CVE-2024-0001',
@@ -124,12 +144,56 @@ const latestReleaseAdvisory = {
   severity_score: 8.5,
   package_name: packageCoordinate,
   package_version: '3.14.0',
+  fixed_versions: ['3.14.0.rhlw-00001'],
 };
 
-const mockPackageAdvisoriesQuery = (advisories?: (typeof latestReleaseAdvisory)[]) => {
+const packageAdvisoriesForRemediationSummary = [
+  {
+    ...latestReleaseAdvisory,
+    advisory_name: 'CVE-2024-0001',
+    fixed_versions: ['3.14.0.rhlw-00001', '3.14.0.rhlw-00002'],
+  },
+  {
+    ...latestReleaseAdvisory,
+    advisory_name: 'CVE-2024-0001',
+    fixed_versions: ['3.14.0.rhlw-00002'],
+  },
+  {
+    ...latestReleaseAdvisory,
+    advisory_name: 'CVE-2024-0002',
+    fixed_versions: ['3.14.0.rhlw-00002', '3.14.0.rhlw-00003'],
+  },
+  {
+    ...latestReleaseAdvisory,
+    advisory_name: 'CVE-2024-0003',
+    package_version: '2.12.0',
+    fixed_versions: ['2.12.0.rhlw-00001'],
+  },
+];
+
+const mockPackageAdvisoriesQuery = (
+  advisories?: (typeof latestReleaseAdvisory)[],
+  queryState: { isLoading?: boolean; isFetching?: boolean; isError?: boolean } = {},
+) => {
   (usePackageAdvisoriesQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
+    isFetching: false,
+    isError: false,
+    ...queryState,
     data: advisories ? { data: advisories } : undefined,
+  }));
+};
+
+const mockAdvisoryDetailsQuery = () => {
+  const advisories = getMockAdvisoriesForLatestRelease();
+
+  (useAdvisoryDetailsQuery as jest.Mock).mockImplementation((name?: string) => ({
+    isLoading: false,
+    data: name
+      ? {
+          data: advisories.filter((advisory) => advisory.advisory_name === name),
+        }
+      : undefined,
   }));
 };
 
@@ -157,7 +221,6 @@ const setupRepository = (securityLevel: 'remediated' | 'predisclosure') => {
 };
 
 beforeEach(() => {
-  searchParams = new URLSearchParams();
   mockUseParams.mockReturnValue({
     repoName: defaultRepoSlug,
     group: defaultLightwellRepositoryPackageItem.group,
@@ -177,6 +240,7 @@ beforeEach(() => {
     data: undefined,
   }));
   mockPackageAdvisoriesQuery(); // Clear advisory data between tests
+  mockAdvisoryDetailsQuery();
 });
 
 it('shows empty state when the package has no builds', async () => {
@@ -246,13 +310,15 @@ const setupPythonRemediatedPackage = () => {
   }));
 };
 
-it('does not show Releases tab when package has no release', async () => {
+it('hides release tabs and fix summary when package has no release', async () => {
   setupNoReleasePackage();
 
   renderPackageDetails();
 
   expect(await screen.findByText('Overview')).toBeInTheDocument();
   expect(screen.queryByText('Releases')).not.toBeInTheDocument();
+  expect(screen.queryByRole('tab', { name: 'Remediations' })).not.toBeInTheDocument();
+  expect(screen.queryByTestId('lightwell-package-fix-summary')).not.toBeInTheDocument();
 });
 
 it('renders package detail content with builds', async () => {
@@ -265,8 +331,40 @@ it('renders package detail content with builds', async () => {
   ).toBeInTheDocument();
   expect(await screen.findByText('Overview')).toBeInTheDocument();
   expect(await screen.findByRole('tab', { name: 'Releases' })).toBeInTheDocument();
+  expect(await screen.findByRole('tab', { name: 'Remediations' })).toBeInTheDocument();
   expect(await screen.findByText('About this package')).toBeInTheDocument();
   expect(await screen.findByText('How to use')).toBeInTheDocument();
+});
+
+it('opens the vulnerability details drawer from the remediations tab', async () => {
+  mockPackageAdvisoriesQuery([latestReleaseAdvisory]);
+  renderPackageDetails();
+
+  await userEvent.click(await screen.findByRole('tab', { name: 'Remediations' }));
+  await userEvent.click(await screen.findByRole('link', { name: 'CVE-2024-0001' }));
+
+  expect(await screen.findByRole('heading', { name: 'CVE-2024-0001' })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: 'CVE-2024-0001' })).toBeInTheDocument();
+  expect(screen.getByText(/Remediated across/)).toHaveTextContent(
+    'Remediated across 2 packages, 2 upstream versions, in 1 ecosystems',
+  );
+  expect(screen.getByRole('tab', { name: 'Vulnerability remediations tab' })).toBeInTheDocument();
+  expect(screen.getByRole('tab', { name: 'Vulnerability OSV tab' })).toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole('button', { name: 'Close drawer panel' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('heading', { name: 'CVE-2024-0001' })).not.toBeInTheDocument(),
+  );
+});
+
+it('opens the vulnerability details drawer from the name search param', async () => {
+  renderPackageDetails('?name=CVE-2026-1234');
+
+  expect(await screen.findByRole('heading', { name: 'CVE-2026-1234' })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: 'CVE-2026-1234' })).toBeInTheDocument();
+  expect(screen.getByText(/Remediated across/)).toHaveTextContent(
+    'Remediated across 6 packages, 18 upstream versions, in 2 ecosystems',
+  );
 });
 
 it('renders sidebar metadata', async () => {
@@ -350,7 +448,10 @@ it('shows upstream versions list in sidebar for non-release packages', async () 
   expect(await screen.findByText('2.21.2, 2.20.0, 2.19.1')).toBeInTheDocument();
 });
 
-const setupMultiVersionReleasePackage = () => {
+const setupMultiVersionReleasePackage = (
+  olderRelease = 'rhlw-00002',
+  latestBuilds = [{ version: '3.14.0', release: 'rhlw-00001', created_at: '2026-07-01T00:00:00Z' }],
+) => {
   (useMavenPackageVersionsListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     data: {
@@ -361,22 +462,76 @@ const setupMultiVersionReleasePackage = () => {
           group: 'org.json.test',
           name: 'json-test',
           version: '3.14.0',
-          builds: [
-            { version: '3.14.0', release: 'rhlw-00001', created_at: '2026-07-01T00:00:00Z' },
-          ],
+          builds: latestBuilds,
         },
         {
           group: 'org.json.test',
           name: 'json-test',
           version: '2.12.0',
           builds: [
-            { version: '2.12.0', release: 'rhlw-00002', created_at: '2026-06-18T00:00:00Z' },
+            { version: '2.12.0', release: olderRelease, created_at: '2026-06-18T00:00:00Z' },
           ],
         },
       ],
     },
   }));
 };
+
+it('shows unique fixes across all releases for the selected package version', async () => {
+  setupMultiVersionReleasePackage('rhlw-00002', threeLatestVersionBuilds);
+  mockPackageAdvisoriesQuery(packageAdvisoriesForRemediationSummary);
+
+  renderPackageDetails();
+
+  await expectFixSummary('2 fixes across 3 Lightwell releases');
+
+  await userEvent.click(screen.getByRole('button', { name: '3.14.0' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: '2.12.0' }));
+
+  await expectFixSummary('1 fix across 1 Lightwell release');
+});
+
+it('shows zero fixes across multiple releases with no advisories', async () => {
+  setupMultiVersionReleasePackage('rhlw-00002', threeLatestVersionBuilds);
+  mockPackageAdvisoriesQuery([]);
+
+  renderPackageDetails();
+
+  await expectFixSummary('0 fixes across 3 Lightwell releases');
+});
+
+it.each([
+  ['while loading', { isLoading: true }],
+  ['after an error', { isError: true }],
+])('shows zero summary counts %s', async (_scenario, queryState) => {
+  mockPackageAdvisoriesQuery(undefined, queryState);
+
+  renderPackageDetails();
+
+  await expectFixSummary('0 fixes across 0 Lightwell releases');
+});
+
+it('hides remediations for a selected version without a release', async () => {
+  setupMultiVersionReleasePackage('');
+  renderPackageDetails();
+
+  await userEvent.click(await screen.findByRole('tab', { name: 'Remediations' }));
+  await userEvent.click(screen.getByRole('button', { name: '3.14.0' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: '2.12.0' }));
+
+  expect(screen.queryByRole('tab', { name: 'Remediations' })).not.toBeInTheDocument();
+  expect(screen.getByRole('tab', { name: 'Versions' })).toBeInTheDocument();
+  await waitFor(() =>
+    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true'),
+  );
+  expect(
+    screen.getByText(/rebuilt from source by Red Hat with no modifications/),
+  ).toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole('button', { name: '2.12.0' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: '3.14.0' }));
+  expect(await screen.findByRole('tab', { name: 'Remediations' })).toBeInTheDocument();
+});
 
 it('shows Lightwell releases for the selected version on the Releases tab', async () => {
   setupMultiVersionReleasePackage();
