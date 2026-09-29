@@ -262,6 +262,14 @@ const PackageDetails = () => {
       ? mavenVersionsListQuery.isLoading
       : pythonPackageVersionsQuery.isLoading && !pythonPackageVersionsQuery.data;
 
+  const isFetchingDetail =
+    !useMock &&
+    Boolean(isMaven ? mavenVersionsListQuery.isFetching : pythonPackageVersionsQuery.isFetching);
+
+  const isErrorDetail =
+    !useMock &&
+    Boolean(isMaven ? mavenVersionsListQuery.isError : pythonPackageVersionsQuery.isError);
+
   if (isResolvingRepository) {
     return <Loader />;
   }
@@ -291,7 +299,8 @@ const PackageDetails = () => {
     : (pythonDetail?.last_updated ?? '');
 
   const detailReady = !isLoadingDetail;
-  const doneLoading = detailReady && (isMaven ? !!mavenVersionsData : !!pythonVersionsData);
+  const hasVersionsData = isMaven ? !!mavenVersionsData : !!pythonVersionsData;
+  const doneLoading = detailReady && (hasVersionsData || (isErrorDetail && !isFetchingDetail));
 
   const hasDetail =
     detailReady &&
@@ -307,7 +316,7 @@ const PackageDetails = () => {
 
   const showReleasesTab = hasRelease && (isMaven || isPython);
 
-  if (!doneLoading && !showEmpty) {
+  if (!doneLoading) {
     return <Loader />;
   }
 
@@ -489,6 +498,7 @@ const PackageDetails = () => {
                             <PackageReleasesTab
                               version={upstreamVersion}
                               builds={isPython ? pythonBuilds : mavenBuilds}
+                              isLoading={isFetchingDetail}
                               packageCoordinate={{
                                 name: packageName,
                                 group: packageGroup,

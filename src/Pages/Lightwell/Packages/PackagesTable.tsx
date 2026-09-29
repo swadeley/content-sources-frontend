@@ -21,7 +21,7 @@ import {
 } from '@patternfly/react-core';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
-import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
+import { CodeIcon } from '@patternfly/react-icons';
 import { SkeletonTable } from '@patternfly/react-component-groups';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
@@ -45,7 +45,12 @@ import {
 import { useLightwellRepositoryPackagesQuery } from 'services/Content/ContentQueries';
 import { RepositoryPackageItem } from 'services/Content/ContentApi';
 import { getMockLightwellPackages } from '../mockPackages';
-import { formatDistributionUrl, formatRepositoryName, getRepositoryDescription } from '../helpers';
+import {
+  formatDistributionUrl,
+  formatRepositoryName,
+  getEcosystemIcon,
+  getRepositoryDescription,
+} from '../helpers';
 import Hide from 'components/Hide/Hide';
 import { LIGHTWELL_USE_MOCK, lightwellPkgsPerPageKey } from '../constants';
 import EmptyTableState from 'components/EmptyTableState/EmptyTableState';
@@ -297,11 +302,12 @@ const PackagesTable = () => {
     return <Loader />;
   }
 
-  if (!repository) {
+  if (isError) throw error;
+
+  if (!repository || !repoUUID) {
     return <LightwellNotFound />;
   }
 
-  if (!repoUUID || isError) throw error;
   if (!useMock && apiPackagesQuery.isError) throw apiPackagesQuery.error;
 
   const showEmptyState = countIsZero && !fetchingOrLoading;
@@ -374,9 +380,7 @@ const PackagesTable = () => {
             >
               <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
                 <FlexItem>
-                  <Icon size='xl'>
-                    {repository?.content_type === 'maven' ? <JavaIcon /> : <PythonIcon />}
-                  </Icon>
+                  <Icon size='xl'>{getEcosystemIcon(repository?.content_type)}</Icon>
                 </FlexItem>
                 <FlexItem>
                   <Title headingLevel='h1' ouiaId='lightwell-packages-header'>

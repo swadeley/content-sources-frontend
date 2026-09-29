@@ -1,4 +1,5 @@
 import { Flex, Label, Title } from '@patternfly/react-core';
+import { SkeletonTableBody } from '@patternfly/react-component-groups';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { useMemo } from 'react';
 
@@ -13,9 +14,15 @@ type PackageReleasesTabProps = {
   version: string;
   builds: RepositoryPackageReleaseInfo[];
   packageCoordinate: PackageCoordinate;
+  isLoading?: boolean;
 };
 
-const PackageReleasesTab = ({ version, builds, packageCoordinate }: PackageReleasesTabProps) => {
+const PackageReleasesTab = ({
+  version,
+  builds,
+  packageCoordinate,
+  isLoading = false,
+}: PackageReleasesTabProps) => {
   const releases = useMemo(
     () =>
       [...builds]
@@ -29,30 +36,38 @@ const PackageReleasesTab = ({ version, builds, packageCoordinate }: PackageRelea
       <Title headingLevel='h2' size='xl'>
         Releases for: version {version}
       </Title>
-      {releases.length === 0 ? (
-        <LightwellEmptyState
-          variant='empty'
-          titleText='No releases for this version'
-          bodyText='Lightwell has not published a release for this version yet. Select a different version to see its releases.'
-        />
-      ) : (
-        <Table aria-label={`Releases for ${version}`} isStriped>
-          <Thead>
+      <Table aria-label={`Releases for ${version}`} aria-busy={isLoading} isStriped>
+        <Thead>
+          <Tr>
+            <Th>Release</Th>
+            <Th width={15}>Date released</Th>
+          </Tr>
+        </Thead>
+        {isLoading ? (
+          <SkeletonTableBody rowsCount={5} columnsCount={2} />
+        ) : releases.length === 0 ? (
+          <Tbody>
             <Tr>
-              <Th>Release</Th>
-              <Th width={15}>Date released</Th>
+              <Td colSpan={2}>
+                <LightwellEmptyState
+                  variant='empty'
+                  titleText='No releases for this version'
+                  bodyText='Lightwell has not published a release for this version yet. Select a different version to see its releases.'
+                />
+              </Td>
             </Tr>
-          </Thead>
+          </Tbody>
+        ) : (
           <Tbody>
             {releases.map((build, index) => {
-              const fullVersion = toLightwellRelease(build);
+              const release = toLightwellRelease(build);
 
               return (
-                <Tr key={fullVersion}>
+                <Tr key={release}>
                   <Td dataLabel='Release'>
                     <Flex gap={{ default: 'gapSm' }} alignItems={{ default: 'alignItemsCenter' }}>
-                      <CopyLabel copyText={formatReleaseCopyText(packageCoordinate, fullVersion)}>
-                        {fullVersion}
+                      <CopyLabel copyText={formatReleaseCopyText(packageCoordinate, release)}>
+                        {release}
                       </CopyLabel>
                       {index === 0 ? (
                         <Label isCompact color='blue'>
@@ -66,8 +81,8 @@ const PackageReleasesTab = ({ version, builds, packageCoordinate }: PackageRelea
               );
             })}
           </Tbody>
-        </Table>
-      )}
+        )}
+      </Table>
     </Flex>
   );
 };
