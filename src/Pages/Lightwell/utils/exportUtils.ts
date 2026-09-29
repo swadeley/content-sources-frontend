@@ -67,9 +67,10 @@ function csvCell(value: string): string {
 
 // Prevent CSV formula injection: spreadsheet apps treat cells starting with
 // these characters as formulas, so prefix them with a single quote to keep the
-// value inert while it still reads as text.
+// value inert while it still reads as text. This also handles leading tabs or
+// carriage returns, and whitespace before =, +, -, or @.
 function neutralizeFormula(value: string): string {
-  if (/^[=+\-@\t\r]/.test(value)) {
+  if (/^[\t\r]|^\s*[=+\-@]/.test(value)) {
     return `'${value}`;
   }
   return value;

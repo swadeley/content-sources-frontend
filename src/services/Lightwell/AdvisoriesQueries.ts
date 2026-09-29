@@ -12,7 +12,6 @@ const advisoryFiltersKey = (filters: LightwellAdvisoryFilters) => ({
   package_name: filters.package_name ?? '',
   package_version: filters.package_version ?? '',
   name: filters.name ?? '',
-  cve_id: filters.cve_id ?? '',
   severity_min: filters.severity_min ?? '',
   latest_release: filters.latest_release === true,
 });
@@ -31,5 +30,14 @@ export const usePackageAdvisoriesQuery = (
     queryFn: () => getLightwellAdvisories(filters),
     staleTime: ADVISORIES_STALE_TIME_MS,
     enabled: options?.enabled ?? true,
+    meta: advisoriesMeta,
+  });
+
+export const useAdvisoryDetailsQuery = (advisoryName?: string, options?: { enabled?: boolean }) =>
+  useQuery({
+    queryKey: [LIGHTWELL_ADVISORIES_KEY, advisoryFiltersKey({ name: advisoryName })],
+    queryFn: () => getLightwellAdvisories({ name: advisoryName }),
+    staleTime: ADVISORIES_STALE_TIME_MS,
+    enabled: options?.enabled ?? Boolean(advisoryName),
     meta: advisoriesMeta,
   });

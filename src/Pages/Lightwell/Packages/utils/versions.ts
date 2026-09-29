@@ -76,3 +76,8 @@ export const toLightwellRelease = (
   !release.release || release.release.startsWith('+') || release.release.startsWith('.')
     ? `${release.version}${release.release}`
     : `${release.version}.${release.release}`;
+
+export const getVersionSeries = (version: string): string => {
+  const match = stripLightwellVersionSuffix(version).match(/^(\d+)\.(\d+)(?:\.|$)/);
+  return match ? `${match[1]}.${match[2]}.X` : version;
+};

@@ -1,6 +1,7 @@
 import type { LightwellAdvisoryResponse } from 'services/Lightwell/AdvisoriesApi';
 
-const REPOSITORY = 'lightwell/java/remediated';
+const JAVA_REPOSITORY = 'lightwell/java/remediated';
+const PYTHON_REPOSITORY = 'lightwell/python/remediated';
 
 const advisory = (
   overrides: Partial<LightwellAdvisoryResponse> &
@@ -14,7 +15,7 @@ const advisory = (
   summary: '',
   details: '',
   reference_urls: [],
-  repository: REPOSITORY,
+  repository: JAVA_REPOSITORY,
   published: '2026-06-01T00:00:00Z',
   modified: '2026-07-01T00:00:00Z',
   aliases: [],
@@ -24,6 +25,106 @@ const advisory = (
   updated_at: '2026-07-01T00:00:00Z',
   ...overrides,
 });
+
+// Synthetic CVE shared by Java and Python packages for the drawer's ecosystem grouping.
+const SHARED_CVE = 'CVE-2026-1234';
+const sharedCveMetadata = {
+  severity: '9.8',
+  severity_score: 9.8,
+  summary: 'Malformed Protocol Buffers input can trigger a parsing failure',
+  details:
+    'A malformed Protocol Buffers message can cause incorrect bounds handling while untrusted data is decoded. The issue affects multiple Java and Python runtime packages. Lightwell publishes fixed builds for the affected upstream versions. Applications that process externally supplied messages should use the remediated release for their package and version.',
+  aliases: ['GHSA-example-1234'],
+  schema_version: '1.6.8',
+  source: 'pnc-build',
+  published: '2026-08-10T00:00:00Z',
+  modified: '2026-08-10T00:00:00Z',
+  created_at: '2026-08-17T00:00:00Z',
+};
+
+type SharedCvePackage = {
+  repository: string;
+  packageName: string;
+  versions: { upstreamVersion: string; fixedVersions: string[] }[];
+};
+
+const sharedCvePackages: SharedCvePackage[] = [
+  {
+    repository: JAVA_REPOSITORY,
+    packageName: 'com.google.protobuf:protobuf-java',
+    versions: [
+      {
+        upstreamVersion: '4.25.7',
+        fixedVersions: ['4.25.7.rhlw-00001', '4.25.7.rhlw-00002', '4.25.7.rhlw-00003'],
+      },
+      { upstreamVersion: '4.25.2', fixedVersions: ['4.25.2.rhlw-00002'] },
+      { upstreamVersion: '3.25.1', fixedVersions: ['3.25.1.rhlw-00001'] },
+    ],
+  },
+  {
+    repository: JAVA_REPOSITORY,
+    packageName: 'com.google.protobuf:protobuf-java-util',
+    versions: [
+      { upstreamVersion: '4.25.7', fixedVersions: ['4.25.7.rhlw-00002'] },
+      { upstreamVersion: '4.25.1', fixedVersions: ['4.25.1.rhlw-00001'] },
+      { upstreamVersion: '3.25.2', fixedVersions: ['3.25.2.rhlw-00001'] },
+    ],
+  },
+  {
+    repository: JAVA_REPOSITORY,
+    packageName: 'com.google.protobuf:protobuf-kotlin',
+    versions: [
+      { upstreamVersion: '4.25.7', fixedVersions: ['4.25.7.rhlw-00002'] },
+      { upstreamVersion: '4.25.2', fixedVersions: ['4.25.2.rhlw-00002'] },
+      { upstreamVersion: '3.25.3', fixedVersions: ['3.25.3.rhlw-00001'] },
+    ],
+  },
+  {
+    repository: JAVA_REPOSITORY,
+    packageName: 'com.google.protobuf:protobuf-javalite',
+    versions: [
+      { upstreamVersion: '4.25.7', fixedVersions: ['4.25.7.rhlw-00002'] },
+      { upstreamVersion: '4.25.1', fixedVersions: ['4.25.1.rhlw-00001'] },
+      { upstreamVersion: '3.25.1', fixedVersions: ['3.25.1.rhlw-00001'] },
+    ],
+  },
+  {
+    repository: PYTHON_REPOSITORY,
+    packageName: 'protobuf',
+    versions: [
+      {
+        upstreamVersion: '4.25.7',
+        fixedVersions: ['4.25.7+rhlw.1', '4.25.7+rhlw.2', '4.25.7+rhlw.3'],
+      },
+      { upstreamVersion: '4.25.2', fixedVersions: ['4.25.2+rhlw.2'] },
+      { upstreamVersion: '3.25.2', fixedVersions: ['3.25.2+rhlw.1'] },
+    ],
+  },
+  {
+    repository: PYTHON_REPOSITORY,
+    packageName: 'protobuf-lite',
+    versions: [
+      { upstreamVersion: '4.25.7', fixedVersions: ['4.25.7+rhlw.2'] },
+      { upstreamVersion: '4.25.1', fixedVersions: ['4.25.1+rhlw.1'] },
+      { upstreamVersion: '3.25.1', fixedVersions: ['3.25.1+rhlw.1'] },
+    ],
+  },
+];
+
+const sharedCveAdvisories = sharedCvePackages.flatMap(({ repository, packageName, versions }) =>
+  versions.map(({ upstreamVersion, fixedVersions }) =>
+    advisory({
+      ...sharedCveMetadata,
+      advisory_id: `x_RHLW-${SHARED_CVE}-${repository === JAVA_REPOSITORY ? 'java' : 'python'}-${packageName.replace(/[^a-zA-Z0-9]+/g, '-')}-${upstreamVersion}`,
+      advisory_name: SHARED_CVE,
+      repository,
+      package_name: packageName,
+      package_version: upstreamVersion,
+      fixed_versions: fixedVersions,
+      updated_at: repository === JAVA_REPOSITORY ? '2026-09-03T00:00:00Z' : '2026-09-05T00:00:00Z',
+    }),
+  ),
+);
 
 export const getMockAdvisoriesForLatestRelease = (): LightwellAdvisoryResponse[] => [
   advisory({
@@ -182,5 +283,60 @@ export const getMockAdvisoriesForLatestRelease = (): LightwellAdvisoryResponse[]
     package_name: 'com.thoughtworks.xstream:xstream',
     package_version: '1.4.21',
     fixed_versions: ['1.4.21.rhlw-00001'],
+  }),
+  advisory({
+    ...sharedCveMetadata,
+    advisory_id: 'x_RHLW-CVE-2026-1234-java-protobuf-java-4.25.7-older',
+    advisory_name: SHARED_CVE,
+    package_name: 'com.google.protobuf:protobuf-java',
+    package_version: '4.25.7',
+    fixed_versions: ['4.25.7.rhlw-00001'],
+    updated_at: '2026-08-20T00:00:00Z',
+  }),
+  ...sharedCveAdvisories,
+  advisory({
+    advisory_id: 'x_RHLW-CVE-2026-1235-protobuf-java-4.25.7',
+    advisory_name: 'CVE-2026-1235',
+    severity: '7.5',
+    severity_score: 7.5,
+    summary: 'Message size validation can be bypassed',
+    details: 'A crafted message can bypass a size limit during parsing.',
+    package_name: 'com.google.protobuf:protobuf-java',
+    package_version: '4.25.7',
+    fixed_versions: ['4.25.7.rhlw-00002', '4.25.7.rhlw-00003'],
+  }),
+  advisory({
+    advisory_id: 'x_RHLW-CVE-2026-1236-protobuf-java-4.25.7',
+    advisory_name: 'CVE-2026-1236',
+    severity: '5.4',
+    severity_score: 5.4,
+    summary: 'Unexpected input can exhaust parser resources',
+    details: 'Repeatedly nested input can consume excessive parsing resources.',
+    package_name: 'com.google.protobuf:protobuf-java',
+    package_version: '4.25.7',
+    fixed_versions: ['4.25.7.rhlw-00003'],
+  }),
+  advisory({
+    advisory_id: 'x_RHLW-CVE-2026-1237-protobuf-java-4.25.7',
+    advisory_name: 'CVE-2026-1237',
+    severity: '2.8',
+    severity_score: 2.8,
+    summary: 'Parser error output includes internal context',
+    details: 'An error response can include internal parsing context.',
+    package_name: 'com.google.protobuf:protobuf-java',
+    package_version: '4.25.7',
+    fixed_versions: ['4.25.7.rhlw-00001', '4.25.7.rhlw-00003'],
+  }),
+  advisory({
+    advisory_id: 'x_RHLW-CVE-2026-1235-protobuf-4.25.7',
+    advisory_name: 'CVE-2026-1235',
+    severity: '7.5',
+    severity_score: 7.5,
+    summary: 'Message size validation can be bypassed',
+    details: 'A crafted message can bypass a size limit during parsing.',
+    repository: PYTHON_REPOSITORY,
+    package_name: 'protobuf',
+    package_version: '4.25.7',
+    fixed_versions: ['4.25.7+rhlw.3'],
   }),
 ];

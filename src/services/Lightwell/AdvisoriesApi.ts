@@ -36,7 +36,6 @@ export type LightwellAdvisoryFilters = {
   package_name?: string;
   package_version?: string;
   name?: string;
-  cve_id?: string;
   severity_min?: string;
   latest_release?: boolean;
 };
@@ -51,12 +50,12 @@ const buildAdvisoryQueryParams = (
   filters: LightwellAdvisoryFilters,
   pagination: Pick<Meta, 'limit' | 'offset'>,
 ) => ({
-  repository: filters.repository,
-  package_name: filters.package_name,
-  package_version: filters.package_version,
-  name: filters.name,
-  cve_id: filters.cve_id,
-  severity_min: filters.severity_min,
+  repository: encodeURIComponent(filters.repository ?? ''),
+  package_name: encodeURIComponent(filters.package_name ?? ''),
+  package_version: encodeURIComponent(filters.package_version ?? ''),
+  // The human-readable advisory name e.g., CVE-2026-0205
+  name: encodeURIComponent(filters.name ?? ''),
+  severity_min: encodeURIComponent(filters.severity_min ?? ''),
   latest_release: filters.latest_release,
   limit: String(pagination.limit),
   offset: String(pagination.offset),
