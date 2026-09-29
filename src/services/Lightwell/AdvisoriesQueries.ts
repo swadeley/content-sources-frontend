@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { getLightwellAdvisories, type LightwellAdvisoryFilters } from './AdvisoriesApi';
 
@@ -28,6 +28,7 @@ export const usePackageAdvisoriesQuery = (
   useQuery({
     queryKey: [LIGHTWELL_ADVISORIES_KEY, advisoryFiltersKey(filters)],
     queryFn: () => getLightwellAdvisories(filters),
+    placeholderData: keepPreviousData,
     staleTime: ADVISORIES_STALE_TIME_MS,
     enabled: options?.enabled ?? true,
     meta: advisoriesMeta,

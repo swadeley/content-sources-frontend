@@ -126,7 +126,12 @@ const sharedCveAdvisories = sharedCvePackages.flatMap(({ repository, packageName
   ),
 );
 
-export const getMockAdvisoriesForLatestRelease = (): LightwellAdvisoryResponse[] => [
+type MockAdvisoryPackageFilter = Pick<
+  LightwellAdvisoryResponse,
+  'package_name' | 'package_version'
+>;
+
+const mockAdvisories: LightwellAdvisoryResponse[] = [
   advisory({
     advisory_id: 'x_RHLW-CVE-2022-42889-2.9.0',
     advisory_name: 'CVE-2022-42889',
@@ -340,3 +345,21 @@ export const getMockAdvisoriesForLatestRelease = (): LightwellAdvisoryResponse[]
     fixed_versions: ['4.25.7+rhlw.3'],
   }),
 ];
+
+/**
+ * Returns mock advisory results using the same exact package and version scoping as the API.
+ * When no filter is provided, the complete static set is returned for advisory-detail lookups.
+ */
+export const getMockAdvisoriesForLatestRelease = (
+  filters?: MockAdvisoryPackageFilter,
+): LightwellAdvisoryResponse[] => {
+  if (!filters) {
+    return mockAdvisories;
+  }
+
+  return mockAdvisories.filter(
+    (advisory) =>
+      advisory.package_name === filters.package_name &&
+      advisory.package_version === filters.package_version,
+  );
+};

@@ -15,13 +15,9 @@ export type LatestReleaseFixes = {
 
 /**
  * Counts unique advisory_name values (e.g., CVE-2022-42889) by severity and
- * returns results only for the latest release of a specific package version.
+ * returns results from the API's already package/version-scoped response.
  */
-const toLatestReleaseFixes = (
-  advisories: LightwellAdvisoryResponse[],
-  packageName: string,
-  packageVersion: string,
-): LatestReleaseFixes => {
+const toLatestReleaseFixes = (advisories: LightwellAdvisoryResponse[]): LatestReleaseFixes => {
   const seen = new Set<string>();
   const counts: AdvisorySeverityCounts = {
     Critical: 0,
@@ -32,15 +28,7 @@ const toLatestReleaseFixes = (
   };
 
   for (const advisory of advisories) {
-    // The API scopes this query exactly, but keep this guard for unexpected data
-    if (advisory.package_name !== packageName || advisory.package_version !== packageVersion) {
-      continue;
-    }
-
-    if (seen.has(advisory.advisory_name)) {
-      continue;
-    }
-
+    if (seen.has(advisory.advisory_name)) continue;
     seen.add(advisory.advisory_name);
     counts[normalizeAdvisorySeverity(advisory.severity_score)] += 1;
   }
@@ -72,14 +60,18 @@ export const useLatestReleaseFixes = ({
   );
 
   const data = useMemo(
-    () =>
-      query.data ? toLatestReleaseFixes(query.data.data, packageName, packageVersion) : undefined,
-    [query.data, packageName, packageVersion],
+    () => (query.data ? toLatestReleaseFixes(query.data.data) : undefined),
+    [query.data],
   );
 
   if (LIGHTWELL_USE_MOCK) {
+    const mockAdvisories = getMockAdvisoriesForLatestRelease({
+      package_name: packageName,
+      package_version: packageVersion,
+    });
+
     return {
-      data: toLatestReleaseFixes(getMockAdvisoriesForLatestRelease(), packageName, packageVersion),
+      data: toLatestReleaseFixes(mockAdvisories),
       isLoading: false,
       isFetching: false,
     };

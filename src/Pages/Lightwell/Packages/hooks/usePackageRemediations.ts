@@ -35,23 +35,18 @@ export const usePackageRemediations = (
   );
 
   const data = useMemo(
-    () =>
-      toPackageRemediations(
-        query.data?.data ?? [],
-        packageCoordinate,
-        version,
-        latestPackageRelease,
-      ),
-    [query.data, packageCoordinate, version, latestPackageRelease],
+    () => toPackageRemediations(query.data?.data ?? [], latestPackageRelease),
+    [query.data, latestPackageRelease],
   );
 
   const summary = useMemo(() => summarizePackageRemediations(data), [data]);
 
   if (LIGHTWELL_USE_MOCK) {
     const mockData = toPackageRemediations(
-      getMockAdvisoriesForLatestRelease(),
-      packageCoordinate,
-      version,
+      getMockAdvisoriesForLatestRelease({
+        package_name: packageCoordinate,
+        package_version: version,
+      }),
       latestPackageRelease,
     );
 
@@ -61,6 +56,7 @@ export const usePackageRemediations = (
       hasData: true,
       isLoading: false,
       isFetching: false,
+      isPlaceholderData: false,
       isError: false,
     };
   }

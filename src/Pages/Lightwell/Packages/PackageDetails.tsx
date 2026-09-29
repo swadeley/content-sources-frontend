@@ -27,7 +27,7 @@ import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import { CodeIcon } from '@patternfly/react-icons';
 import { createUseStyles } from 'react-jss';
-import { createRef, useEffect, useMemo, useState } from 'react';
+import { createRef, useLayoutEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Loader from 'components/Loader';
@@ -219,7 +219,7 @@ const PackageDetails = () => {
         (release) => release.version === activeVersion && !!release.release,
       );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!hasRelease && activeTabKey === 2) {
       setActiveTabKey(0);
     }
@@ -256,7 +256,7 @@ const PackageDetails = () => {
 
   const versionOptions = isPython ? pythonVersions : mavenVersions;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!versionOptions.length) {
       return;
     }
@@ -314,16 +314,12 @@ const PackageDetails = () => {
     hasData: hasRemediationsData,
     isLoading: isLoadingRemediations,
     isFetching: isFetchingRemediations,
+    isPlaceholderData: isPlaceholderRemediations,
     isError: isRemediationsError,
   } = usePackageRemediations(remediationsParams, { enabled: remediationsQueryEnabled });
 
   const remediationsUnavailable = isRemediationsError && !hasRemediationsData;
-
-  const noRemediations =
-    hasRemediationsData && !isRemediationsError && packageRemediations.length === 0;
-
-  const summaryUnavailable =
-    isLoadingRemediations || isFetchingRemediations || remediationsUnavailable;
+  const summaryUnavailable = isLoadingRemediations || remediationsUnavailable;
 
   const fixes = summaryUnavailable ? 0 : remediationSummary.fixes;
   const releases = summaryUnavailable ? 0 : releaseBuilds.filter((build) => !!build.release).length;
@@ -523,7 +519,6 @@ const PackageDetails = () => {
                         <Tab
                           eventKey={2}
                           title={<TabTitleText>Remediations</TabTitleText>}
-                          isDisabled={noRemediations}
                           tabContentRef={remediationsTabRef}
                           ouiaId='lightwell-package-remediations-tab'
                         />
@@ -572,7 +567,7 @@ const PackageDetails = () => {
                             <PackageReleasesTab
                               version={upstreamVersion}
                               builds={releaseBuilds}
-                              isLoading={isFetchingDetail}
+                              isLoading={isLoadingDetail}
                               packageCoordinate={{
                                 name: packageName,
                                 group: packageGroup,
@@ -616,6 +611,7 @@ const PackageDetails = () => {
                               remediations={packageRemediations}
                               isLoading={isLoadingRemediations}
                               isFetching={isFetchingRemediations}
+                              isPlaceholderData={isPlaceholderRemediations}
                               formatCopyText={(version) =>
                                 formatReleaseCopyText(
                                   { name: packageName, group: packageGroup, isPython },

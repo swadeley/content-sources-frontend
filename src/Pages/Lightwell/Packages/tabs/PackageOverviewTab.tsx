@@ -143,7 +143,7 @@ const PackageOverviewTab = ({
       </Stack>
       {showLatestReleaseFixes && (
         <>
-          {isLoadingAdvisories && (
+          {isLoadingAdvisories && !latestReleaseFixes && (
             <Skeleton
               height={fixesCardHeight}
               width={fixesCardWidth}

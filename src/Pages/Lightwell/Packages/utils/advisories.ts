@@ -44,18 +44,11 @@ export const countAdvisoryUpstreamVersions = (
 /** Expands package advisories into unique rows for each Lightwell release. */
 export const toPackageRemediations = (
   advisories: LightwellAdvisoryResponse[],
-  packageName: string,
-  packageVersion: string,
   latestPackageRelease?: string,
 ): PackageAdvisoryRemediation[] => {
   const rows = new Map<string, PackageAdvisoryRemediation>();
 
   for (const advisory of advisories) {
-    // The API scopes this query exactly, but keep this guard for unexpected data
-    if (advisory.package_name !== packageName || advisory.package_version !== packageVersion) {
-      continue;
-    }
-
     for (const lightwellRelease of advisory.fixed_versions) {
       const key = `${advisory.advisory_name}\0${lightwellRelease}`;
       if (!rows.has(key)) {

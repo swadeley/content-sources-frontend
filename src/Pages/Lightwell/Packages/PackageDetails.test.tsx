@@ -147,30 +147,6 @@ const latestReleaseAdvisory = {
   fixed_versions: ['3.14.0.rhlw-00001'],
 };
 
-const packageAdvisoriesForRemediationSummary = [
-  {
-    ...latestReleaseAdvisory,
-    advisory_name: 'CVE-2024-0001',
-    fixed_versions: ['3.14.0.rhlw-00001', '3.14.0.rhlw-00002'],
-  },
-  {
-    ...latestReleaseAdvisory,
-    advisory_name: 'CVE-2024-0001',
-    fixed_versions: ['3.14.0.rhlw-00002'],
-  },
-  {
-    ...latestReleaseAdvisory,
-    advisory_name: 'CVE-2024-0002',
-    fixed_versions: ['3.14.0.rhlw-00002', '3.14.0.rhlw-00003'],
-  },
-  {
-    ...latestReleaseAdvisory,
-    advisory_name: 'CVE-2024-0003',
-    package_version: '2.12.0',
-    fixed_versions: ['2.12.0.rhlw-00001'],
-  },
-];
-
 const mockPackageAdvisoriesQuery = (
   advisories?: (typeof latestReleaseAdvisory)[],
   queryState: { isLoading?: boolean; isFetching?: boolean; isError?: boolean } = {},
@@ -182,6 +158,19 @@ const mockPackageAdvisoriesQuery = (
     ...queryState,
     data: advisories ? { data: advisories } : undefined,
   }));
+};
+
+const mockPackageAdvisoriesQueryByVersion = (
+  advisoriesByVersion: Record<string, (typeof latestReleaseAdvisory)[]>,
+) => {
+  (usePackageAdvisoriesQuery as jest.Mock).mockImplementation(
+    ({ package_version: packageVersion }: Parameters<typeof usePackageAdvisoriesQuery>[0]) => ({
+      isLoading: false,
+      isFetching: false,
+      isError: false,
+      data: { data: advisoriesByVersion[packageVersion ?? ''] ?? [] },
+    }),
+  );
 };
 
 const mockAdvisoryDetailsQuery = () => {
@@ -221,6 +210,7 @@ const setupRepository = (securityLevel: 'remediated' | 'predisclosure') => {
 };
 
 beforeEach(() => {
+  jest.clearAllMocks();
   mockUseParams.mockReturnValue({
     repoName: defaultRepoSlug,
     group: defaultLightwellRepositoryPackageItem.group,
@@ -336,10 +326,18 @@ it('renders package detail content with builds', async () => {
   expect(await screen.findByText('How to use')).toBeInTheDocument();
 });
 
-it('disables the remediations tab when the package has no remediations', async () => {
+it('shows an empty state when the package has no remediations', async () => {
   mockPackageAdvisoriesQuery([]);
   renderPackageDetails();
-  expect(await screen.findByRole('tab', { name: 'Remediations' })).toBeDisabled();
+
+  const remediationsTab = await screen.findByRole('tab', { name: 'Remediations' });
+  expect(remediationsTab).not.toBeDisabled();
+  await userEvent.click(remediationsTab);
+
+  expect(
+    await screen.findByText('No remediations are available for this package version.'),
+  ).toBeInTheDocument();
+  expect(screen.getByRole('textbox', { name: 'Search CVEs or releases' })).toBeDisabled();
 });
 
 it('keeps the remediations tab enabled when remediations fail to load', async () => {
@@ -490,8 +488,36 @@ const setupMultiVersionReleasePackage = (
 };
 
 it('shows unique fixes across all releases for the selected package version', async () => {
+  const packageAdvisoriesForRemediationSummary = {
+    '3.14.0': [
+      {
+        ...latestReleaseAdvisory,
+        advisory_name: 'CVE-2024-0001',
+        fixed_versions: ['3.14.0.rhlw-00001', '3.14.0.rhlw-00002'],
+      },
+      {
+        ...latestReleaseAdvisory,
+        advisory_name: 'CVE-2024-0001',
+        fixed_versions: ['3.14.0.rhlw-00002'],
+      },
+      {
+        ...latestReleaseAdvisory,
+        advisory_name: 'CVE-2024-0002',
+        fixed_versions: ['3.14.0.rhlw-00002', '3.14.0.rhlw-00003'],
+      },
+    ],
+    '2.12.0': [
+      {
+        ...latestReleaseAdvisory,
+        advisory_name: 'CVE-2024-0003',
+        package_version: '2.12.0',
+        fixed_versions: ['2.12.0.rhlw-00001'],
+      },
+    ],
+  };
+
   setupMultiVersionReleasePackage('rhlw-00002', threeLatestVersionBuilds);
-  mockPackageAdvisoriesQuery(packageAdvisoriesForRemediationSummary);
+  mockPackageAdvisoriesQueryByVersion(packageAdvisoriesForRemediationSummary);
 
   renderPackageDetails();
 
@@ -501,6 +527,10 @@ it('shows unique fixes across all releases for the selected package version', as
   await userEvent.click(await screen.findByRole('menuitem', { name: '2.12.0' }));
 
   await expectFixSummary('1 fix across 1 Lightwell release');
+  expect(usePackageAdvisoriesQuery).toHaveBeenCalledWith(
+    expect.objectContaining({ package_version: '2.12.0' }),
+    { enabled: true },
+  );
 });
 
 it('shows zero fixes across multiple releases with no advisories', async () => {

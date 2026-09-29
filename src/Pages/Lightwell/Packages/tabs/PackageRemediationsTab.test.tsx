@@ -28,6 +28,7 @@ it('renders advisory links that set the name search param', () => {
         remediations={remediations}
         isLoading={false}
         isFetching={false}
+        isPlaceholderData={false}
         formatCopyText={(version) => `org.json.test:json-test:${version}`}
       />
     </MemoryRouter>,
@@ -52,6 +53,7 @@ it('replaces the name param when the drawer is already open', () => {
         remediations={remediations}
         isLoading={false}
         isFetching={false}
+        isPlaceholderData={false}
         formatCopyText={(version) => version}
       />
     </MemoryRouter>,
@@ -61,4 +63,24 @@ it('replaces the name param when the drawer is already open', () => {
     'href',
     '/lightwell/java-remediated/org.json.test/json-test?name=CVE-2022-40152',
   );
+});
+
+it('disables filters while displaying placeholder remediations', () => {
+  render(
+    <MemoryRouter initialEntries={['/lightwell/java-remediated/org.json.test/json-test']}>
+      <PackageRemediationsTab
+        name='json-test'
+        version='2.12.0'
+        remediations={remediations}
+        isLoading={false}
+        isFetching={true}
+        isPlaceholderData={true}
+        formatCopyText={(version) => version}
+      />
+    </MemoryRouter>,
+  );
+
+  expect(screen.getByRole('textbox', { name: 'Search CVEs or releases' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Release filter' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Severity filter' })).toBeDisabled();
 });

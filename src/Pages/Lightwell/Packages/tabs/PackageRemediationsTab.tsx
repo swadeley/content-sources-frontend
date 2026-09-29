@@ -19,6 +19,7 @@ type PackageRemediationsTabProps = {
   remediations: PackageAdvisoryRemediation[];
   isLoading: boolean;
   isFetching: boolean;
+  isPlaceholderData: boolean;
   formatCopyText: (version: string) => string;
 };
 
@@ -28,6 +29,7 @@ const PackageRemediationsTab = ({
   remediations,
   isLoading,
   isFetching,
+  isPlaceholderData,
   formatCopyText,
 }: PackageRemediationsTabProps) => {
   const [search, setSearch] = useState('');
@@ -54,7 +56,8 @@ const PackageRemediationsTab = ({
     );
   });
 
-  const isTableLoading = isLoading || isFetching;
+  const isTableLoading = isLoading || isPlaceholderData;
+  const areFiltersDisabled = isTableLoading || remediations.length === 0;
 
   const hasNoMatchingRemediations =
     !isTableLoading && remediations.length > 0 && filteredRemediations.length === 0;
@@ -73,7 +76,7 @@ const PackageRemediationsTab = ({
           value={search}
           onChange={(_event, value) => setSearch(value)}
           onClear={() => setSearch('')}
-          isDisabled={isTableLoading || remediations.length === 0}
+          isDisabled={areFiltersDisabled}
         />
         <AdvisoryFilterDropdown
           label='Release'
@@ -83,7 +86,7 @@ const PackageRemediationsTab = ({
             ...releaseOptions.map((release) => ({ value: release, label: release })),
           ]}
           onChange={setReleaseFilter}
-          isDisabled={isTableLoading || remediations.length === 0}
+          isDisabled={areFiltersDisabled}
         />
         <AdvisoryFilterDropdown
           label='Severity'
@@ -93,12 +96,12 @@ const PackageRemediationsTab = ({
             ...ADVISORY_SEVERITIES.map((severity) => ({ value: severity, label: severity })),
           ]}
           onChange={setSeverityFilter}
-          isDisabled={isTableLoading || remediations.length === 0}
+          isDisabled={areFiltersDisabled}
         />
       </Flex>
       <Table
         aria-label={`Remediations for: ${name} ${version}`}
-        aria-busy={isTableLoading}
+        aria-busy={isFetching || isTableLoading}
         isStriped={!hasEmptyTableState}
         borders={!hasEmptyTableState}
       >

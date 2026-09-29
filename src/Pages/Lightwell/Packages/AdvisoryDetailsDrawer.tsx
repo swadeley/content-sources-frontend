@@ -8,7 +8,7 @@ import {
   TabTitleText,
 } from '@patternfly/react-core';
 import drawerStyles from '@patternfly/react-styles/css/components/Drawer/drawer';
-import { useEffect, useState, PropsWithChildren } from 'react';
+import { useLayoutEffect, useState, PropsWithChildren } from 'react';
 import { createPortal } from 'react-dom';
 import { createUseStyles } from 'react-jss';
 
@@ -105,7 +105,7 @@ const AdvisoryDetailsDrawer = ({ children, preferredRecord }: AdvisoryDetailsDra
 
   const [activeTabKey, setActiveTabKey] = useState<AdvisoryDetailTab>(AdvisoryDetailTab.OVERVIEW);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setActiveTabKey(AdvisoryDetailTab.OVERVIEW);
   }, [
     advisoryName,
