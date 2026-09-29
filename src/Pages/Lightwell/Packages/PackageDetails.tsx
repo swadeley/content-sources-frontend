@@ -54,7 +54,7 @@ import PackageRemediationsTab from './tabs/PackageRemediationsTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './tabs/PackageVersionsTab';
 import AdvisoryDetailsDrawer from './AdvisoryDetailsDrawer';
-import { formatReleaseCopyText, getPackageCoordinate } from './utils/format';
+import { formatReleaseCopyText, getPackageCoordinate, pluralize } from './utils/format';
 import { usePackageRemediations } from './hooks/usePackageRemediations';
 import {
   lightwellReleaseNum,
@@ -318,6 +318,10 @@ const PackageDetails = () => {
   } = usePackageRemediations(remediationsParams, { enabled: remediationsQueryEnabled });
 
   const remediationsUnavailable = isRemediationsError && !hasRemediationsData;
+
+  const noRemediations =
+    hasRemediationsData && !isRemediationsError && packageRemediations.length === 0;
+
   const summaryUnavailable =
     isLoadingRemediations || isFetchingRemediations || remediationsUnavailable;
 
@@ -447,8 +451,8 @@ const PackageDetails = () => {
         description={
           hasRelease ? (
             <span data-ouia-component-id='lightwell-package-fix-summary'>
-              <strong>{fixes}</strong> {fixes === 1 ? 'fix' : 'fixes'} across{' '}
-              <strong>{releases}</strong> Lightwell {releases === 1 ? 'release' : 'releases'}
+              <strong>{fixes}</strong> {pluralize(fixes, 'fix', 'fixes')} across{' '}
+              <strong>{releases}</strong> Lightwell {pluralize(releases, 'release')}
             </span>
           ) : null
         }
@@ -519,7 +523,7 @@ const PackageDetails = () => {
                         <Tab
                           eventKey={2}
                           title={<TabTitleText>Remediations</TabTitleText>}
-                          isDisabled={remediationsUnavailable}
+                          isDisabled={noRemediations}
                           tabContentRef={remediationsTabRef}
                           ouiaId='lightwell-package-remediations-tab'
                         />

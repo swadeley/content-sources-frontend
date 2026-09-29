@@ -30,7 +30,6 @@ export const buildRemediationCsvRows = (remediations: AdvisoryRemediationEcosyst
         series.versions.map((version) => ({
           Ecosystem: ecosystem.name,
           Package: pkg.name,
-          'Version series': series.name,
           'Upstream version': version.upstreamVersion,
           'Latest Lightwell release': version.lightwellRelease,
         })),
@@ -52,6 +51,7 @@ export const toPackageRemediations = (
   const rows = new Map<string, PackageAdvisoryRemediation>();
 
   for (const advisory of advisories) {
+    // The API scopes this query exactly, but keep this guard for unexpected data
     if (advisory.package_name !== packageName || advisory.package_version !== packageVersion) {
       continue;
     }

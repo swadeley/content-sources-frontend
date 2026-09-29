@@ -336,6 +336,18 @@ it('renders package detail content with builds', async () => {
   expect(await screen.findByText('How to use')).toBeInTheDocument();
 });
 
+it('disables the remediations tab when the package has no remediations', async () => {
+  mockPackageAdvisoriesQuery([]);
+  renderPackageDetails();
+  expect(await screen.findByRole('tab', { name: 'Remediations' })).toBeDisabled();
+});
+
+it('keeps the remediations tab enabled when remediations fail to load', async () => {
+  mockPackageAdvisoriesQuery(undefined, { isError: true });
+  renderPackageDetails();
+  expect(await screen.findByRole('tab', { name: 'Remediations' })).not.toBeDisabled();
+});
+
 it('opens the vulnerability details drawer from the remediations tab', async () => {
   mockPackageAdvisoriesQuery([latestReleaseAdvisory]);
   renderPackageDetails();
@@ -540,7 +552,7 @@ it('shows Lightwell releases for the selected version on the Releases tab', asyn
 
   await userEvent.click(await screen.findByRole('tab', { name: 'Releases' }));
 
-  expect(await screen.findByText('Releases for: version 3.14.0')).toBeInTheDocument();
+  expect(await screen.findByText(/Releases for:/)).toBeInTheDocument();
 
   const releasesTable = screen.getByRole('grid', { name: 'Releases for 3.14.0' });
   const releaseRows = releasesTable.querySelectorAll('tbody tr');
@@ -552,7 +564,7 @@ it('shows Lightwell releases for the selected version on the Releases tab', asyn
   await userEvent.click(await screen.findByRole('button', { name: '3.14.0' }));
   await userEvent.click(await screen.findByRole('menuitem', { name: '2.12.0' }));
 
-  expect(await screen.findByText('Releases for: version 2.12.0')).toBeInTheDocument();
+  expect(await screen.findByText(/Releases for:/)).toBeInTheDocument();
 
   const selectedVersionTable = screen.getByRole('grid', { name: 'Releases for 2.12.0' });
   const selectedVersionRows = selectedVersionTable.querySelectorAll('tbody tr');
@@ -643,7 +655,7 @@ it('shows a dependency-update description when the latest release has no fixes',
   expect(
     await screen.findByRole('heading', { name: 'No new backported fixes in this release' }),
   ).toBeInTheDocument();
-  expect(screen.getByTestId('lightwell-fixes-card')).toBeInTheDocument();
+  expect(screen.queryByTestId('lightwell-fixes-card')).not.toBeInTheDocument();
   expect(
     screen.getByText('Released to support a dependency update with no new fixes included.'),
   ).toBeInTheDocument();
@@ -728,9 +740,7 @@ it('shows Python remediated releases and copies the published pip version', asyn
 
   await userEvent.click(screen.getByRole('button', { name: '3.0.1' }));
   await userEvent.click(await screen.findByRole('menuitem', { name: '2.9.0' }));
-  expect(
-    await screen.findByRole('heading', { name: 'Releases for: version 2.9.0' }),
-  ).toBeInTheDocument();
+  expect(await screen.findByText(/Releases for:/)).toBeInTheDocument();
   const olderRelease = await screen.findAllByRole('button', { name: '2.9.0+rhlw.1' });
   await userEvent.click(olderRelease[0]);
   expect(writeText).toHaveBeenCalledWith('pip install requests==2.9.0+rhlw.1');

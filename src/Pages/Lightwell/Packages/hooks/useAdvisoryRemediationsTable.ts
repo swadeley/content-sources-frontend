@@ -56,9 +56,7 @@ export const useAdvisoryRemediationsTable = (remediations: AdvisoryRemediationEc
                 .map((series) => ({
                   ...series,
                   versions:
-                    !term ||
-                    pkg.name.toLowerCase().includes(term) ||
-                    series.name.toLowerCase().includes(term)
+                    !term || pkg.name.toLowerCase().includes(term)
                       ? series.versions
                       : series.versions.filter(
                           (version) =>

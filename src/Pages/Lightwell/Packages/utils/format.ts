@@ -1,5 +1,8 @@
 import type { PackageCoordinate } from '../types';
 
+export const pluralize = (count: number, singular: string, plural = `${singular}s`) =>
+  count === 1 ? singular : plural;
+
 /**
  * Formats an ISO date string as DD MMM YYYY
  *

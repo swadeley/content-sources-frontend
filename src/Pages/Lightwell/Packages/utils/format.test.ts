@@ -1,4 +1,24 @@
-import { formatReleaseCopyText, formatReleaseDate, getPackageCoordinate } from './format';
+import {
+  formatReleaseCopyText,
+  formatReleaseDate,
+  getPackageCoordinate,
+  pluralize,
+} from './format';
+
+describe('pluralize', () => {
+  it('returns the singular form for one', () => {
+    expect(pluralize(1, 'release')).toBe('release');
+  });
+
+  it('returns the plural form for zero and multiple items', () => {
+    expect(pluralize(0, 'release')).toBe('releases');
+    expect(pluralize(2, 'release')).toBe('releases');
+  });
+
+  it('supports an explicit plural form', () => {
+    expect(pluralize(2, 'person', 'people')).toBe('people');
+  });
+});
 
 describe('formatReleaseDate', () => {
   it('formats an ISO date as DD MMM YYYY', () => {

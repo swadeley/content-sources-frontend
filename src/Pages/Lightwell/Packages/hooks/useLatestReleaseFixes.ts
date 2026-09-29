@@ -32,6 +32,7 @@ const toLatestReleaseFixes = (
   };
 
   for (const advisory of advisories) {
+    // The API scopes this query exactly, but keep this guard for unexpected data
     if (advisory.package_name !== packageName || advisory.package_version !== packageVersion) {
       continue;
     }

@@ -55,13 +55,13 @@ const LatestReleaseFixes = ({ total, counts }: LatestReleaseFixesProps) => {
           </Title>
         </Flex>
       </FlexItem>
-
-      <FixesCard>
-        {DISPLAYED_SEVERITIES.map((severity) => (
-          <FixBySeverityStat key={severity} severity={severity} counts={counts} />
-        ))}
-      </FixesCard>
-
+      {total !== 0 && counts.None !== total ? (
+        <FixesCard>
+          {DISPLAYED_SEVERITIES.map((severity) => (
+            <FixBySeverityStat key={severity} severity={severity} counts={counts} />
+          ))}
+        </FixesCard>
+      ) : null}
       {description ? (
         <FlexItem>
           <Content component='p'>{description}</Content>

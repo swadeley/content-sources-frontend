@@ -1,4 +1,4 @@
-import { Button, Flex, Label, SearchInput, Title } from '@patternfly/react-core';
+import { Button, Flex, Label, SearchInput } from '@patternfly/react-core';
 import { SkeletonTableBody } from '@patternfly/react-component-groups';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { useMemo, useState } from 'react';
@@ -9,6 +9,7 @@ import { useAdvisoryDrawerParams } from '../hooks/useAdvisoryDrawerParams';
 import type { PackageAdvisoryRemediation } from '../types';
 import AdvisoryFilterDropdown from '../components/AdvisoryFilterDropdown';
 import CopyLabel from '../components/CopyLabel';
+import PackageVersionTitle from '../components/PackageVersionTitle';
 import { ADVISORY_SEVERITIES, SEVERITY_LABEL_COLORS } from '../utils/severity';
 import { sortVersionsDesc } from '../utils/versions';
 
@@ -63,9 +64,7 @@ const PackageRemediationsTab = ({
 
   return (
     <Flex direction={{ default: 'column' }} gap={{ default: 'gapMd' }}>
-      <Title headingLevel='h2' size='xl'>
-        Remediations for: {name} {version}
-      </Title>
+      <PackageVersionTitle name={name} version={version} descriptor='Remediations' />
       <Flex gap={{ default: 'gapSm' }} flexWrap={{ default: 'wrap' }}>
         <SearchInput
           aria-label='Search CVEs or releases'

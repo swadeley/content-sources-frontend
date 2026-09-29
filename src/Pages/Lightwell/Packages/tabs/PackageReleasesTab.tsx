@@ -1,4 +1,4 @@
-import { Flex, Label, Title } from '@patternfly/react-core';
+import { Flex, Label } from '@patternfly/react-core';
 import { SkeletonTableBody } from '@patternfly/react-component-groups';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { useMemo } from 'react';
@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { RepositoryPackageReleaseInfo } from '../../../../services/Content/ContentApi';
 import CopyLabel from '../components/CopyLabel';
 import LightwellEmptyState from '../../components/LightwellEmptyState';
+import PackageVersionTitle from '../components/PackageVersionTitle';
 import type { PackageCoordinate } from '../types';
 import { formatReleaseCopyText, formatReleaseDate } from '../utils/format';
 import { lightwellReleaseNum, toLightwellRelease } from '../utils/versions';
@@ -33,9 +34,7 @@ const PackageReleasesTab = ({
 
   return (
     <Flex direction={{ default: 'column' }} gap={{ default: 'gapMd' }}>
-      <Title headingLevel='h2' size='xl'>
-        Releases for: version {version}
-      </Title>
+      <PackageVersionTitle name={packageCoordinate.name} version={version} descriptor='Releases' />
       <Table aria-label={`Releases for ${version}`} aria-busy={isLoading} isStriped>
         <Thead>
           <Tr>
