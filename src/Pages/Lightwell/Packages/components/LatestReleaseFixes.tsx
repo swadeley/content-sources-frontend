@@ -4,7 +4,9 @@ import { RhUiSecuredIcon } from '@patternfly/react-icons';
 import FixBySeverityStat from './FixBySeverityStat';
 import FixesCard from './FixesCard';
 import type { AdvisorySeverityCounts } from '../hooks/useLatestReleaseFixes';
-import { ADVISORY_SEVERITIES } from '../utils/severity';
+import type { AdvisorySeverity } from '../utils/severity';
+
+const DISPLAYED_SEVERITIES: AdvisorySeverity[] = ['Critical', 'Important', 'Moderate'];
 
 type LatestReleaseFixesProps = {
   total: number;
@@ -12,20 +14,25 @@ type LatestReleaseFixesProps = {
 };
 
 const releaseFixesDescription = (total: number, counts: AdvisorySeverityCounts) => {
-  if (total === 0) {
-    return 'Issued to support a dependency update.';
+  if (total === 0 || counts.None === total) {
+    return 'Released to support a dependency update with no new fixes included.';
   }
 
-  const hasNonLowFix = counts.Critical > 0 || counts.Important > 0 || counts.Moderate > 0;
-
-  if (!hasNonLowFix && counts.Low > 0) {
-    return 'Resolves remaining low-severity issues from earlier release cycles.';
+  if (counts.Low > 0) {
+    const vulnerability = counts.Low === 1 ? 'vulnerability' : 'vulnerabilities';
+    return (
+      <>
+        Addresses key security issues, including <strong>{counts.Low} low-severity</strong>{' '}
+        {vulnerability}.
+      </>
+    );
   }
 
   return undefined;
 };
 
 const LatestReleaseFixes = ({ total, counts }: LatestReleaseFixesProps) => {
+  const fixesTotal = total - counts.None;
   const description = releaseFixesDescription(total, counts);
 
   return (
@@ -36,26 +43,24 @@ const LatestReleaseFixes = ({ total, counts }: LatestReleaseFixesProps) => {
           gap={{ default: 'gapSm' }}
           height='fit-content'
         >
-          {total > 0 ? (
+          {fixesTotal > 0 ? (
             <Icon size='xl' status='success'>
               <RhUiSecuredIcon />
             </Icon>
           ) : null}
           <Title headingLevel='h3' size='lg'>
-            {total > 0
-              ? `${total} new backported fixes in this release`
+            {fixesTotal > 0
+              ? `${fixesTotal} new backported fixes in this release`
               : 'No new backported fixes in this release'}
           </Title>
         </Flex>
       </FlexItem>
 
-      {total > 0 ? (
-        <FixesCard>
-          {ADVISORY_SEVERITIES.map((severity) => (
-            <FixBySeverityStat key={severity} severity={severity} counts={counts} />
-          ))}
-        </FixesCard>
-      ) : null}
+      <FixesCard>
+        {DISPLAYED_SEVERITIES.map((severity) => (
+          <FixBySeverityStat key={severity} severity={severity} counts={counts} />
+        ))}
+      </FixesCard>
 
       {description ? (
         <FlexItem>

@@ -476,9 +476,7 @@ it('shows the low-severity description when the latest release only fixes low is
 
   expect(await screen.findByText('1 new backported fixes in this release')).toBeInTheDocument();
   expect(screen.getByTestId('lightwell-fixes-card')).toBeInTheDocument();
-  expect(
-    screen.getByText('Resolves remaining low-severity issues from earlier release cycles.'),
-  ).toBeInTheDocument();
+  expect(screen.getByText('1 low-severity')).toBeInTheDocument();
 });
 
 it('shows a dependency-update description when the latest release has no fixes', async () => {
@@ -490,8 +488,10 @@ it('shows a dependency-update description when the latest release has no fixes',
   expect(
     await screen.findByRole('heading', { name: 'No new backported fixes in this release' }),
   ).toBeInTheDocument();
-  expect(screen.queryByTestId('lightwell-fixes-card')).not.toBeInTheDocument();
-  expect(screen.getByText('Issued to support a dependency update.')).toBeInTheDocument();
+  expect(screen.getByTestId('lightwell-fixes-card')).toBeInTheDocument();
+  expect(
+    screen.getByText('Released to support a dependency update with no new fixes included.'),
+  ).toBeInTheDocument();
 });
 
 it('hides latest release fixes for a predisclosure repository', async () => {

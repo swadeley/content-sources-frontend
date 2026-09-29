@@ -72,6 +72,7 @@ const PackageOverviewTab = ({
           }),
     [isMaven, group, name, latestRelease, sourceUrl],
   );
+
   const [activeTabKey, setActiveTabKey] = useState(tabs[0]?.eventKey ?? '');
 
   const showLatestReleaseFixes =
@@ -123,36 +124,43 @@ const PackageOverviewTab = ({
         <Title headingLevel='h2' size='xl'>
           About this package
         </Title>
-        <Content>
-          <p>{summary ?? 'Package description not yet available.'}</p>
-          {hasRelease ? (
-            <p>
-              This package has been rebuilt by Red Hat with backported fixes for known
-              vulnerabilities. The upstream version is pinned and Red Hat applies security patches
-              as sequential releases {isMaven ? '(.rhlw suffix).' : '(+rhlw suffix).'}
-            </p>
-          ) : (
-            <p>
-              This package has been rebuilt from source by Red Hat with no modifications. Multiple
-              upstream versions are available, each verified end-to-end through the Red Hat build
-              pipeline.
-            </p>
-          )}
+        <Content component='p' className={spacing.mb_0}>
+          {summary ?? 'Package description not yet available.'}
         </Content>
+        {hasRelease ? (
+          <Content component='p'>
+            This package has been rebuilt by Red Hat with backported fixes for known
+            vulnerabilities. The upstream version is pinned and Red Hat applies security patches as
+            sequential releases {isMaven ? '(.rhlw suffix).' : '(+rhlw suffix).'}
+          </Content>
+        ) : (
+          <Content component='p'>
+            This package has been rebuilt from source by Red Hat with no modifications. Multiple
+            upstream versions are available, each verified end-to-end through the Red Hat build
+            pipeline.
+          </Content>
+        )}
       </Stack>
-      {showLatestReleaseFixes && isLoadingAdvisories ? (
-        <Skeleton
-          height={fixesCardHeight}
-          width={fixesCardWidth}
-          style={{ maxWidth: '100%' }}
-          screenreaderText='Loading package advisories'
-        />
-      ) : null}
-      {showLatestReleaseFixes && latestReleaseFixes ? (
-        <Stack hasGutter>
-          <LatestReleaseFixes total={latestReleaseFixes.total} counts={latestReleaseFixes.counts} />
-        </Stack>
-      ) : null}
+      {showLatestReleaseFixes && (
+        <>
+          {isLoadingAdvisories && (
+            <Skeleton
+              height={fixesCardHeight}
+              width={fixesCardWidth}
+              style={{ maxWidth: '100%' }}
+              screenreaderText='Loading package advisories'
+            />
+          )}
+          {latestReleaseFixes && (
+            <Stack hasGutter>
+              <LatestReleaseFixes
+                total={latestReleaseFixes.total}
+                counts={latestReleaseFixes.counts}
+              />
+            </Stack>
+          )}
+        </>
+      )}
       <Stack hasGutter>
         <Title headingLevel='h2' size='xl'>
           How to use
