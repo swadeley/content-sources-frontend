@@ -440,6 +440,70 @@ it('subscribes to predisclosure repository notifications when toggle is turned o
   ]);
 });
 
+it('shows notification toggle for python remediated repositories', async () => {
+  (useLightwellNotificationPrefs as jest.Mock).mockReturnValue({
+    prefs: { enabled: true, minimumSeverity: 'critical' },
+    isLoading: false,
+    isError: false,
+    shouldExposeNotifications: true,
+  });
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultPythonRemediatedContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  await screen.findByText('Python Remediated');
+
+  expect(
+    screen.getByRole('switch', {
+      name: `Toggle notifications for ${defaultPythonRemediatedContentItem.name}`,
+    }),
+  ).toBeInTheDocument();
+});
+
+it('subscribes to python remediated repository notifications when toggle is turned on', async () => {
+  const user = userEvent.setup();
+  const mockSetRepoSubscribed = jest.fn();
+  (useLightwellNotificationPrefs as jest.Mock).mockReturnValue({
+    prefs: { enabled: true, minimumSeverity: 'high' },
+    isLoading: false,
+    isError: false,
+    shouldExposeNotifications: true,
+  });
+  (useLightwellRepoNotifications as jest.Mock).mockReturnValue({
+    isRepoSubscribed: jest.fn().mockReturnValue(false),
+    setRepoSubscribed: mockSetRepoSubscribed,
+    isLoading: false,
+    isError: false,
+    pendingEventType: undefined,
+  });
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultPythonRemediatedContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  const toggle = await screen.findByRole('switch', {
+    name: `Toggle notifications for ${defaultPythonRemediatedContentItem.name}`,
+  });
+  expect(toggle).not.toBeChecked();
+
+  await user.click(toggle);
+  expect(mockSetRepoSubscribed).toHaveBeenCalledWith('python-remediated', [
+    'critical',
+    'important',
+  ]);
+});
+
 it('registers breadcrumbs with Chrome via useRemoteHook', async () => {
   (useContentListQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,

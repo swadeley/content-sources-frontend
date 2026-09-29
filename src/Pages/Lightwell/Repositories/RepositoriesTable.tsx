@@ -363,8 +363,7 @@ const RepositoriesTable = () => {
                             </Td>
                             {showNotificationsColumn ? (
                               <Td>
-                                {/* TODO: Remove the content_type check when notifications are setup for Python remediated. */}
-                                {(security_level === 'remediated' && content_type == 'maven') ||
+                                {security_level === 'remediated' ||
                                 security_level === 'predisclosure' ? (
                                   <Switch
                                     id={`notify-toggle-${uuid}`}
