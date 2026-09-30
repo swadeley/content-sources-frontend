@@ -11,7 +11,7 @@ const successBorderColor = t_global_border_color_status_success_default.var;
 const backgroundColor = t_global_background_color_100.var;
 
 export const fixesCardWidth =
-  'calc(394px + 3 * 2 * (var(--pf-t--global--spacer--lg) - var(--pf-t--global--spacer--lg)))';
+  'calc(394px + 4 * 2 * (var(--pf-t--global--spacer--xl) - var(--pf-t--global--spacer--lg)))';
 export const fixesCardHeight =
   'calc(99px + 2 * (var(--pf-t--global--spacer--lg) - var(--pf-t--global--spacer--md)))';
 

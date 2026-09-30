@@ -4,36 +4,18 @@ import { RhUiSecuredIcon } from '@patternfly/react-icons';
 import FixBySeverityStat from './FixBySeverityStat';
 import FixesCard from './FixesCard';
 import type { AdvisorySeverityCounts } from '../hooks/useLatestReleaseFixes';
+import { pluralize } from '../utils/format';
 import type { AdvisorySeverity } from '../utils/severity';
 
-const DISPLAYED_SEVERITIES: AdvisorySeverity[] = ['Critical', 'Important', 'Moderate'];
+const DISPLAYED_SEVERITIES: AdvisorySeverity[] = ['Critical', 'Important', 'Moderate', 'Low'];
 
 type LatestReleaseFixesProps = {
   total: number;
   counts: AdvisorySeverityCounts;
 };
 
-const releaseFixesDescription = (total: number, counts: AdvisorySeverityCounts) => {
-  if (total === 0 || counts.None === total) {
-    return 'Released to support a dependency update with no new fixes included.';
-  }
-
-  if (counts.Low > 0) {
-    const vulnerability = counts.Low === 1 ? 'vulnerability' : 'vulnerabilities';
-    return (
-      <>
-        Addresses key security issues, including <strong>{counts.Low} low-severity</strong>{' '}
-        {vulnerability}.
-      </>
-    );
-  }
-
-  return undefined;
-};
-
 const LatestReleaseFixes = ({ total, counts }: LatestReleaseFixesProps) => {
   const fixesTotal = total - counts.None;
-  const description = releaseFixesDescription(total, counts);
 
   return (
     <Flex direction={{ default: 'column' }} gap={{ default: 'gapMd' }}>
@@ -50,21 +32,23 @@ const LatestReleaseFixes = ({ total, counts }: LatestReleaseFixesProps) => {
           ) : null}
           <Title headingLevel='h3' size='lg'>
             {fixesTotal > 0
-              ? `${fixesTotal} new backported fixes in this release`
+              ? `${fixesTotal} new backported ${pluralize(fixesTotal, 'fix', 'fixes')} in this release`
               : 'No new backported fixes in this release'}
           </Title>
         </Flex>
       </FlexItem>
-      {total !== 0 && counts.None !== total ? (
+      {fixesTotal !== 0 ? (
         <FixesCard>
           {DISPLAYED_SEVERITIES.map((severity) => (
             <FixBySeverityStat key={severity} severity={severity} counts={counts} />
           ))}
         </FixesCard>
       ) : null}
-      {description ? (
+      {fixesTotal === 0 ? (
         <FlexItem>
-          <Content component='p'>{description}</Content>
+          <Content component='p'>
+            Released to support a dependency update with no new fixes included.
+          </Content>
         </FlexItem>
       ) : null}
     </Flex>

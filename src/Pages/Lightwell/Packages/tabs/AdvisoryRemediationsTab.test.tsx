@@ -54,8 +54,10 @@ it('auto-expands search matches and restores pre-search row expansions when sear
 
   const javaPackageToggle = getToggle('org.example:demo-lib');
   expect(javaPackageToggle).toHaveAttribute('aria-expanded', 'false');
+  expect(screen.getAllByText('1 upstream version in 1 series')).toHaveLength(2);
   await user.click(javaPackageToggle);
   const javaSeriesToggle = getToggle('3.14.x');
+  expect(screen.getAllByText('1 version')).toHaveLength(2);
   await user.click(javaSeriesToggle);
   expect(javaSeriesToggle).toHaveAttribute('aria-expanded', 'true');
 

@@ -10,6 +10,7 @@ import AdvisoryFilterDropdown from '../components/AdvisoryFilterDropdown';
 import CopyLabel from '../components/CopyLabel';
 import RemediationExportButton from '../components/RemediationExportButton';
 import { useAdvisoryRemediationsTable } from '../hooks/useAdvisoryRemediationsTable';
+import { pluralize } from '../utils/format';
 import sizing from '@patternfly/react-styles/css/utilities/Sizing/sizing';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
@@ -159,7 +160,8 @@ const AdvisoryRemediationsTab = ({ advisoryName, remediations }: AdvisoryRemedia
                         >
                           <strong>{pkg.name}</strong>
                           <span>
-                            {pkg.versionCount} upstream versions in {pkg.series.length} series
+                            {pkg.versionCount} upstream {pluralize(pkg.versionCount, 'version')} in{' '}
+                            {pkg.series.length} series
                           </span>
                         </Flex>
                       </Td>
@@ -218,7 +220,10 @@ const AdvisoryRemediationsTab = ({ advisoryName, remediations }: AdvisoryRemedia
                                         gap={{ default: 'gapXl' }}
                                       >
                                         <strong>{series.name}</strong>
-                                        <span>{series.versions.length} versions</span>
+                                        <span>
+                                          {series.versions.length}{' '}
+                                          {pluralize(series.versions.length, 'version')}
+                                        </span>
                                       </Flex>
                                     </Td>
                                   </Tr>

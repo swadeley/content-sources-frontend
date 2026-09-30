@@ -13,6 +13,7 @@ import {
 import type { PropsWithChildren } from 'react';
 
 import type { AdvisoryDetails } from '../types';
+import { pluralize } from '../utils/format';
 import { SEVERITY_LABEL_COLORS, type AdvisorySeverity } from '../utils/severity';
 
 const ADVISORY_DRAWER_TITLE_ID = 'lightwell-vulnerability-drawer-title';
@@ -74,9 +75,10 @@ const AdvisoryDetailsPanel = ({
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelDescription>
-        Remediated across <strong>{counts.packages}</strong> packages,{' '}
-        <strong>{counts.upstreamVersions}</strong> upstream versions, in{' '}
-        <strong>{counts.ecosystems}</strong> ecosystems
+        Remediated across <strong>{counts.packages}</strong> {pluralize(counts.packages, 'package')}
+        , <strong>{counts.upstreamVersions}</strong> upstream{' '}
+        {pluralize(counts.upstreamVersions, 'version')}, in <strong>{counts.ecosystems}</strong>{' '}
+        {pluralize(counts.ecosystems, 'ecosystem')}
       </DrawerPanelDescription>
       <DrawerPanelBody>{children}</DrawerPanelBody>
     </DrawerPanelContent>

@@ -356,7 +356,7 @@ it('opens the vulnerability details drawer from the remediations tab', async () 
   expect(await screen.findByRole('heading', { name: 'CVE-2024-0001' })).toBeInTheDocument();
   expect(screen.getByRole('dialog', { name: 'CVE-2024-0001' })).toBeInTheDocument();
   expect(screen.getByText(/Remediated across/)).toHaveTextContent(
-    'Remediated across 2 packages, 2 upstream versions, in 1 ecosystems',
+    'Remediated across 2 packages, 2 upstream versions, in 1 ecosystem',
   );
   expect(screen.getByRole('tab', { name: 'Vulnerability remediations tab' })).toBeInTheDocument();
   expect(screen.getByRole('tab', { name: 'Vulnerability OSV tab' })).toBeInTheDocument();
@@ -658,27 +658,29 @@ it('shows latest release fixes for a remediated repository', async () => {
 
   renderPackageDetails();
 
-  expect(await screen.findByText('1 new backported fixes in this release')).toBeInTheDocument();
+  expect(await screen.findByText('1 new backported fix in this release')).toBeInTheDocument();
   expect(screen.getByTestId('lightwell-fixes-card')).toBeInTheDocument();
   expect(usePackageAdvisoriesQuery).toHaveBeenCalledWith(expect.any(Object), { enabled: true });
-});
-
-it('shows the low-severity description when the latest release only fixes low issues', async () => {
-  setupRepository('remediated');
-  mockPackageAdvisoriesQuery([
-    { ...latestReleaseAdvisory, severity: '3.1', severity_score: 3.0999999046325684 },
-  ]);
-
-  renderPackageDetails();
-
-  expect(await screen.findByText('1 new backported fixes in this release')).toBeInTheDocument();
-  expect(screen.getByTestId('lightwell-fixes-card')).toBeInTheDocument();
-  expect(screen.getByText('1 low-severity')).toBeInTheDocument();
 });
 
 it('shows a dependency-update description when the latest release has no fixes', async () => {
   setupRepository('remediated');
   mockPackageAdvisoriesQuery([]);
+
+  renderPackageDetails();
+
+  expect(
+    await screen.findByRole('heading', { name: 'No new backported fixes in this release' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByTestId('lightwell-fixes-card')).not.toBeInTheDocument();
+  expect(
+    screen.getByText('Released to support a dependency update with no new fixes included.'),
+  ).toBeInTheDocument();
+});
+
+it('shows the dependency-update description when all latest-release advisories have no severity', async () => {
+  setupRepository('remediated');
+  mockPackageAdvisoriesQuery([{ ...latestReleaseAdvisory, severity: '0', severity_score: 0 }]);
 
   renderPackageDetails();
 
