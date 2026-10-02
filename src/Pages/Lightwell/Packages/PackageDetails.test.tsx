@@ -539,18 +539,24 @@ it('shows zero fixes across multiple releases with no advisories', async () => {
 
   renderPackageDetails();
 
-  await expectFixSummary('0 fixes across 3 Lightwell releases');
+  const summary = await screen.findByTestId('lightwell-package-fix-summary');
+  expect(summary).toHaveStyle({ visibility: 'hidden' });
+  expect(summary).toHaveAttribute('aria-hidden', 'true');
+  expect(summary.textContent).toBe('0 fixes across 3 Lightwell releases');
 });
 
 it.each([
   ['while loading', { isLoading: true }],
   ['after an error', { isError: true }],
-])('shows zero summary counts %s', async (_scenario, queryState) => {
+])('hides zero summary counts %s', async (_scenario, queryState) => {
   mockPackageAdvisoriesQuery(undefined, queryState);
 
   renderPackageDetails();
 
-  await expectFixSummary('0 fixes across 0 Lightwell releases');
+  const summary = await screen.findByTestId('lightwell-package-fix-summary');
+  expect(summary).toHaveStyle({ visibility: 'hidden' });
+  expect(summary).toHaveAttribute('aria-hidden', 'true');
+  expect(summary.textContent).toBe('0 fixes across 0 Lightwell releases');
 });
 
 it('hides remediations for a selected version without a release', async () => {

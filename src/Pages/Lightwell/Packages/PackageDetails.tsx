@@ -446,7 +446,12 @@ const PackageDetails = () => {
         }
         description={
           hasRelease ? (
-            <span data-ouia-component-id='lightwell-package-fix-summary'>
+            // keep this mounted so hiding the description doesn't cause a layout shift when switching versions
+            <span
+              data-ouia-component-id='lightwell-package-fix-summary'
+              style={{ visibility: fixes > 0 ? 'visible' : 'hidden' }}
+              aria-hidden={fixes <= 0}
+            >
               <strong>{fixes}</strong> {pluralize(fixes, 'fix', 'fixes')} across{' '}
               <strong>{releases}</strong> Lightwell {pluralize(releases, 'release')}
             </span>
