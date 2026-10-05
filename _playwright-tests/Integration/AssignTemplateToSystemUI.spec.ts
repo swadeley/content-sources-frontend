@@ -8,10 +8,12 @@ import {
 } from 'test-utils';
 import {
   DNF_COMMAND_TIMEOUT_MS,
+  LONG_TEST_TIMEOUT_MS,
   MODAL_VISIBILITY_TIMEOUT_MS,
   RHSM_RHCD_WAIT,
   SYSTEM_ROW_VISIBILITY_TIMEOUT_MS,
   CONTENT_PROPAGATION_POLL,
+  TEMPLATE_VALID_STATUS_TIMEOUT_MS,
   YUM_INSTALL_TIMEOUT_MS,
 } from '../testConstants';
 import { RHSMClient, waitForRhcdActive, refreshSubscriptionManager } from './helpers/rhsmClient';
@@ -41,6 +43,7 @@ test.describe('Assign Standard Template to System via UI', () => {
     cleanup,
   }) => {
     void client; // Pull in fixture so Undici fetch dispatcher is configured for dynamic API cleanup
+    test.setTimeout(LONG_TEST_TIMEOUT_MS);
 
     await test.step('Set up cleanup for templates and RHSM client', async () => {
       cleanup.add(() => regClient.Destroy('rhc'));
@@ -71,19 +74,8 @@ test.describe('Assign Standard Template to System via UI', () => {
 
     await test.step('Wait for system to appear in Patch', async () => {
       await waitForRhcdActive(regClient, RHSM_RHCD_WAIT.maxAttempts, RHSM_RHCD_WAIT.delayMs);
-      await waitInPatch(page, hostname, false);
-    });
-
-    await test.step('Create template via UI and open system assignment modal', async () => {
-      await navigateToTemplates(page);
-      await closeGenericPopupsIfExist(page);
-
-      await createTemplateViaUI({
-        page,
-        templateName,
-        templateDescription: 'Test template for system assignment',
-        withSystemAssignment: true,
-      });
+      // Overnight CI can take longer than the default 3 minutes for Patch to list a new host
+      await waitInPatch(page, hostname, false, 8 * 60 * 1000);
     });
 
     await test.step('Verify package URLs come from base CDN before assignment', async () => {
@@ -100,18 +92,36 @@ test.describe('Assign Standard Template to System via UI', () => {
       );
     });
 
+    await test.step('Create template via UI and open system assignment modal', async () => {
+      await navigateToTemplates(page);
+      await closeGenericPopupsIfExist(page);
+
+      await createTemplateViaUI({
+        page,
+        templateName,
+        templateDescription: 'Test template for system assignment',
+        withSystemAssignment: true,
+      });
+    });
+
     await test.step('Assign template to system via system list', async () => {
       const modalPage = page.getByRole('dialog', { name: 'Assign template to systems' });
       await expect(modalPage).toBeVisible({ timeout: MODAL_VISIBILITY_TIMEOUT_MS });
 
-      await expect(modalPage.getByRole('button', { name: 'Save', exact: true })).toBeDisabled({
+      const saveButton = modalPage.getByRole('button', { name: 'Save', exact: true });
+      await expect(saveButton).toBeDisabled({
         timeout: MODAL_VISIBILITY_TIMEOUT_MS,
       });
 
-      const rowSystem = await getRowByNameOrUrl(modalPage, hostname);
+      const rowSystem = await getRowByNameOrUrl(modalPage, hostname, true);
       await rowSystem.getByRole('checkbox').check();
 
-      await modalPage.getByRole('button', { name: 'Save', exact: true }).click();
+      // Save stays disabled until a system is selected *and* the template RHSM environment exists
+      await expect(
+        saveButton,
+        'Save should enable after selecting a system and the template environment is ready',
+      ).toBeEnabled({ timeout: TEMPLATE_VALID_STATUS_TIMEOUT_MS });
+      await saveButton.click();
       await expect(modalPage).toBeHidden({ timeout: MODAL_VISIBILITY_TIMEOUT_MS });
 
       const systemRow = await getRowByNameOrUrl(page, hostname);
