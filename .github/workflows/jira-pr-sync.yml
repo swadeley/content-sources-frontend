@@ -1,0 +1,48 @@
+# Sync PR draft/ready state to HMS Jira status (Focaccia HMS Content replacement).
+#
+# Development → Pull requests is populated by GitHub for Jira when the title
+# contains HMS-####. This workflow only transitions status and comments the
+# browse URL on the PR.
+#
+# Required repository configuration:
+#   vars.JIRA_BASE_URL      e.g. https://redhat.atlassian.net for unscoped tokens
+#  Scoped tokens to use https://api.atlassian.com/ex/jira/<cloudId>
+#  see https://redhat.atlassian.net/_edge/tenant_info
+#   secrets.JIRA_USER_EMAIL  service account email
+#   secrets.JIRA_API_TOKEN   Atlassian API token for that account
+name: Jira PR Sync
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - ready_for_review
+      - converted_to_draft
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+jobs:
+  jira-pr-sync:
+    name: Sync Jira status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Sync PR with Jira
+        env:
+          JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
+          PR_HTML_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 .github/workflowScripts/jira_pr_sync.py
