@@ -1,0 +1,55 @@
+# Sync PR draft/ready state to HMS Jira status (Focaccia HMS Content replacement).
+#
+# Development → Pull requests are populated by GitHub for Jira when the title
+# contains HMS-####. This workflow only transitions status and comments the
+# browse URL on the PR.
+#
+# Uses pull_request_target so repository secrets are available for PRs from
+# forks. Checkout is intentionally the PR base (trusted) branch only, never
+# the PR head, so untrusted PR fork code cannot run with Jira credentials.
+#
+# Required repository configuration:
+#   vars.JIRA_BASE_URL         https://api.atlassian.com/ex/jira/<cloudId>
+#   vars.JIRA_BROWSE_URL       site URL for PR comments, e.g. https://redhat.atlassian.net
+#   secrets.JIRA_CLIENT_ID     OAuth 2.0 client ID (service account credential)
+#   secrets.JIRA_CLIENT_SECRET OAuth 2.0 client secret
+name: Jira PR Sync
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - ready_for_review
+      - converted_to_draft
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+jobs:
+  jira-pr-sync:
+    name: Sync Jira status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v5
+        with:
+          # Trusted code only (base of the PR). Do not checkout the PR head.
+          ref: ${{ github.event.pull_request.base.sha }}
+
+      - name: Sync PR with Jira
+        env:
+          JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}
+          JIRA_BROWSE_URL: ${{ vars.JIRA_BROWSE_URL }}
+          JIRA_CLIENT_ID: ${{ secrets.JIRA_CLIENT_ID }}
+          JIRA_CLIENT_SECRET: ${{ secrets.JIRA_CLIENT_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
+          PR_HTML_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 .github/workflowScripts/jira_pr_sync.py
