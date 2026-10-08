@@ -198,7 +198,7 @@ it('clears the ticket filter when the customer changes and keeps other filters',
   ).toBe(true);
 });
 
-it('shows loading skeleton while data is fetching', async () => {
+it('keeps the status summary card header while metrics are loading', async () => {
   (useCustomerIdsQuery as jest.Mock).mockReturnValue({
     isLoading: false,
     data: ['CID-01'],
@@ -213,9 +213,14 @@ it('shows loading skeleton while data is fetching', async () => {
   renderBeacon();
 
   await waitFor(() => {
-    expect(document.querySelector('.pf-v6-c-skeleton')).toBeInTheDocument();
+    expect(screen.getByText('Status Summary')).toBeInTheDocument();
   });
 
+  expect(document.querySelector('.lw-c-metrics-card')).toBeInTheDocument();
+  expect(document.querySelector('.lw-c-loaded.lw-m-loading')).toBeInTheDocument();
+  expect(document.querySelectorAll('.pf-v6-c-skeleton').length).toBeGreaterThan(0);
+  expect(document.querySelector('.pf-m-text-3xl')).toBeInTheDocument();
+  expect(screen.queryByText('Total')).not.toBeInTheDocument();
   expect(screen.getByText('Beacon')).toBeInTheDocument();
   expect(screen.getByText('Customer ID')).toBeInTheDocument();
   expect(screen.getByText('Filters')).toBeInTheDocument();

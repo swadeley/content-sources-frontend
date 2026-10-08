@@ -197,12 +197,6 @@ module.exports = {
     modules: [srcDir, path.resolve(__dirname, './node_modules')],
   },
   routes: {
-    // Local insights-chrome (PF 6.6.0-prerelease.48). Keep `npm run start` watching in
-    // insights-chrome, and serve dist over HTTP on 9997 (see scripts/serve-chrome-dist.mjs).
-    '/apps/chrome': {
-      host: 'http://127.0.0.1:9997',
-      is_chrome: true,
-    },
     ...(process.env.BACKEND_PORT && {
       '/api/content-sources/': {
         host: `http://127.0.0.1:${process.env.BACKEND_PORT}`,

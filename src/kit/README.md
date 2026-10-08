@@ -11,26 +11,42 @@ src/kit/
   assets/                             Shared kit artwork (logos, backgrounds)
   components/
     primitives/                       Base units — one PF host + Lightwell config
-                                      (LwButton, LwCard, LwMenu, LwPopover, LwStatItem, …)
+                                      (LwButton, LwCard, LwMenu, LwPopover, …)
     assemblies/                       Multi-region slots; use primitives
-      page/                           Page-family assemblies (anti-God siblings)
+      page/                           Page-family assembly
         page.config.css               Page presentational defaults (spacers, type)
-        page-header/                  Kit invention — plain chrome
-        page-hero/                    PF Hero harness — passthrough + slots
-      …                               (LwDataView, …)
+        page-header/                  One header — plain or hero surface
+        page-chrome-slots             PageTitleStack + PageChromeSlots / PageChromeSlot / PageChromeSlotFooter
+      metrics/                        Metrics family (stepper, count, card, stat-item, charts, …)
+        ROADMAP.md                    Family inventory / shared config / sequencing
+        stepper/                      LwMetricsStepper (README + unit roadmap first)
+        stat-item/                    LwStatItem (compact value + label)
+      …                               (LwButtonGroup, LwDataView, …)
     components.config.ts              Prop / behavior defaults for both tiers
     components.config.css             Domain presentational baseline
+  docs/
+    patternfly-gaps.md                Intentional PF gap fills
   lightwell.config.ts                 Tenant root config — cascade top
 ```
+
+Assemblies require **README + roadmap before code** (family + unit roadmaps must
+not overlap). See `.cursor/skills/scaffold-outline`.
 
 ## Importing
 
 ```ts
 // Kit assemblies (barrel)
-import { LwPageHeader, LwPageHero } from 'kit/components/assemblies';
+import {
+  LwPageHeader,
+  PageChromeSlot,
+  PageChromeSlotFooter,
+  PageChromeSlots,
+  PageTitleStack,
+  LwStatItem,
+} from 'kit/components/assemblies';
 
 // Kit primitives (barrel)
-import { LwButton, LwCard, LwMenu, LwPopover, LwStatItem } from 'kit/components/primitives';
+import { LwButton, LwCard, LwMenu, LwPopover } from 'kit/components/primitives';
 
 // Config utilities
 import { mergeComponentProps } from 'kit/components/components.config';
@@ -62,8 +78,9 @@ Each `Lw*` is a logic harness:
 2. **owned slot args** → harness builds interior
 3. **neither** → minimal shell / empty state
 
-One job per assembly. `LwPageHeader` (plain) and `LwPageHero` (PF Hero) are siblings
-with a shared slot grammar — not one God component with a mode flag.
+One job per assembly. `LwPageHeader` is one assembly — `hero` is surface pre-config
+(PF Hero host + two classes), same children / slot grammar. Compose chrome with
+`PageChromeSlots` / `PageChromeSlot` / `PageChromeSlotFooter`; do not invent region props.
 
 ## Tier rules
 
@@ -86,7 +103,12 @@ git mv src/kit/lightwell.config.ts src/lightwell.config.ts
 # update barrel imports; remove src/kit/
 ```
 
+## PatternFly gaps
+
+Intentional fills for missing PF APIs (e.g. MenuToggle `size="lg"`) are tracked in
+[`docs/patternfly-gaps.md`](docs/patternfly-gaps.md). Remove a fill when upstream ships it.
+
 ## Skills
 
 `.cursor/skills/scaffold-outline` — operating perspective, Rule 0, config cascade,
-logic passthrough, page-header vs page-hero, naming conventions.
+logic passthrough, page-header (hero surface), naming conventions.

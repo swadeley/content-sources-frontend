@@ -8,14 +8,10 @@ import { Subscriptions } from 'services/Subscriptions/SubscriptionApi';
 import { useFetchSubscriptionsQuery } from 'services/Subscriptions/SubscriptionQueries';
 import { useFlag } from '@unleash/proxy-client-react';
 import { useKesselWorkspace, useKesselRbac, useTraditionalRbac } from './rbacHelpers';
+import { RbacPermissions } from './rbacPermissions';
 
-// Add permissions here
-export enum RbacPermissions {
-  repoRead, // If the user doesn't have this permission, they won't see the app, it is thus presumed true.
-  repoWrite,
-  templateWrite,
-  templateRead,
-}
+// Keep existing `import { RbacPermissions } from 'middleware/AppContext'` working.
+export { RbacPermissions };
 
 export interface AppContextInterface {
   rbac?: Record<keyof typeof RbacPermissions, boolean>;

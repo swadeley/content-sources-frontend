@@ -96,3 +96,48 @@ it('lets children passthrough win over items', async () => {
   expect(screen.getByRole('button', { name: 'Custom interior' })).toBeInTheDocument();
   expect(screen.queryByRole('menuitem', { name: 'Hidden' })).not.toBeInTheDocument();
 });
+
+it('renders a field label on a labeled group without stealing the toggle name', () => {
+  render(
+    <LwMenu
+      fieldLabel='Customer ID'
+      label='Select customer ID'
+      items={[{ id: 'a', children: 'A' }]}
+    />,
+  );
+
+  const toggle = screen.getByRole('button', { name: 'Select customer ID' });
+  const group = screen.getByRole('group', { name: 'Customer ID' });
+  expect(group).toContainElement(toggle);
+  expect(group).toHaveClass('lw-c-menu-group');
+  expect(screen.getByText('Customer ID')).toBeInTheDocument();
+});
+
+it('passes toggleProps through to the harness-built MenuToggle', () => {
+  render(
+    <LwMenu
+      label='Export'
+      toggleProps={{ variant: 'secondary', ouiaId: 'export-toggle' }}
+      items={[{ id: 'a', children: 'A' }]}
+    />,
+  );
+
+  const toggle = screen.getByRole('button', { name: 'Export' });
+  expect(toggle).toHaveClass('pf-m-secondary');
+  expect(toggle).toHaveAttribute('data-ouia-component-id', 'export-toggle');
+});
+
+it('applies pf-m-display-lg when toggleProps.size is lg (PF MenuToggle gap fill)', () => {
+  render(
+    <LwMenu
+      label='Export'
+      toggleProps={{ size: 'lg', variant: 'secondary' }}
+      items={[{ id: 'a', children: 'A' }]}
+    />,
+  );
+
+  const toggle = screen.getByRole('button', { name: 'Export' });
+  expect(toggle).toHaveClass('pf-m-display-lg');
+  expect(toggle).toHaveClass('pf-m-secondary');
+  expect(toggle).not.toHaveClass('pf-m-small');
+});

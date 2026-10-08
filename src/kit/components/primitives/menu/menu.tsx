@@ -8,7 +8,7 @@ import {
   type MenuToggleElement,
   type MenuToggleProps,
 } from '@patternfly/react-core';
-import { useState, type ReactNode, type Ref } from 'react';
+import { useId, useState, type ReactNode, type Ref } from 'react';
 
 import {
   getLwMenuDefaults,
@@ -25,19 +25,41 @@ export type LwMenuItem = {
   isDisabled?: boolean;
 };
 
+/**
+ * PF `MenuToggle` passthrough for the harness-built toggle.
+ * Harness owns ref / open / busy wiring and wins those keys after spread.
+ *
+ * `size: 'lg'` is a Lightwell gap fill — PF MenuToggle only ships `default` | `sm`.
+ * Maps to `pf-m-display-lg` (same modifier Button uses for `size="lg"`).
+ * See `src/kit/docs/patternfly-gaps.md`.
+ */
+export type LwMenuToggleProps = Partial<
+  Omit<MenuToggleProps, 'ref' | 'onClick' | 'isExpanded' | 'children' | 'size'>
+> & {
+  size?: 'default' | 'sm' | 'lg';
+};
+
 type LwMenuOwnedProps = {
   /** Toggle label when idle. Required unless call-site passes PF `toggle`. */
   label?: ReactNode;
   /** Toggle label while `isBusy`; defaults to `label`. */
   busyLabel?: ReactNode;
+  /**
+   * Visible field label above the toggle (PF does not ship this).
+   * When set, a grouping host earns its place so label + menu stay one flex item.
+   * Not `FormGroup` — chrome / filter UI, not form semantics.
+   */
+  fieldLabel?: ReactNode;
   /** Locks open/close and disables the toggle; shows spinner + busy label. */
   isBusy?: boolean;
   /** Disables the toggle (also true while busy). */
   isDisabled?: boolean;
-  /** MenuToggle variant when harness builds the toggle. */
-  toggleVariant?: MenuToggleProps['variant'];
-  /** ouiaId on the harness-built MenuToggle. */
-  toggleOuiaId?: string;
+  /**
+   * Pure PF `MenuToggle` passthrough for the harness-built toggle.
+   * Do not rename PF tokens (`variant`, `ouiaId`, …) — pass them here.
+   * Ignored when call-site supplies `toggle`.
+   */
+  toggleProps?: LwMenuToggleProps;
   /**
    * Slot build: item descriptors → `DropdownList` / `DropdownItem`.
    * Ignored when `children` is provided (passthrough wins).
@@ -60,8 +82,8 @@ export type LwMenuProps = LwMenuOwnedProps &
 /**
  * Kit **primitive** — configured PF `Dropdown` (standard toggle + menu presentation).
  *
- * One base unit: host = `Dropdown`. Lightwell-owned props (`label`, `isBusy`, `items`, …)
- * configure that host; they do not promote this to an assembly.
+ * One base unit: host = `Dropdown` (or labeled grouping root when `fieldLabel` is set).
+ * MenuToggle stays inside the harness (Dropdown slot) — not a second primitive.
  *
  * Cascade for interior:
  *   1. `children` → passthrough
@@ -74,10 +96,10 @@ export type LwMenuProps = LwMenuOwnedProps &
 export function LwMenu({
   label,
   busyLabel,
+  fieldLabel,
   isBusy = false,
   isDisabled = false,
-  toggleVariant,
-  toggleOuiaId,
+  toggleProps,
   items,
   children,
   toggle: toggleProp,
@@ -86,6 +108,7 @@ export function LwMenu({
   className,
   ...rest
 }: LwMenuProps) {
+  const fieldLabelId = useId();
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const isControlled = isOpenProp !== undefined;
   const isOpen = isControlled ? isOpenProp : uncontrolledOpen;
@@ -106,30 +129,40 @@ export function LwMenu({
 
   const toggleDisabled = isDisabled || isBusy;
   const toggleLabel = isBusy ? (busyLabel ?? label) : label;
+  const isLabeled = fieldLabel != null && fieldLabel !== false && fieldLabel !== '';
+
+  const {
+    size: toggleSize,
+    className: toggleClassName,
+    isDisabled: toggleIsDisabled,
+    'aria-busy': toggleAriaBusy,
+    icon: toggleIcon,
+    ...restToggleProps
+  } = toggleProps ?? {};
+  const isDisplayLg = toggleSize === 'lg';
 
   const defaultToggle = (toggleRef: Ref<MenuToggleElement>) => (
     <MenuToggle
+      {...restToggleProps}
+      // PF MenuToggle size is `default` | `sm` only; `lg` → kit `pf-m-display-lg`.
+      size={toggleSize === 'lg' ? undefined : toggleSize}
+      className={mergeClassNames(isDisplayLg ? 'pf-m-display-lg' : undefined, toggleClassName)}
       ref={toggleRef}
       onClick={() => handleOpenChange(!isOpen)}
       isExpanded={isOpen}
-      isDisabled={toggleDisabled}
-      variant={toggleVariant}
-      ouiaId={toggleOuiaId}
-      aria-busy={isBusy || undefined}
-      icon={isBusy ? <Spinner size='sm' aria-hidden='true' /> : undefined}
+      isDisabled={Boolean(toggleIsDisabled) || toggleDisabled}
+      aria-busy={isBusy || toggleAriaBusy || undefined}
+      icon={isBusy ? <Spinner size='sm' aria-hidden='true' /> : toggleIcon}
     >
       {toggleLabel}
     </MenuToggle>
   );
 
-  // `toggle` is required by DropdownProps but excluded from LwMenuPassthroughProps
-  // (it is caller-owned or harness-built). Merge only what the config type allows,
-  // then spread `toggle` directly onto the host.
   const dropdownProps = mergeComponentProps(getLwMenuDefaults(), {
     ...rest,
     isOpen,
     onOpenChange: handleOpenChange,
-    className: mergeClassNames('lw-c-menu', className),
+    className: isLabeled ? undefined : mergeClassNames('lw-c-menu', className),
   });
 
   const selectItem = (onSelect?: () => void) => {
@@ -156,10 +189,27 @@ export function LwMenu({
     );
   }
 
-  return (
+  const dropdown = (
     <Dropdown {...dropdownProps} toggle={toggleProp ?? defaultToggle}>
       {interior}
     </Dropdown>
+  );
+
+  if (!isLabeled) {
+    return dropdown;
+  }
+
+  return (
+    <div
+      className={mergeClassNames('lw-c-menu', 'lw-c-menu-group', className)}
+      role='group'
+      aria-labelledby={fieldLabelId}
+    >
+      <span className='lw-c-menu-group__label' id={fieldLabelId}>
+        {fieldLabel}
+      </span>
+      {dropdown}
+    </div>
   );
 }
 

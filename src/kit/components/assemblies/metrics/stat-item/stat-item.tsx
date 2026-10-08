@@ -17,10 +17,13 @@ export type LwStatItemProps = {
 };
 
 /**
- * Kit **primitive** — stat value + label block.
+ * Kit **assembly** (metrics family) — stat value + label block.
  * No PF host equivalent; renders a minimal two-element block.
  * Variant maps to PF status tokens in co-located CSS.
  * Layout (centering, Flex context) is the parent's responsibility.
+ *
+ * Prefer `LwMetricsCount` when the surface needs status bar / tooltip / Flex host.
+ * This unit stays for compact value+label without that chrome.
  */
 export function LwStatItem({ value, label, variant = 'default', className }: LwStatItemProps) {
   const variantClass = variant !== 'default' ? `lw-c-stat-item--${variant}` : undefined;

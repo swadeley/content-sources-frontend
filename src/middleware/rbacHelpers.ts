@@ -8,7 +8,7 @@ import {
   type SelfAccessCheckResourceWithRelation,
 } from '@project-kessel/react-kessel-access-check';
 import { Features } from 'services/Features/FeatureApi';
-import { RbacPermissions } from './AppContext';
+import { RbacPermissions } from './rbacPermissions';
 import PackageJson from '../../package.json';
 import { BulkSelfAccessCheckNestedRelationsParams } from '@project-kessel/react-kessel-access-check/types';
 

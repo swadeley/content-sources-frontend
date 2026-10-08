@@ -1,0 +1,34 @@
+/* LwMetricsCount — PF text + optional chromatic status bar.
+ * KitCssScopePlugin already wraps — do not re-scope the theme class.
+ */
+
+.lw-c-metrics-count {
+  --lw-metrics-count-bar-color: transparent;
+}
+
+.lw-c-metrics-count__value {
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.lw-c-metrics-count__label {
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.lw-c-metrics-count__bar {
+  display: block;
+  width: 2.5rem;
+  height: 0.25rem;
+  border-radius: var(--pf-t--global--border--radius--pill);
+  background-color: var(--lw-metrics-count-bar-color);
+}
+
+.lw-c-metrics-count__help {
+  display: inline-flex;
+  line-height: 0;
+  color: var(--pf-t--global--text--color--subtle);
+  cursor: help;
+}
+
+.lw-c-metrics-count.lw-m-row .lw-c-metrics-count__bar {
+  width: 1.5rem;
+}

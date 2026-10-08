@@ -1,17 +1,34 @@
 import { useMemo } from 'react';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
-import { PageSection, Stack, StackItem } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { LwPageHero } from 'kit/components/assemblies';
+import {
+  CardBody,
+  Content,
+  HelperText,
+  HelperTextItem,
+  MultipleFileUpload,
+  MultipleFileUploadMain,
+} from '@patternfly/react-core';
+import { UploadIcon } from '@patternfly/react-icons';
+import {
+  LwPageHeader,
+  PageChromeSlot,
+  PageChromeSlots,
+  PageTitleStack,
+} from 'kit/components/assemblies';
+import { LwCard } from 'kit/components/primitives';
 import { useManifestUpload } from './hooks/useManifestUpload';
-import ManifestUploadCard from './components/ManifestUploadCard';
+import AnalysisProgress from './components/AnalysisProgress';
+import ManifestFormatPopover from './components/ManifestFormatPopover';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
 
 const DROP_LAST_CHROME_SEGMENT_OPTIONS = { dropLastChromeSegment: true };
 
 const ManifestUpload = () => {
   const { uploadProps } = useManifestUpload();
+  const { step, reportUUID, file, fileError, processError, onDropAccepted, onRetry } = uploadProps;
+  const showProgress = step === 'uploading' || step === 'analyzing' || !!processError;
+
   const rootPath = useLightwellRootPath();
   const appBreadcrumbsEnabled = useFlag('platform.chrome.app-breadcrumbs');
   const breadcrumbs = useMemo(
@@ -26,21 +43,66 @@ const ManifestUpload = () => {
   });
 
   return (
-    <>
-      <LwPageHero
-        title='Lightwell Lens'
-        ouiaId='lightwell-coverage-header'
-        description='Upload your SBOM or package manifest to assess your stack against the Lightwell Network catalog.'
-      />
-      {/* plXs matches the mXs margin LwPageHero applies to its inner title flex, keeping content left-aligned */}
-      <PageSection aria-label='Lens Uploader' hasBodyWrapper={false}>
-        <Stack hasGutter style={{ maxWidth: 1200 }}>
-          <StackItem>
-            <ManifestUploadCard {...uploadProps} />
-          </StackItem>
-        </Stack>
-      </PageSection>
-    </>
+    <LwPageHeader hero>
+      <PageChromeSlots>
+        <PageChromeSlot>
+          <PageTitleStack
+            title='Lightwell Lens'
+            description='Upload your SBOM or package manifest to assess your stack against the Lightwell Network catalog.'
+            ouiaId='lightwell-coverage-header'
+          />
+        </PageChromeSlot>
+        <PageChromeSlot>
+          {showProgress ? (
+            <LwCard isPlain isGlass={false}>
+              <CardBody>
+                <AnalysisProgress
+                  step={step}
+                  reportUUID={reportUUID}
+                  processError={processError}
+                  onRetry={onRetry}
+                />
+              </CardBody>
+            </LwCard>
+          ) : (
+            <LwCard
+              isPlain
+              isGlass={false}
+              hasHeader='Select your manifest file'
+              hasAction={<ManifestFormatPopover />}
+            >
+              <MultipleFileUpload
+                isHorizontal
+                dropzoneProps={{ multiple: false, maxFiles: 1, onDropAccepted }}
+              >
+                <MultipleFileUploadMain
+                  titleIcon={<UploadIcon />}
+                  titleText='Drag and drop a file here'
+                  titleTextSeparator='or'
+                  browseButtonText='Choose file'
+                />
+              </MultipleFileUpload>
+              {fileError ? (
+                <HelperText>
+                  <HelperTextItem variant='error'>
+                    {file?.name ? `${file.name}: ${fileError}` : fileError}
+                  </HelperTextItem>
+                </HelperText>
+              ) : null}
+            </LwCard>
+          )}
+        </PageChromeSlot>
+      </PageChromeSlots>
+      <PageChromeSlots>
+        <PageChromeSlot>
+          <Content>
+            Supported formats: CSV, CycloneDX, SPDX, POM, requirements.txt
+            <br />
+            File size limit: Up to 10MB for POM files. Up to 15MB for all other supported formats.
+          </Content>
+        </PageChromeSlot>
+      </PageChromeSlots>
+    </LwPageHeader>
   );
 };
 

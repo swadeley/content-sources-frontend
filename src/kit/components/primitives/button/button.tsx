@@ -16,6 +16,9 @@ export type LwButtonProps = {
  * Kit **primitive** — configured PF `Button`.
  * Logic harness, not a DOM wrap: root = `Button`; call-site props win via mergeComponentProps.
  * Defaults live in `components.config.ts` → `componentsConfig.button`.
+ *
+ * Circle icon-help: pass PF `isCircle` (→ `pf-m-circle`). Do not invent a Lightwell twin
+ * or product CSS (e.g. `lightwell-help-btn`). Prefer `LwTooltip` / `LwPopover` + this host.
  */
 export function LwButton({ className, ...rest }: LwButtonProps) {
   const buttonProps = mergeComponentProps(getLwButtonDefaults(), {

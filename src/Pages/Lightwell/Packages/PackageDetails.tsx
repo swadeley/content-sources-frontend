@@ -1,31 +1,23 @@
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  Button,
-  Card,
   CardBody,
   Dropdown,
   DropdownItem,
   DropdownList,
-  Flex,
   Grid,
   GridItem,
-  Icon,
   Label,
   MenuToggle,
-  PageBreadcrumb,
   PageSection,
   Tab,
   TabContent,
   TabContentBody,
   Tabs,
   TabTitleText,
-  Title,
-  Truncate,
 } from '@patternfly/react-core';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import { CodeIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { createUseStyles } from 'react-jss';
 import { createRef, useLayoutEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -33,7 +25,6 @@ import { useParams } from 'react-router-dom';
 import Loader from 'components/Loader';
 import LightwellEmptyState from '../components/LightwellEmptyState';
 import LightwellNotFound from '../components/LightwellNotFound';
-import LightwellPageHeader from '../components/LightwellPageHeader';
 import {
   useMavenPackageVersionsListQuery,
   usePythonPackageVersionsQuery,
@@ -50,7 +41,6 @@ import {
   getMockMavenPackageVersionsList,
   getMockPythonPackageVersions,
 } from '../mockPackages';
-import RemediatedDataWarning from '../RemediatedDataWarning';
 import ConnectRepositoryModal from '../Repositories/components/ConnectRepositoryModal';
 import useLightwellRepository from '../../../Hooks/Lightwell/useLightwellRepository';
 import PackageOverviewTab from './tabs/PackageOverviewTab';
@@ -59,6 +49,7 @@ import PackageRemediationsTab from './tabs/PackageRemediationsTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './tabs/PackageVersionsTab';
 import AdvisoryDetailsDrawer from './AdvisoryDetailsDrawer';
+import RemediatedDataWarning from '../RemediatedDataWarning';
 import { formatReleaseCopyText, getPackageCoordinate, pluralize } from './utils/format';
 import { usePackageRemediations } from './hooks/usePackageRemediations';
 import {
@@ -68,8 +59,16 @@ import {
   stripLightwellVersionSuffix,
   toLightwellRelease,
 } from './utils/versions';
-import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
+import {
+  LwButtonGroup,
+  LwPageHeader,
+  PageChromeSlot,
+  PageChromeSlotFooter,
+  PageChromeSlots,
+  PageTitleStack,
+} from 'kit/components/assemblies';
+import { LwAlert, LwButton, LwCard } from 'kit/components/primitives';
 
 const useStyles = createUseStyles({
   detailCard: {
@@ -81,7 +80,6 @@ const DROP_LAST_CHROME_SEGMENT_OPTIONS = { dropLastChromeSegment: true };
 
 const PackageDetails = () => {
   const classes = useStyles();
-  const { navigateTo } = useLightwellNavigateTo();
   const rootPath = useLightwellRootPath();
 
   const {
@@ -376,6 +374,13 @@ const PackageDetails = () => {
     return <Loader />;
   }
 
+  const singleVersionLabel =
+    versionOptions.length === 1 && (selectedVersion || activeVersion)
+      ? isMaven && hasRelease
+        ? upstreamVersion
+        : selectedVersion || activeVersion
+      : '';
+
   return (
     <AdvisoryDetailsDrawer
       preferredRecord={{
@@ -384,101 +389,81 @@ const PackageDetails = () => {
         packageVersion: activeVersion,
       }}
     >
-      {!appBreadcrumbsEnabled && (
-        <PageBreadcrumb isWidthLimited>
-          <Breadcrumb ouiaId='lightwell-package-details-breadcrumb'>
-            <BreadcrumbItem component='button' onClick={() => navigateTo('repositories')}>
-              Lightwell Repositories
-            </BreadcrumbItem>
-            <BreadcrumbItem
-              component='button'
-              onClick={() => navigateTo('repositoryPackages', { repoSlug })}
-            >
-              {breadcrumbRepoName}
-            </BreadcrumbItem>
-            <BreadcrumbItem isActive>
-              <Truncate content={packageCoordinate || '—'} />
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </PageBreadcrumb>
-      )}
-
-      <LightwellPageHeader
-        title={
-          <Title headingLevel='h1' ouiaId='lightwell-package-details-header'>
-            {packageCoordinate || 'Package details'}
-          </Title>
-        }
-        titleStart={<Icon size='xl'>{getEcosystemIcon(repository.content_type)}</Icon>}
-        titleEnd={
-          <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
-            {versionOptions.length === 1 && (selectedVersion || activeVersion) ? (
-              <Label variant='outline' style={{ fontSize: '14px', padding: '8px 16px' }}>
-                {isMaven && hasRelease ? upstreamVersion : selectedVersion || activeVersion}
-              </Label>
-            ) : null}
-            {versionOptions.length > 1 ? (
-              <Dropdown
-                isScrollable
-                onSelect={(_e, val) => {
-                  setSelectedVersion(val as string);
-                  setVersionDropdownOpen(false);
-                }}
-                toggle={(toggleRef) => (
-                  <MenuToggle
-                    variant='primary'
-                    ref={toggleRef}
-                    onClick={() => setVersionDropdownOpen((prev) => !prev)}
-                    isExpanded={versionDropdownOpen}
-                    ouiaId='lightwell-version-selector'
+      <LwPageHeader>
+        <PageChromeSlots>
+          <PageChromeSlot>
+            <PageTitleStack
+              title={packageCoordinate || 'Package details'}
+              icon={getEcosystemIcon(repository.content_type)}
+              description={
+                hasRelease ? (
+                  // keep this mounted so hiding the description doesn't cause a layout shift when switching versions
+                  <span
+                    data-ouia-component-id='lightwell-package-fix-summary'
+                    style={{ visibility: fixes > 0 ? 'visible' : 'hidden' }}
+                    aria-hidden={fixes <= 0}
                   >
-                    {selectedVersion || activeVersion}
-                  </MenuToggle>
-                )}
-                onOpenChange={(isOpen) => setVersionDropdownOpen(isOpen)}
-                isOpen={versionDropdownOpen}
-              >
-                <DropdownList>
-                  {versionOptions.map((v) => (
-                    <DropdownItem key={v} value={v} isSelected={selectedVersion === v}>
-                      {v}
-                    </DropdownItem>
-                  ))}
-                </DropdownList>
-              </Dropdown>
-            ) : null}
-          </Flex>
-        }
-        description={
-          hasRelease ? (
-            // keep this mounted so hiding the description doesn't cause a layout shift when switching versions
-            <span
-              data-ouia-component-id='lightwell-package-fix-summary'
-              style={{ visibility: fixes > 0 ? 'visible' : 'hidden' }}
-              aria-hidden={fixes <= 0}
-            >
-              <strong>{fixes}</strong> {pluralize(fixes, 'fix', 'fixes')} across{' '}
-              <strong>{releases}</strong> Lightwell {pluralize(releases, 'release')}
-            </span>
-          ) : null
-        }
-        actions={
-          <ConnectRepositoryModal
-            repository={{
-              uuid: repository.uuid,
-              name: repository.name,
-              published_distribution_url: formatDistributionUrl(
-                repository.published_distribution_url || '',
-              ),
-              content_type: repository.content_type,
-            }}
-          >
-            <Button size='sm' variant='secondary' icon={<CodeIcon />}>
-              Connect
-            </Button>
-          </ConnectRepositoryModal>
-        }
-      />
+                    <strong>{fixes}</strong> {pluralize(fixes, 'fix', 'fixes')} across{' '}
+                    <strong>{releases}</strong> Lightwell {pluralize(releases, 'release')}
+                  </span>
+                ) : null
+              }
+              ouiaId='lightwell-package-details-header'
+            />
+            <PageChromeSlotFooter>
+              <LwButtonGroup>
+                <ConnectRepositoryModal
+                  repository={{
+                    uuid: repository.uuid,
+                    name: repository.name,
+                    published_distribution_url: formatDistributionUrl(
+                      repository.published_distribution_url || '',
+                    ),
+                    content_type: repository.content_type,
+                  }}
+                >
+                  <LwButton variant='secondary' icon={<CodeIcon />}>
+                    Connect
+                  </LwButton>
+                </ConnectRepositoryModal>
+
+                {singleVersionLabel ? <Label variant='outline'>{singleVersionLabel}</Label> : null}
+                {versionOptions.length > 1 ? (
+                  <Dropdown
+                    isScrollable
+                    onSelect={(_e, val) => {
+                      setSelectedVersion(val as string);
+                      setVersionDropdownOpen(false);
+                    }}
+                    toggle={(toggleRef) => (
+                      <MenuToggle
+                        ref={toggleRef}
+                        onClick={() => setVersionDropdownOpen((prev) => !prev)}
+                        isExpanded={versionDropdownOpen}
+                        ouiaId='lightwell-version-selector'
+                      >
+                        {selectedVersion || activeVersion}
+                      </MenuToggle>
+                    )}
+                    onOpenChange={(isOpen) => setVersionDropdownOpen(isOpen)}
+                    isOpen={versionDropdownOpen}
+                  >
+                    <DropdownList>
+                      {versionOptions.map((v) => (
+                        <DropdownItem key={v} value={v} isSelected={selectedVersion === v}>
+                          {v}
+                        </DropdownItem>
+                      ))}
+                    </DropdownList>
+                  </Dropdown>
+                ) : null}
+              </LwButtonGroup>
+              {(repository.security_level === 'remediated' ||
+                repository.security_level === 'predisclosure') && <LwAlert />}
+            </PageChromeSlotFooter>
+          </PageChromeSlot>
+        </PageChromeSlots>
+      </LwPageHeader>
 
       {showEmpty || hasDetail ? (
         <PageSection hasBodyWrapper={false} aria-label='Package details'>
@@ -492,7 +477,7 @@ const PackageDetails = () => {
           ) : null}
 
           {hasDetail ? (
-            <Card className={classes.detailCard}>
+            <LwCard className={`${classes.detailCard} ${spacing.mxLg} ${spacing.mbLg}`}>
               <CardBody>
                 <Grid hasGutter>
                   <GridItem md={8}>
@@ -653,7 +638,7 @@ const PackageDetails = () => {
                   </GridItem>
                 </Grid>
               </CardBody>
-            </Card>
+            </LwCard>
           ) : null}
         </PageSection>
       ) : null}

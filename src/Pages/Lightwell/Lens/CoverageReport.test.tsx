@@ -31,8 +31,14 @@ jest.mock('Hooks/Lightwell/navigation/useLightwellRootPath', () => ({
 }));
 
 // Charts (including the bar chart's screen-reader table) are tested in their own files
-jest.mock('./charts/EcosystemBarChart', () => ({ __esModule: true, default: () => null }));
-jest.mock('./charts/MatchDonutChart', () => ({ __esModule: true, default: () => null }));
+jest.mock('kit/components/assemblies', () => {
+  const actual = jest.requireActual('kit/components/assemblies');
+  return {
+    ...actual,
+    LwMetricsDonutChart: () => null,
+    LwMetricsStackChart: () => null,
+  };
+});
 
 jest.mock('services/Lightwell/CoverageReportsQueries', () => ({
   ...jest.requireActual('services/Lightwell/CoverageReportsQueries'),

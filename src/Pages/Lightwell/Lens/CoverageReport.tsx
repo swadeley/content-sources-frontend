@@ -2,11 +2,14 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
-import { LwPageHero } from 'kit/components/assemblies';
+import {
+  LwPageHeader,
+  PageChromeSlot,
+  PageChromeSlots,
+  PageTitleStack,
+} from 'kit/components/assemblies';
 import {
   Alert,
-  Button,
-  Card,
   CardBody,
   Flex,
   FlexItem,
@@ -17,7 +20,6 @@ import {
   Truncate,
 } from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import CoverageSummaryBlock from './components/CoverageSummaryBlock';
 import CveFixesBlock from './components/CveFixesBlock';
 import ManifestFormatPopover from './components/ManifestFormatPopover';
@@ -31,6 +33,7 @@ import LightwellNotFound from '../components/LightwellNotFound';
 import type { EcosystemInfo } from './utils/ecosystem';
 import { getTotalCveCount } from './utils/cveSeverity';
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
+import { LwButton, LwCard } from 'kit/components/primitives';
 
 const DROP_LAST_CHROME_SEGMENT_OPTIONS = { dropLastChromeSegment: true };
 
@@ -93,52 +96,57 @@ const CoverageReport = () => {
 
   return (
     <>
-      <LwPageHero
-        title={matchAnalysisTitle}
-        description={
-          skippedEntries > 0 ? (
-            <Alert
-              variant='warning'
-              isInline
-              title={`${skippedEntries} ${skippedEntries === 1 ? 'package' : 'packages'} skipped`}
-            >
-              <div>
-                {skippedEntries === 1
-                  ? "Its entry doesn't match a supported format."
-                  : "Their entries don't match a supported format."}{' '}
-                <ManifestFormatPopover label='View supported formats' />
-              </div>
-            </Alert>
-          ) : undefined
-        }
-        ouiaId='lightwell-coverage-header'
-        actions={
-          <Flex gap={{ default: 'gapSm' }}>
-            <FlexItem>
-              <ExportMenu
-                uuid={report.uuid}
-                filename={filename}
-                filters={table.debouncedFilters}
-                includeCveData={hasCveData}
-                packageCount={packageCount}
-              />
-            </FlexItem>
-            <FlexItem>
-              <Button
-                variant='secondary'
-                icon={<PlusIcon />}
-                ouiaId='lightwell-new-analysis-button'
-                onClick={startOver}
+      <LwPageHeader hero bodyWidth='100%' bodyMaxWidth='100%'>
+        <PageChromeSlots>
+          <PageChromeSlot>
+            <PageTitleStack title={matchAnalysisTitle} ouiaId='lightwell-coverage-header' />
+          </PageChromeSlot>
+          <PageChromeSlot>
+            <Flex gap={{ default: 'gapSm' }}>
+              <FlexItem>
+                <ExportMenu
+                  uuid={report.uuid}
+                  filename={filename}
+                  filters={table.debouncedFilters}
+                  includeCveData={hasCveData}
+                  packageCount={packageCount}
+                />
+              </FlexItem>
+              <FlexItem>
+                <LwButton
+                  variant='secondary'
+                  icon={<PlusIcon />}
+                  ouiaId='lightwell-new-analysis-button'
+                  onClick={startOver}
+                >
+                  New analysis
+                </LwButton>
+              </FlexItem>
+            </Flex>
+          </PageChromeSlot>
+        </PageChromeSlots>
+        {skippedEntries > 0 && (
+          <PageChromeSlots>
+            <PageChromeSlot>
+              <Alert
+                variant='warning'
+                isInline
+                title={`${skippedEntries} ${skippedEntries === 1 ? 'package' : 'packages'} skipped`}
               >
-                New analysis
-              </Button>
-            </FlexItem>
-          </Flex>
-        }
-      />
-      {/* plXs matches the mXs margin LwPageHero applies to its inner title flex, keeping content left-aligned */}
+                <div>
+                  {skippedEntries === 1
+                    ? "Its entry doesn't match a supported format."
+                    : "Their entries don't match a supported format."}{' '}
+                  <ManifestFormatPopover label='View supported formats' />
+                </div>
+              </Alert>
+            </PageChromeSlot>
+          </PageChromeSlots>
+        )}
+      </LwPageHeader>
+
       <PageSection aria-label='Match analysis' hasBodyWrapper={false}>
-        <Stack hasGutter style={{ maxWidth: 1200, gap: '3rem' }}>
+        <Stack hasGutter>
           <StackItem>
             <CoverageSummaryBlock report={report} />
           </StackItem>
@@ -151,7 +159,7 @@ const CoverageReport = () => {
             <EcosystemBreakdownBlock report={report} />
           </StackItem>
           <StackItem>
-            <Card isGlass>
+            <LwCard>
               <CardBody>
                 {/* Remove Flex because it interacts with DataView's 100%-height and creates extra space below pagination */}
                 <PackageCoverageTable
@@ -162,7 +170,7 @@ const CoverageReport = () => {
                   onPackageCountChange={setPackageCount}
                 />
               </CardBody>
-            </Card>
+            </LwCard>
           </StackItem>
         </Stack>
       </PageSection>

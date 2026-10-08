@@ -68,7 +68,8 @@
   width: 100%;
 }
 
-/* Pipeline */
+/* Pipeline — UNUSED (PipelineView → LwMetricsStepper). Dissolution sweep.
+ * See scaffold-outline/examples/dissolution-map.md */
 .lightwell-pipeline {
   padding: var(--pf-t--global--spacer--sm) 0;
 }
@@ -79,7 +80,8 @@
   padding: 0 var(--pf-t--global--spacer--xs);
 }
 
-/* Status cards (read-only pipeline visuals) */
+/* Status cards — UNUSED (StatusCard → LwMetricsStepper). Dissolution sweep.
+ * See scaffold-outline/examples/dissolution-map.md */
 .lightwell-status-card {
   text-align: center;
   min-width: 100px;
@@ -111,7 +113,8 @@
   white-space: normal;
 }
 
-/* Summary stats */
+/* Summary stats — UNUSED (old summary chrome → LwMetricsCount). Dissolution sweep.
+ * See scaffold-outline/examples/dissolution-map.md */
 .lightwell-stat-number {
   display: block;
   font-size: 2rem;
@@ -119,11 +122,15 @@
   line-height: 1.2;
 }
 
+/* UNUSED — SlaInfoPopover help trigger; successor: LwButton isCircle / LwTooltip.
+ * Dissolution sweep. See scaffold-outline/examples/dissolution-map.md */
 .lightwell-help-btn {
   padding: 0;
   font-size: var(--pf-t--global--font--size--body--sm);
 }
 
+/* UNUSED — old critical stat paint → LwMetricsCount color. Dissolution sweep.
+ * See scaffold-outline/examples/dissolution-map.md */
 .lightwell-stat--critical {
   color: var(--pf-t--global--color--status--danger--default);
 }

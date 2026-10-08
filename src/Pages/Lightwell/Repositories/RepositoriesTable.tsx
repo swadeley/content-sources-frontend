@@ -1,6 +1,4 @@
 import {
-  Button,
-  Card,
   Content,
   Flex,
   FlexItem,
@@ -62,7 +60,15 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellNavigateTo';
 import { useLightwellRootPath } from 'Hooks/Lightwell/navigation/useLightwellRootPath';
 import NotificationPreferencesModal from './components/NotificationPreferencesModal';
-import { LwPageHeader } from 'kit/components/assemblies';
+import {
+  LwButtonGroup,
+  LwPageHeader,
+  PageChromeSlot,
+  PageChromeSlotFooter,
+  PageChromeSlots,
+  PageTitleStack,
+} from 'kit/components/assemblies';
+import { LwButton, LwCard } from 'kit/components/primitives';
 import { useLightwellNotificationPrefs } from './hooks/useLightwellNotificationPrefs';
 import {
   mapSeveritiesToApi,
@@ -209,27 +215,34 @@ const RepositoriesTable = () => {
 
   return (
     <>
-      <LwPageHeader
-        title='Repositories'
-        ouiaId='lightwell-header'
-        description='Browse Lightwell repositories by ecosystem and security level.'
-        {...(shouldShowNotificationButton && {
-          actions: (
-            <NotificationPreferencesModal>
-              <Button
-                size='sm'
-                variant='secondary'
-                aria-label='Notification preferences'
-                ouiaId='lightwell-notification-preferences-button'
-                icon={<BellIcon />}
-                {...(!isDemo && { isDisabled: isNotificationPrefsError })}
-              >
-                Notifications
-              </Button>
-            </NotificationPreferencesModal>
-          ),
-        })}
-      />
+      <LwPageHeader>
+        <PageChromeSlots>
+          <PageChromeSlot>
+            <PageTitleStack
+              title='Repositories'
+              description='Browse Lightwell repositories by ecosystem and security level.'
+              ouiaId='lightwell-header'
+            />
+            {shouldShowNotificationButton ? (
+              <PageChromeSlotFooter>
+                <LwButtonGroup>
+                  <NotificationPreferencesModal>
+                    <LwButton
+                      variant='primary'
+                      aria-label='Notification preferences'
+                      ouiaId='lightwell-notification-preferences-button'
+                      icon={<BellIcon />}
+                      {...(!isDemo && { isDisabled: isNotificationPrefsError })}
+                    >
+                      Notifications
+                    </LwButton>
+                  </NotificationPreferencesModal>
+                </LwButtonGroup>
+              </PageChromeSlotFooter>
+            ) : null}
+          </PageChromeSlot>
+        </PageChromeSlots>
+      </LwPageHeader>
       <PageSection hasBodyWrapper={false} className={`${spacing.pt_0} ${spacing.pbLg}`}>
         <Grid data-ouia-component-id='lightwell-repositories-page'>
           <Hide hide={countIsZero || count < 10}>
@@ -258,7 +271,7 @@ const RepositoriesTable = () => {
           </Hide>
           <Hide hide={countIsZero || isLoading}>
             <Stack>
-              <Card className={`${spacing.ptLg} ${spacing.pb_2xl} ${spacing.pxLg}`}>
+              <LwCard className={`${spacing.ptLg} ${spacing.pb_2xl} ${spacing.pxLg}`}>
                 <Stack>
                   <Table
                     aria-label='Lightwell repositories table'
@@ -297,7 +310,7 @@ const RepositoriesTable = () => {
                                   gap={{ default: 'gapSm' }}
                                 >
                                   <Icon size='xl'>{getEcosystemIcon(content_type)}</Icon>
-                                  <Button
+                                  <LwButton
                                     variant='link'
                                     isInline
                                     ouiaId={`lightwell-repo-${uuid}`}
@@ -309,7 +322,7 @@ const RepositoriesTable = () => {
                                     }
                                   >
                                     {formatRepositoryName(content_type, security_level, name)}
-                                  </Button>
+                                  </LwButton>
                                 </Flex>
                                 <FlexItem>
                                   <Content component='small'>
@@ -398,7 +411,7 @@ const RepositoriesTable = () => {
                     />
                   </Hide>
                 </Stack>
-              </Card>
+              </LwCard>
             </Stack>
           </Hide>
           <Hide hide={!countIsZero || isLoading}>

@@ -20,8 +20,12 @@ and **configured** at call sites — not reimplemented per page.
 
 | Tier | What it is | Path | Examples |
 | ---- | ---------- | ---- | -------- |
-| **Primitive** | Base unit — one configured PF host | `components/primitives/` | `LwButton`, `LwCard`, `LwMenu`, `LwPopover`, `LwStatItem` |
-| **Assembly** | Structured / movable multi-region slots; **uses primitives** | `components/assemblies/` | `LwPageHeader`, `LwPageHero`, `LwDataView` |
+| **Primitive** | Base unit — one configured PF host | `components/primitives/` | `LwButton`, `LwCard`, `LwMenu`, `LwPopover`, `LwTooltip`, `LwEmptyState`, `LwSkeleton` |
+| **Assembly** | Structured / movable multi-region slots; **uses primitives** | `components/assemblies/` | `LwPageHeader`, `LwButtonGroup`, `LwDataView`, metrics family (`LwMetricsStepper`, `LwMetricsCount`, `LwStatItem`, …) |
+
+**Assembly docs:** new assemblies require family/unit `ROADMAP.md` + unit `README.md`
+**before** implementation code. Family and unit roadmaps must not overlap. See
+[SKILL.md § Assembly docs](SKILL.md#assembly-docs-required-before-code).
 
 **Primitive test (all three):**
 
@@ -31,20 +35,40 @@ and **configured** at call sites — not reimplemented per page.
 | B | **Not a special composition** — standard presentation of that PF control |
 | C | **PF-shaped** — same job PatternFly already names (Button, Dropdown, Label, …) |
 
-Lightwell-owned props on that host (`label` / `isBusy` / `items` on `LwMenu`,
-future `intent` on `LwButton`) are **configuration of the base unit**. They do
-**not** promote to assembly. Kit invention ≠ assembly.
+Lightwell-owned props on that host (`label` / `isBusy` / `items` / `fieldLabel` on
+`LwMenu`, future `intent` on `LwButton`) are **configuration of the base unit**. They do
+**not** promote to assembly. Kit invention ≠ assembly. Menu toggle + menu are one
+primitive (`LwMenu`) — toggles do not ship alone in the wild. Secondary PF pieces
+required by a host slot (MenuToggle via Dropdown `toggle`) stay inside that harness;
+pure PF knobs use a props bag (`toggleProps`), not renamed owned twins.
 
 **Promotion rule:** a primitive becomes an assembly when it owns a **multi-region
 slot contract** (title / description / actions / … that rearrange chrome), and/or
 begins **composing other `Lw*` units**. Example: a future composed status card that
-nests `LwStatItem` + `LwMenu` inside `LwCard` would be an assembly. `LwCard` /
+nests metrics units + `LwMenu` inside `LwCard` would be an assembly. `LwCard` /
 `LwMenu` / `LwPopover` stay primitive: one PF host each, Lightwell props map onto
-that host.
+that host. Metrics value cells (`LwStatItem`, `LwMetricsCount`) live under
+`assemblies/metrics/` — metric concern, not base PF hosts.
+
+**Layout assemblies** (`LwButtonGroup`): children-only arrangement. Call site passes
+N controls; the assembly must not hard-code Beacon (or any product) slots.
+
+**Hidden CSS namespace:** `KitCssScopePlugin` wraps `src/kit/**` in
+`html.lightwell-v1-theme`. Authors write as if already inside that block — never
+re-declare the theme class (double-nest → rules miss). Details: [SKILL.md](SKILL.md#hidden-theme-namespace-kitcssscopeplugin).
 
 **Domain wiring** (Beacon table, column catalogs, pipeline views) is not a kit tier.
 It stays with the product until it earns extraction. Never call domain code an "assembly"
 in kit paths.
+
+**Chrome vs domain:** Lightwell surfaces compose **kit roots** for PF hosts. Domain may
+own fetch, copy, and item builders — not product-named chrome shells (`SlaInfoPopover`,
+`lightwell-help-btn`). Replace **usages** on the page first; leave dead domain files
+**untouched** until a [dissolution sweep](examples/dissolution-map.md) — do not edit or
+mass-delete them in the migrate PR. Icon-help is centralized: `LwTooltip` defaults its
+trigger to `LwButton` + PF `isCircle`; richer help stays `LwPopover` + circle `LwButton`
+at the call site. `EmptyState` / `Skeleton` are **root-only** kit hosts — subregions stay
+call-site composition until a second surface earns a kit job.
 
 Stack:
 
@@ -82,9 +106,9 @@ would fork the cascade.
 
 | File | Role |
 | ---- | ---- |
-| `src/kit/components/components.config.css` | Domain presentational defaults — generic padding, font-size, font-weight, shared spacers |
-| `src/kit/components/assemblies/page/page.config.css` | Page-family notes — header mirrors Hero padding defaults (do not override Hero) |
-| Co-located `*.css` next to each `Lw*` | Unit-specific rules; prefer tokens from the files above |
+| `src/kit/components/components.config.css` | Domain presentational defaults — title type, field label, shared control gaps |
+| `src/kit/components/assemblies/page/page.config.css` | Page-family tokens — page padding (Hero mirror), chrome-slot gap, page-title aliases |
+| Co-located `*.css` next to each `Lw*` | Unit-specific rules; **consume** tokens from the files above — do not re-declare |
 
 Presentational values (padding, font-size, font-weight, spacers) belong in **CSS**,
 not in `components.config.ts`. Use CSS custom properties so page chrome and body can
@@ -98,11 +122,42 @@ CHECK FIRST proves no host token or kit rule fits — and only for a true one-of
 ```
 components.config.css          ← Lightwell domain presentational baseline
   └── assemblies/page/page.config.css   ← page-family overrides of that baseline
-        └── page-header.css / page-hero.css   ← unit rules only when needed
+        └── page-header.css   ← unit rules only when needed
 ```
 
 `page.config.css` is the page-family config surface — **CSS, not YAML**. Same idea as
 `components.config.ts`, but for paint and space.
+
+**PF breakpoints in kit CSS:** PatternFly defines them as SCSS
+(`$pf-v6-global--breakpoint--*`). Kit is plain CSS — `@media` cannot use those
+vars or `--pf-t--global--breakpoint--*`. Copy the **rem** value. The lookup map
+lives as a comment in
+[components.config.css](../../../src/kit/components/components.config.css)
+(header). Do not re-look up PF SCSS per file; do not use `px` (`1200px` is not
+`75rem` if the root font size is not 16px).
+
+### Base support, not exotic selectors
+
+Kit unit CSS declares **base support** — what the surface is (padding, flex column,
+gap, align). It is not exotic: easy to read, easy to debug.
+
+An **elaborate, exotic approach** is a very bad idea and an anti-pattern for many
+reasons:
+
+- It's fragile and contextual
+- It's unnecessary
+- It's overly-complex
+- It's noise
+- It confuses concepts
+
+Exotic means encoding layout *situations* in the selector — deep `:has()`,
+`:nth-child()`, `:first-child` / `:not(:only-child)` stacks that infer intent from
+DOM order. That muddies “what this component is” with “what happens when siblings
+exist.” Prefer an explicit class or prop when a variant earns a name; do not hide
+policy in combinators.
+
+See [SKILL.md § Kit CSS](SKILL.md#kit-css-co-located) and
+[examples.md § Base support CSS](examples.md#base-support-css-not-exotic-selectors).
 
 ---
 
@@ -119,46 +174,38 @@ Every `Lw*` is a **logic harness**, not a DOM wrapper.
 Same cascade as `LwCard`: children win for full composition; slot args build when the
 caller wants the kit outline. Do not invent a third mode per assembly.
 
-**Rule:** one job per assembly. Split when a unit starts owning two visual contracts
-(e.g. plain page chrome **and** PF Hero). That is how God components form — refuse them.
+**Rule:** one job per assembly. A surface pre-config on the same composition grammar
+(`LwPageHeader` `hero`) is not a second job. Fork when a unit owns two unrelated
+contracts — that is how God components form; refuse them.
 
 ---
 
-## Page family — header vs hero (anti-God)
+## Page family — one header; hero is surface
 
-`page-header` does **not** exist in PatternFly. Kit invents it. `Hero` does exist —
-kit harnesses it as `page-hero`. They are **siblings**, not one assembly with a mode flag.
+`page-header` does **not** exist in PatternFly. Kit invents **one** `LwPageHeader`.
+PF `Hero` is the host when `hero` is set — surface pre-config, not a second assembly.
 
 ```
 assemblies/
   page/
     page.config.css          # page spacers / type (presentational config)
-    page-header/             # kit invention — plain chrome
+    page-header/             # one assembly — plain or hero surface
       page-header.tsx
       page-header.css
       page-header.test.tsx
-    page-hero/               # PF Hero harness
-      page-hero.tsx
-      page-hero.css
-      page-hero.test.tsx
+    page-chrome-slots.tsx    # PageTitleStack + PageChromeSlots / PageChromeSlot / PageChromeSlotFooter (exported)
 ```
 
-| | `LwPageHeader` | `LwPageHero` |
-| - | -------------- | ------------ |
-| **Job** | Plain page chrome | Interactive / Hero surface (PF `Hero`) |
-| **Host** | Layout host that earns its place (`Flex` / `header`) | `Hero` root — Rule 0, no extra wrap |
-| **Styling** | Plain; **padding mirrors PF Hero defaults** (`spacer--3xl`) | Hero surface; **keep PF padding defaults** — do not override |
-| **PF** | None (kit invention) | Passthrough `HeroProps`; logic wrap |
+| | Plain | Hero (`hero`) |
+| - | ----- | ------------- |
+| **Host** | `Flex` | PF `Hero` |
+| **Classes** | `lw-c-page-header` | `lw-c-page-header` + `lw-c-page-hero` |
+| **Composition** | `children` **or** `title` / `description` / `actions` | **identical** |
 
-**Sibling choice:** pages pick one — header **or** hero. Do not nest Hero inside Header.
-Do not grow a `variant="hero"` on Header. Hero = interactive page chrome; header = plain.
+**Padding:** hero leaves PF Hero padding alone; plain mirrors via `--lw-space--page-*`.
 
-**Shared slot grammar:** both own the same slots (`title` / `description` / `actions`)
-and the same children-vs-slots cascade. Extract the title stack once if it starts to
-fork.
-
-**Padding contract:** `LwPageHero` leaves PF Hero padding alone. `LwPageHeader` uses the
-same values (`spacer--3xl`) so titles do not jump when navigating hero ↔ header routes.
+Do not invent region props (`hasAside`, `hasChromeRows`). Call sites compose
+`PageChromeSlots` / `PageChromeSlot` / `PageChromeSlotFooter`. Do not fork a second page-chrome assembly for Hero.
 
 ---
 
@@ -179,17 +226,22 @@ same values (`spacer--3xl`) so titles do not jump when navigating hero ↔ heade
 | **Logic wrap** | Function resolves defaults, maps domain → PF props, hydrates owned slots as children |
 | **DOM wrap** | Extra host around the PF component — refused |
 
-Tree root = PatternFly host (or the kit host when PF has no equivalent — e.g. `LwPageHeader`).
-`className` / passthrough args apply **on that host**.
+Tree root = PatternFly host (or the kit host when PF has no equivalent — e.g. plain
+`LwPageHeader` on `Flex`). `className` / passthrough args apply **on that host**.
 PF may own internal structure (e.g. `Hero` → `__body`); that is not a kit wrapper.
 
 Canonical shapes:
 
-- `LwPageHero` → `<Hero {...merged}>…slots…</Hero>`
-- `LwPageHeader` → layout host with shared page padding; same slots; no Hero
+- `LwPageHeader` → `<Flex className="lw-c-page-header">…</Flex>`
+- `LwPageHeader hero` → `<Hero className="lw-c-page-header lw-c-page-hero">…</Hero>`
 
 Flex/grid format **direct children** — extra `div`s re-parent content and break
 `flex`, `gap`, sticky, and `overflow`. Each node costs layout, paint, a11y, and memory.
+
+**Intrinsic size:** do not set `width: 100%` or `height: 100%` unless stretch is an
+**explicit** job (fill a known containing block). Prefer natural block flow, flex/grid
+growth, or `min-width` tokens. Forced width is the quieter twin of forced height —
+less catastrophic, still layout debt.
 
 Rule 0 applies at both primitive and assembly tiers.
 
@@ -201,8 +253,8 @@ Rule 0 applies at both primitive and assembly tiers.
 | ------- | -------------- | ------------------- |
 | **Prop defaults** | `components.config.ts` | passthrough on `Lw*` |
 | **Presentational defaults** | `components.config.css` → `page.config.css` | tokens / unit CSS |
-| **Primitive** | `LwButton`, `LwCard`, `LwMenu`, `LwPopover`, `LwStatItem`, … | props / Lightwell-owned config on one host |
-| **Assembly** | `LwPageHeader`, `LwPageHero`, … | multi-region slots or children |
+| **Primitive** | `LwButton`, `LwCard`, `LwMenu`, `LwPopover`, `LwTooltip`, `LwEmptyState`, `LwSkeleton`, … | props / Lightwell-owned config on one host |
+| **Assembly** | `LwPageHeader`, metrics (`LwMetricsStepper`, `LwMetricsCount`, `LwStatItem`, …), … | multi-region slots or children |
 | **Page / domain** | async outline + domain wiring | assembly slots + product data |
 
 **One source → many consumers. Find the harness; do not fork.**
@@ -241,7 +293,7 @@ lightwell.config.ts
    (multi-region slots; uses primitives) → page/domain. Kit invention ≠ assembly.
 4. Config cascade — TS for props; CSS for presentational. No YAML. Page family uses `page.config.css`.
 5. Logic passthrough — children compose; slot args build; one cascade per assembly.
-6. Split page-header vs page-hero — siblings, shared slots, no God component.
+6. One page header — hero is surface pre-config (`hero`), same composition grammar.
 7. Domain wiring is not a kit tier — stays with the product until extracted.
 
 Operate from this perspective.

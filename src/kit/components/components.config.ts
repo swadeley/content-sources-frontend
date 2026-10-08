@@ -1,25 +1,35 @@
-import type { CSSProperties } from 'react';
-import type {
-  ButtonProps,
-  CardProps,
-  DropdownProps,
-  FlexProps,
-  HeroProps,
-  PopoverProps,
+import type { CSSProperties, HTMLAttributes } from 'react';
+import {
+  ClipboardCopyVariant,
+  type AlertProps,
+  type ButtonProps,
+  type CardProps,
+  type ClipboardCopyProps,
+  type DropdownProps,
+  type EmptyStateProps,
+  type FlexProps,
+  type HeroProps,
+  type IconComponentProps,
+  type PopoverProps,
+  type ProgressStepperProps,
+  type SkeletonProps,
+  type TitleProps,
+  type TooltipProps,
 } from '@patternfly/react-core';
 
-import { lightwellConfig } from '../lightwell.config';
+import { lightwellConfig, type LwStepIconColorKey } from '../lightwell.config';
 
 /**
  * Lightwell components domain config.
  *
  * Cascade:
  *   Prop / behavior:  lightwell.config.ts → this file → Lw* roots
- *   Presentational:   components.config.css → assemblies/page/page.config.css → unit *.css
+ *   Presentational:   lightwell.config.css → components.config.css → page.config.css → unit *.css
+ *                     (imported from LightwellApp — units consume var(--lw-*), do not re-declare)
  *
  * Covers both tiers within components/:
- *   - primitives/ (LwButton, LwCard, LwMenu, LwPopover, LwStatItem, …)
- *   - assemblies/ (LwPageHeader, LwPageHero, LwDataView, …)
+ *   - primitives/ (LwButton, LwCard, LwMenu, LwPopover, LwTooltip, LwEmptyState, LwSkeleton, …)
+ *   - assemblies/ (LwPageHeader, LwButtonGroup, LwDataView, …)
  *
  * Tenant identity (cssPrefix, exportPrefix, brand tokens) comes from lightwell.config.ts.
  * Add component/assembly-specific **prop** defaults here.
@@ -37,6 +47,11 @@ interface MergeableProps {
   className?: string;
   style?: CSSProperties;
 }
+
+// ─── Primitive: LwAlert ──────────────────────────────────────────────────────
+
+/** Defaults for `LwAlert` — Alert host; call-site wins via merge. */
+export type LwAlertConfig = Partial<AlertProps>;
 
 // ─── Primitive: LwButton ─────────────────────────────────────────────────────
 
@@ -70,35 +85,141 @@ export type LwPopoverPassthroughProps = Omit<
 /** Defaults for `LwPopover` — call-site wins via merge. */
 export type LwPopoverConfig = Partial<LwPopoverPassthroughProps>;
 
-// ─── Assembly: LwPageHeader (plain chrome) ───────────────────────────────────
+// ─── Primitive: LwTooltip ────────────────────────────────────────────────────
 
-/** PF `Flex` props forwarded by `LwPageHeader` (excluding children). */
+/** PF `Tooltip` props forwarded by `LwTooltip` (excluding children / content — kit may own those). */
+export type LwTooltipPassthroughProps = Omit<TooltipProps, 'children' | 'content'>;
+
+/** Defaults for `LwTooltip` — call-site wins via merge. */
+export type LwTooltipConfig = Partial<LwTooltipPassthroughProps>;
+
+// ─── Primitive: LwEmptyState (root only) ─────────────────────────────────────
+
+/** Defaults for `LwEmptyState` — EmptyState root; Footer/Actions/Body stay call-site children. */
+export type LwEmptyStateConfig = Partial<EmptyStateProps>;
+
+// ─── Primitive: LwSkeleton (root only) ───────────────────────────────────────
+
+/** Defaults for `LwSkeleton` — Skeleton root; call-site wins via merge. */
+export type LwSkeletonConfig = Partial<SkeletonProps>;
+
+// ─── Primitive: LwTitle ──────────────────────────────────────────────────────
+
+/** PF Title size tokens keyed by heading level — `h1` is the page-title baseline. */
+export type LwTitleHeadingLevel = NonNullable<TitleProps['headingLevel']>;
+export type LwTitleSize = NonNullable<TitleProps['size']>;
+
+export type LwTitleSizesConfig = Partial<Record<LwTitleHeadingLevel, LwTitleSize>>;
+
+/** Defaults for `LwTitle` — prop defaults + per-level size map.
+ * Omit HTML `sizes` (string) so the kit map is not intersected with it. */
+export type LwTitleConfig = Partial<Omit<TitleProps, 'children' | 'size' | 'sizes'>> & {
+  sizes?: LwTitleSizesConfig;
+};
+
+// ─── Primitive: LwIcon ──────────────────────────────────────────────────────
+
+/** Defaults for `LwIcon` — PF Icon host; call-site wins via merge. */
+export type LwIconConfig = Partial<Omit<IconComponentProps, 'children'>>;
+
+// ─── Primitive: LwClipboardCopy ──────────────────────────────────────────────
+
+/** Defaults for `LwClipboardCopy` — ClipboardCopy host; call-site wins via merge. */
+export type LwClipboardCopyConfig = Partial<Omit<ClipboardCopyProps, 'children' | 'ref'>>;
+
+// ─── Assembly: LwPageHeader (plain or hero surface) ──────────────────────────
+
+/** PF `Flex` props forwarded by plain `LwPageHeader` (excluding children). */
 export type LwPageHeaderPassthroughProps = Omit<FlexProps, 'children' | 'title' | 'ref'>;
 
-/** Defaults for `LwPageHeader` — Flex host; call-site wins via merge. */
+/** Defaults for plain `LwPageHeader` — Flex host; call-site wins via merge. */
 export type LwPageHeaderConfig = Partial<LwPageHeaderPassthroughProps>;
 
-// ─── Assembly: LwPageHero (PF Hero) ──────────────────────────────────────────
+/** PF `Hero` props forwarded when `LwPageHeader` `hero` is set. */
+export type LwPageHeaderHeroPassthroughProps = Omit<HeroProps, 'children' | 'content' | 'title'>;
 
-/** PF `Hero` props forwarded by `LwPageHero` (excluding children / content / title — kit owns title slot). */
-export type LwPageHeroPassthroughProps = Omit<HeroProps, 'children' | 'content' | 'title'>;
+/** Defaults for hero surface — Hero host; call-site wins via merge. */
+export type LwPageHeaderHeroConfig = Partial<LwPageHeaderHeroPassthroughProps>;
 
-/** Defaults for `LwPageHero` — Hero host; call-site wins via merge. */
-export type LwPageHeroConfig = Partial<LwPageHeroPassthroughProps>;
+// ─── Assembly: LwButtonGroup (layout row) ────────────────────────────────────
+
+/** Host attrs for `LwButtonGroup` (excluding children). */
+export type LwButtonGroupPassthroughProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'>;
+
+/** Defaults for `LwButtonGroup` — layout host; call-site wins via merge. */
+export type LwButtonGroupConfig = Partial<LwButtonGroupPassthroughProps>;
+
+// ─── Assembly: LwMetricsStepper (PF ProgressStepper) ─────────────────────────
+
+/** PF `ProgressStepper` props forwarded by `LwMetricsStepper` (kit builds children; compact is refused). */
+export type LwMetricsStepperPassthroughProps = Omit<ProgressStepperProps, 'children' | 'isCompact'>;
+
+/**
+ * Defaults for `LwMetricsStepper` — ProgressStepper host; call-site wins via merge.
+ * `isHorizontal` is kit-owned (PF CSS `pf-m-horizontal`; React has no matching prop).
+ */
+export type LwMetricsStepperConfig = Partial<LwMetricsStepperPassthroughProps> & {
+  isHorizontal?: boolean;
+};
+
+// ─── Assembly: LwMetricsCount (PF text + bar) ─────────────────────────────────
+
+/** Owned defaults for `LwMetricsCount` (layout direction + bar color). */
+export type LwMetricsCountConfig = {
+  direction?: 'column' | 'row';
+  /** Default status-bar key when call site omits `color`. */
+  color?: LwStepIconColorKey;
+};
+
+// ─── Assembly: LwMetricsCard (LwCard shell) ───────────────────────────────────
+
+/** Owned defaults for `LwMetricsCard`. */
+export type LwMetricsCardConfig = object;
+
+// ─── Assembly: LwLoaded (loading / loaded surface) ───────────────────────────
+
+/** Defaults for `LwLoaded` — default loading surface is PF `Skeleton` (text line). */
+export type LwLoadedConfig = {
+  /**
+   * Optional PF Skeleton `fontSize` for the default loading surface.
+   * Prefer text modifiers over a fixed `height` slab (PF card demos use lines).
+   */
+  fontSize?: SkeletonProps['fontSize'];
+  /** Screen reader text for the default skeleton. */
+  screenreaderText?: string;
+};
 
 // ─── Domain config shape ─────────────────────────────────────────────────────
 
 /** Collected defaults for all Lw* units. Extend as primitives and assemblies land. */
 export interface LwComponentsConfig {
+  alert: LwAlertConfig;
   button: LwButtonConfig;
   card: LwCardConfig;
   menu: LwMenuConfig;
   popover: LwPopoverConfig;
+  tooltip: LwTooltipConfig;
+  emptyState: LwEmptyStateConfig;
+  skeleton: LwSkeletonConfig;
+  title: LwTitleConfig;
+  icon: LwIconConfig;
+  clipboardCopy: LwClipboardCopyConfig;
   pageHeader: LwPageHeaderConfig;
-  pageHero: LwPageHeroConfig;
+  pageHeaderHero: LwPageHeaderHeroConfig;
+  buttonGroup: LwButtonGroupConfig;
+  metricsStepper: LwMetricsStepperConfig;
+  metricsCount: LwMetricsCountConfig;
+  metricsCard: LwMetricsCardConfig;
+  loaded: LwLoadedConfig;
 }
 
 export const componentsConfig: LwComponentsConfig = {
+  alert: {
+    // Sensitive-data baseline used across remediated / predisclosure surfaces.
+    variant: 'warning',
+    isInline: true,
+    title: 'This data is sensitive. Do not share or capture screenshots.',
+  },
   button: {
     // No Lightwell-specific defaults yet — variant / size land here when decided.
   },
@@ -112,15 +233,66 @@ export const componentsConfig: LwComponentsConfig = {
   popover: {
     // No Lightwell-specific Popover defaults yet — position / animation land here when decided.
   },
+  tooltip: {
+    // Default trigger (circle plain LwButton) is composed in LwTooltip when children omitted.
+  },
+  emptyState: {
+    // Root-only harness — no Lightwell-specific EmptyState defaults yet.
+  },
+  skeleton: {
+    // Root-only harness — no Lightwell-specific Skeleton defaults yet.
+  },
+  title: {
+    // Page titles default to h1; size for that level comes from `sizes.h1`.
+    headingLevel: 'h1',
+    sizes: {
+      h1: '2xl',
+    },
+  },
+  icon: {
+    // No Lightwell-specific size yet — page title rows pass size from PageTitleStack.
+  },
+  clipboardCopy: {
+    isReadOnly: true,
+    hoverTip: 'Copy',
+    clickTip: 'Copied',
+    // PF applies `pf-m-inline` only for inlineCompact (button-group chrome styles that).
+    variant: ClipboardCopyVariant.inlineCompact,
+  },
   pageHeader: {
     justifyContent: { default: 'justifyContentSpaceBetween' },
     alignItems: { default: 'alignItemsFlexStart' },
   },
-  pageHero: {
+  pageHeaderHero: {
     // Lightwell chrome uses glass theme — keep Hero glass-capable by default.
     isGlass: true,
   },
+  buttonGroup: {
+    // Layout defaults live in button-group.css (gap / align).
+  },
+  metricsStepper: {
+    // PF ProgressStepper is vertical below md; React has no isHorizontal — kit applies pf-m-horizontal.
+    isHorizontal: true,
+  },
+  metricsCount: {
+    direction: 'column',
+    // Token-backed bar when call site omits `color` (e.g. Beacon Total → stepIcon.blue).
+    color: 'blue',
+  },
+  metricsCard: {
+    // Shell defaults live on LwCard / call-site composition.
+  },
+  loaded: {
+    // PF text-line Skeleton (no fixed height slab). Call sites that know structure
+    // pass `fallback` matching the loaded layout (see Beacon status summary).
+    fontSize: 'md',
+    screenreaderText: 'Loading',
+  },
 };
+
+export function getLwAlertDefaults(): LwAlertConfig {
+  return { ...componentsConfig.alert };
+}
 
 export function getLwButtonDefaults(): LwButtonConfig {
   return { ...componentsConfig.button };
@@ -138,12 +310,63 @@ export function getLwPopoverDefaults(): LwPopoverConfig {
   return { ...componentsConfig.popover };
 }
 
+export function getLwTooltipDefaults(): LwTooltipConfig {
+  return { ...componentsConfig.tooltip };
+}
+
+export function getLwEmptyStateDefaults(): LwEmptyStateConfig {
+  return { ...componentsConfig.emptyState };
+}
+
+export function getLwSkeletonDefaults(): LwSkeletonConfig {
+  return { ...componentsConfig.skeleton };
+}
+
+export function getLwTitleDefaults(): Partial<TitleProps> {
+  const { sizes, ...propDefaults } = componentsConfig.title;
+  void sizes;
+  return { ...propDefaults };
+}
+
+/** Resolve configured Title `size` for a heading level. Call-site `size` still wins upstream. */
+export function getLwTitleSizeForLevel(headingLevel: LwTitleHeadingLevel): LwTitleSize | undefined {
+  return componentsConfig.title.sizes?.[headingLevel];
+}
+
+export function getLwIconDefaults(): LwIconConfig {
+  return { ...componentsConfig.icon };
+}
+
+export function getLwClipboardCopyDefaults(): LwClipboardCopyConfig {
+  return { ...componentsConfig.clipboardCopy };
+}
+
 export function getLwPageHeaderDefaults(): LwPageHeaderConfig {
   return { ...componentsConfig.pageHeader };
 }
 
-export function getLwPageHeroDefaults(): LwPageHeroConfig {
-  return { ...componentsConfig.pageHero };
+export function getLwPageHeaderHeroDefaults(): LwPageHeaderHeroConfig {
+  return { ...componentsConfig.pageHeaderHero };
+}
+
+export function getLwButtonGroupDefaults(): LwButtonGroupConfig {
+  return { ...componentsConfig.buttonGroup };
+}
+
+export function getLwMetricsStepperDefaults(): LwMetricsStepperConfig {
+  return { ...componentsConfig.metricsStepper };
+}
+
+export function getLwMetricsCountDefaults(): LwMetricsCountConfig {
+  return { ...componentsConfig.metricsCount };
+}
+
+export function getLwMetricsCardDefaults(): LwMetricsCardConfig {
+  return { ...componentsConfig.metricsCard };
+}
+
+export function getLwLoadedDefaults(): LwLoadedConfig {
+  return { ...componentsConfig.loaded };
 }
 
 // ─── Merge utilities ─────────────────────────────────────────────────────────
