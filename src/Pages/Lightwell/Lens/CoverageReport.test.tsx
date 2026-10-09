@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import CoverageReport from './CoverageReport';
 import { useCoverageReport } from './hooks/useCoverageReport';
 import {
@@ -99,6 +100,40 @@ describe('CoverageReport', () => {
     expect(screen.getByText('Exact match')).toBeInTheDocument();
     expect(screen.getByText('Partial match')).toBeInTheDocument();
   });
+
+  it.each([0, undefined])('hides the skipped-package warning for count %s', (skipped_entries) => {
+    (useCoverageReport as jest.Mock).mockReturnValue({
+      report: { ...defaultCoverageReportItem, skipped_entries },
+      isLoading: false,
+      startOver: jest.fn(),
+    });
+    renderCoverageReport();
+    expect(screen.queryByRole('heading', { name: /packages? skipped/ })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'View supported formats' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [1, '1 package skipped', "Its entry doesn't match a supported format."],
+    [987, '987 packages skipped', "Their entries don't match a supported format."],
+  ])(
+    'shows the warning and format help for %s skipped packages',
+    async (skipped_entries, title, message) => {
+      (useCoverageReport as jest.Mock).mockReturnValue({
+        filename: 'test-sbom.json',
+        report: { ...defaultCoverageReportItem, skipped_entries },
+        isLoading: false,
+        startOver: jest.fn(),
+      });
+      renderCoverageReport();
+      expect(screen.getByRole('heading', { name: new RegExp(title) })).toBeInTheDocument();
+      expect(screen.getByText(message)).toBeInTheDocument();
+      await userEvent.click(screen.getByRole('button', { name: 'View supported formats' }));
+      expect(await screen.findByText('What should my manifest contain?')).toBeInTheDocument();
+      expect(screen.getByText('What is the maximum manifest size?')).toBeInTheDocument();
+    },
+  );
 
   it('displays the CVEs fixed card with per-severity counts', () => {
     renderCoverageReport();

@@ -7,6 +7,7 @@ export const MOCK_REPORT: CompletedCoverageReport = {
   created_at: '2026-08-18T00:00:00Z',
   completed_at: '2026-08-18T00:00:01Z',
   total: 1830,
+  skipped_entries: 3,
   exact_matches: 1100,
   partial_matches: 270,
   unmatched: 460,

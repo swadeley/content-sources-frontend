@@ -4,6 +4,7 @@ import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
 import LightwellPageHeader from '../components/LightwellPageHeader';
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -19,6 +20,7 @@ import { PlusIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import CoverageSummaryBlock from './components/CoverageSummaryBlock';
 import CveFixesBlock from './components/CveFixesBlock';
+import ManifestFormatPopover from './components/ManifestFormatPopover';
 import EcosystemBreakdownBlock from './components/EcosystemBreakdownBlock';
 import PackageCoverageTable from './components/PackageCoverageTable';
 import { ExportMenu } from './components/ExportMenu';
@@ -69,6 +71,7 @@ const CoverageReport = () => {
   // Drives every CVE surface (summary card, table columns, exports): when the
   // net-delta totals are all zero no package has CVE data worth showing.
   const hasCveData = getTotalCveCount(report.cve_summary) > 0;
+  const skippedEntries = report.skipped_entries ?? 0;
 
   const matchAnalysisTitle = filename ? (
     <Title headingLevel='h1'>
@@ -93,6 +96,22 @@ const CoverageReport = () => {
     <>
       <LightwellPageHeader
         title={matchAnalysisTitle}
+        description={
+          skippedEntries > 0 ? (
+            <Alert
+              variant='warning'
+              isInline
+              title={`${skippedEntries} ${skippedEntries === 1 ? 'package' : 'packages'} skipped`}
+            >
+              <div>
+                {skippedEntries === 1
+                  ? "Its entry doesn't match a supported format."
+                  : "Their entries don't match a supported format."}{' '}
+                <ManifestFormatPopover label='View supported formats' />
+              </div>
+            </Alert>
+          ) : undefined
+        }
         ouiaId='lightwell-coverage-header'
         actions={
           <Flex gap={{ default: 'gapSm' }}>

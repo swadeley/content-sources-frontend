@@ -848,6 +848,7 @@ export const testRoadmapLifecycleResponse: RoadmapLifecycleResponse = {
 };
 
 export const defaultCoverageReportItem: CompletedCoverageReport = {
+  skipped_entries: 0,
   uuid: 'test-uuid',
   created_at: '2026-08-18T12:00:00Z',
   status: 'completed',

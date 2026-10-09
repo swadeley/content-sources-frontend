@@ -1,7 +1,7 @@
 import { Button, Content, ContentVariants, List, ListItem, Popover } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
-const ManifestFormatPopover = () => (
+const ManifestFormatPopover = ({ label }: { label?: string }) => (
   <Popover
     hasAutoWidth
     maxWidth='60rem'
@@ -51,8 +51,14 @@ const ManifestFormatPopover = () => (
       </Content>
     }
   >
-    <Button variant='plain' aria-label='More info about supported formats'>
-      <OutlinedQuestionCircleIcon />
+    <Button
+      variant={label ? 'link' : 'plain'}
+      isInline={!!label}
+      aria-label={label ?? 'More info about supported formats'}
+      icon={label ? <OutlinedQuestionCircleIcon /> : undefined}
+      iconPosition='end'
+    >
+      {label ?? <OutlinedQuestionCircleIcon />}
     </Button>
   </Popover>
 );

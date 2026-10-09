@@ -63,6 +63,8 @@ type PendingCoverageReport = CoverageReportBase & {
 
 export type CompletedCoverageReport = CoverageReportBase & {
   status: 'completed';
+  // Parser entries skipped due to invalid input; absent on older backends.
+  skipped_entries?: number;
   exact_matches: number;
   partial_matches: number;
   unmatched: number;
