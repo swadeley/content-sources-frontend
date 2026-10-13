@@ -76,6 +76,7 @@ test.describe('Assign EUS Template to System', () => {
     });
 
     await test.step('Create EUS template via UI and wait for validation', async () => {
+      await ensureValidToken(page, 'EUS_REPO_TOKEN.json');
       await createTemplateViaUI({
         page,
         templateName,
@@ -94,6 +95,7 @@ test.describe('Assign EUS Template to System', () => {
     await test.step('Wait for system to appear in Patch with template attached', async () => {
       await waitForRhcdActive(regClient, RHSM_RHCD_WAIT.maxAttempts, RHSM_RHCD_WAIT.delayMs);
       await refreshSubscriptionManager(regClient);
+      await ensureValidToken(page, 'EUS_REPO_TOKEN.json');
       await waitInPatch(page, hostname, true, 8 * 60 * 1000); // 8 minutes
     });
 
