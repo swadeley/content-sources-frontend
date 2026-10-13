@@ -48,4 +48,7 @@ export const useCoverageReportPackagesQuery = (
 
 // Errors are handled inline by the calling hooks (useManifestUpload, useCoverageReport)
 export const useCreateCoverageReportMutation = () =>
-  useMutation({ mutationFn: (file: File) => createCoverageReport(file) });
+  useMutation({
+    mutationFn: ({ file, catalog_source }: { file: File; catalog_source?: string }) =>
+      createCoverageReport(file, catalog_source),
+  });

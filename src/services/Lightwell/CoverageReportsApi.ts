@@ -82,9 +82,15 @@ type FailedCoverageReport = CoverageReportBase & {
 export type CoverageReportResponse =
   PendingCoverageReport | CompletedCoverageReport | FailedCoverageReport;
 
-export const createCoverageReport = async (file: File): Promise<CoverageReportResponse> => {
+export const createCoverageReport = async (
+  file: File,
+  catalog_source?: string,
+): Promise<CoverageReportResponse> => {
   const formData = new FormData();
   formData.append('file', file);
+  if (catalog_source) {
+    formData.append('catalog_source', catalog_source);
+  }
 
   const { data } = await axios.post<CoverageReportResponse>(
     '/api/content-sources/v1/coverage_reports/',

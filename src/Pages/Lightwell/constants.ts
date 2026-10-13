@@ -23,6 +23,7 @@ export const LIGHTWELL_ORIGIN = 'lightwell';
 export const LIGHTWELL_USE_MOCK = false;
 export const LIGHTWELL_LENS_USE_MOCK = false; // Set to true locally to skip file upload during dev
 export const LIGHTWELL_BEACON_USE_MOCK = false;
+export const LIGHTWELL_LENS_CATALOG_SOURCE = 'db';
 
 export const lightwellReposPerPageKey = 'lightwellRepositoriesPerPage';
 export const lightwellPkgsPerPageKey = 'lightwellPackagesPerPage';

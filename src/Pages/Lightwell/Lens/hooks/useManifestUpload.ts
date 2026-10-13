@@ -4,7 +4,7 @@ import {
   useCoverageReportQuery,
 } from 'services/Lightwell/CoverageReportsQueries';
 import { validateManifestFile, getMaxFileSizeMB, toBytes } from '../utils/validateManifestFile';
-import { LIGHTWELL_LENS_USE_MOCK } from 'Pages/Lightwell/constants';
+import { LIGHTWELL_LENS_CATALOG_SOURCE, LIGHTWELL_LENS_USE_MOCK } from 'Pages/Lightwell/constants';
 import { MOCK_UPLOAD } from '../../mockCoverageAnalysis';
 import type { ManifestUploadCardProps } from '../components/ManifestUploadCard';
 import { apiError, taskError, timeoutError, type ProcessError } from '../utils/errors';
@@ -93,17 +93,20 @@ export const useManifestUpload = () => {
     setFilename(selectedFile.name);
     setStep('uploading');
 
-    createReport.mutate(selectedFile, {
-      onSuccess: (data) => {
-        setPollCount(0);
-        setReportUUID(data.uuid);
-        setStep('analyzing');
+    createReport.mutate(
+      { file: selectedFile, catalog_source: LIGHTWELL_LENS_CATALOG_SOURCE },
+      {
+        onSuccess: (data) => {
+          setPollCount(0);
+          setReportUUID(data.uuid);
+          setStep('analyzing');
+        },
+        onError: () => {
+          setProcessError(apiError('upload'));
+          setStep('error');
+        },
       },
-      onError: () => {
-        setProcessError(apiError('upload'));
-        setStep('error');
-      },
-    });
+    );
   };
 
   const handleRetry = () => {
