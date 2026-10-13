@@ -75,6 +75,7 @@ test.describe('Assign Standard Template to System via UI', () => {
     await test.step('Wait for system to appear in Patch', async () => {
       await waitForRhcdActive(regClient, RHSM_RHCD_WAIT.maxAttempts, RHSM_RHCD_WAIT.delayMs);
       // Overnight CI can take longer than the default 3 minutes for Patch to list a new host
+      await ensureValidToken(page, 'ADMIN_TOKEN.json');
       await waitInPatch(page, hostname, false, 8 * 60 * 1000);
     });
 
@@ -93,6 +94,7 @@ test.describe('Assign Standard Template to System via UI', () => {
     });
 
     await test.step('Create template via UI and open system assignment modal', async () => {
+      await ensureValidToken(page, 'ADMIN_TOKEN.json');
       await navigateToTemplates(page);
       await closeGenericPopupsIfExist(page);
 

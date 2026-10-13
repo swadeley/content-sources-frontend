@@ -50,6 +50,7 @@ test.describe('Associated Template CRUD', () => {
     });
 
     await test.step('Navigate to templates and create a new template', async () => {
+      await ensureValidToken(page, 'ADMIN_TOKEN.json');
       await navigateToTemplates(page);
       await closeGenericPopupsIfExist(page);
 
@@ -82,6 +83,7 @@ test.describe('Associated Template CRUD', () => {
     });
 
     await test.step('Verify system is attached to template', async () => {
+      await ensureValidToken(page, 'ADMIN_TOKEN.json');
       await waitInPatch(page, hostname, true);
     });
 
@@ -146,6 +148,7 @@ test.describe('Associated Template CRUD', () => {
     });
 
     await test.step('Wait for system to be removed from inventory', async () => {
+      await ensureValidToken(page, 'ADMIN_TOKEN.json');
       await expect
         .poll(async () => await isInInventory(page, hostname), {
           message: 'System still found in inventory',
@@ -155,6 +158,7 @@ test.describe('Associated Template CRUD', () => {
     });
 
     await test.step('Wait for template to have no associated systems in Patch', async () => {
+      await ensureValidToken(page, 'ADMIN_TOKEN.json');
       const templateUuid = await getTemplateUuidByName(client, templateName);
       expect(templateUuid, 'template UUID should be resolvable').toBeTruthy();
 
