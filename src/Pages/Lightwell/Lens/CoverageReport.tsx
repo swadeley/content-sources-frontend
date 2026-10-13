@@ -24,7 +24,6 @@ import ManifestFormatPopover from './components/ManifestFormatPopover';
 import EcosystemBreakdownBlock from './components/EcosystemBreakdownBlock';
 import PackageCoverageTable from './components/PackageCoverageTable';
 import { ExportMenu } from './components/ExportMenu';
-import RemediatedDataWarning from '../RemediatedDataWarning';
 import { useCoverageReport } from './hooks/useCoverageReport';
 import { usePackageCoverageTable } from './hooks/usePackageCoverageTable';
 import Loader from 'components/Loader';
@@ -159,7 +158,6 @@ const CoverageReport = () => {
             <Card isGlass>
               <CardBody>
                 {/* Remove Flex because it interacts with DataView's 100%-height and creates extra space below pagination */}
-                <RemediatedDataWarning className={spacing.mbMd} />
                 <PackageCoverageTable
                   uuid={report.uuid}
                   ecosystems={ecosystems}
