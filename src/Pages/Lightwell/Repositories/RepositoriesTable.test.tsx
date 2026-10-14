@@ -5,6 +5,7 @@ import RepositoriesTable from './RepositoriesTable';
 import { useContentListQuery } from 'services/Content/ContentQueries';
 import {
   defaultLightwellContentItem,
+  defaultPythonPredisclosureContentItem,
   defaultPythonRemediatedContentItem,
   defaultPythonValidatedContentItem,
   ReactQueryTestWrapper,
@@ -499,6 +500,59 @@ it('subscribes to python remediated repository notifications when toggle is turn
 
   await user.click(toggle);
   expect(mockSetRepoSubscribed).toHaveBeenCalledWith('python-remediated', [
+    'critical',
+    'important',
+  ]);
+});
+
+it('renders python predisclosure repository', async () => {
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultPythonPredisclosureContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  expect(await screen.findByText('Python Predisclosure')).toBeInTheDocument();
+  expect(screen.getByText('Predisclosure')).toBeInTheDocument();
+});
+
+it('subscribes to python predisclosure repository notifications when toggle is turned on', async () => {
+  const user = userEvent.setup();
+  const mockSetRepoSubscribed = jest.fn();
+  (useLightwellNotificationPrefs as jest.Mock).mockReturnValue({
+    prefs: { enabled: true, minimumSeverity: 'high' },
+    isLoading: false,
+    isError: false,
+    shouldExposeNotifications: true,
+  });
+  (useLightwellRepoNotifications as jest.Mock).mockReturnValue({
+    isRepoSubscribed: jest.fn().mockReturnValue(false),
+    setRepoSubscribed: mockSetRepoSubscribed,
+    isLoading: false,
+    isError: false,
+    pendingEventType: undefined,
+  });
+  (useContentListQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    data: {
+      data: [defaultPythonPredisclosureContentItem],
+      meta: { count: 1, limit: 20, offset: 0 },
+    },
+  }));
+
+  renderRepositoriesTable();
+
+  const toggle = await screen.findByRole('switch', {
+    name: `Toggle notifications for ${defaultPythonPredisclosureContentItem.name}`,
+  });
+  expect(toggle).not.toBeChecked();
+
+  await user.click(toggle);
+  expect(mockSetRepoSubscribed).toHaveBeenCalledWith('python-predisclosure', [
     'critical',
     'important',
   ]);

@@ -50,6 +50,7 @@ import {
   formatRepositoryName,
   getEcosystemIcon,
   getRepositoryDescription,
+  hasBackportedFixes,
 } from '../helpers';
 import Hide from 'components/Hide/Hide';
 import { LIGHTWELL_USE_MOCK, lightwellPkgsPerPageKey } from '../constants';
@@ -109,7 +110,7 @@ type MappedPackage = {
 
 const mapRepositoryPackage = (
   pkg: RepositoryPackageItem,
-  isPythonRemediated: boolean,
+  isPythonWithFixes: boolean,
 ): MappedPackage => {
   const latestCreatedAt = pkg.latest_releases
     .map((release) => release.created_at)
@@ -118,7 +119,7 @@ const mapRepositoryPackage = (
 
   const sortedReleases = pkg.latest_releases
     .map((release) =>
-      isPythonRemediated
+      isPythonWithFixes
         ? {
             ...release,
             version: stripLightwellVersionSuffix(release.version),
@@ -139,7 +140,7 @@ const mapRepositoryPackage = (
     latestReleasePerVersion.length > 0
       ? latestReleasePerVersion.map((release) => release.version)
       : sortVersionsDesc(
-          isPythonRemediated
+          isPythonWithFixes
             ? [...new Set(pkg.versions.map(stripLightwellVersionSuffix))]
             : pkg.versions,
         );
@@ -252,8 +253,8 @@ const PackagesTable = () => {
     isFetching: isPackagesFetching,
   } = apiPackagesQuery;
 
-  const isPythonRemediated =
-    repository?.content_type === 'python' && repository?.security_level === 'remediated';
+  const isPythonWithFixes =
+    repository?.content_type === 'python' && hasBackportedFixes(repository?.security_level);
 
   const { packages, packageCount } = useMemo(() => {
     if (useMock) {
@@ -262,17 +263,17 @@ const PackagesTable = () => {
       return {
         packages: mockPackages
           .slice(offset, offset + perPage)
-          .map((pkg) => mapRepositoryPackage(pkg, isPythonRemediated)),
+          .map((pkg) => mapRepositoryPackage(pkg, isPythonWithFixes)),
         packageCount: mockPackages.length,
       };
     }
 
     const results = packagesData?.results ?? [];
     return {
-      packages: results.map((pkg) => mapRepositoryPackage(pkg, isPythonRemediated)),
+      packages: results.map((pkg) => mapRepositoryPackage(pkg, isPythonWithFixes)),
       packageCount: packagesData?.total ?? 0,
     };
-  }, [useMock, repoUUID, debouncedSearch, page, perPage, packagesData, isPythonRemediated]);
+  }, [useMock, repoUUID, debouncedSearch, page, perPage, packagesData, isPythonWithFixes]);
 
   const rootPath = useLightwellRootPath();
   const appBreadcrumbsEnabled = useFlag('platform.chrome.app-breadcrumbs');

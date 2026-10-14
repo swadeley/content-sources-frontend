@@ -39,7 +39,12 @@ import {
   usePythonPackageVersionsQuery,
 } from 'services/Content/ContentQueries';
 import { LIGHTWELL_USE_MOCK } from '../constants';
-import { formatDistributionUrl, formatRepositoryName, getEcosystemIcon } from '../helpers';
+import {
+  formatDistributionUrl,
+  formatRepositoryName,
+  getEcosystemIcon,
+  hasBackportedFixes,
+} from '../helpers';
 import {
   getMockLightwellPackages,
   getMockMavenPackageVersionsList,
@@ -214,7 +219,7 @@ const PackageDetails = () => {
 
   const hasRelease = isMaven
     ? (mavenDetail?.builds ?? []).some((build) => !!build.release)
-    : repository?.security_level === 'remediated' &&
+    : hasBackportedFixes(repository?.security_level) &&
       pythonVersionReleases.some(
         (release) => release.version === activeVersion && !!release.release,
       );
@@ -477,8 +482,7 @@ const PackageDetails = () => {
 
       {showEmpty || hasDetail ? (
         <PageSection hasBodyWrapper={false} aria-label='Package details'>
-          {(repository.security_level === 'remediated' ||
-            repository.security_level === 'predisclosure') && <RemediatedDataWarning />}
+          {hasBackportedFixes(repository.security_level) && <RemediatedDataWarning />}
           {showEmpty ? (
             <LightwellEmptyState
               variant='empty'

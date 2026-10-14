@@ -7,6 +7,7 @@ import {
   defaultLightwellContentItem,
   defaultLightwellRepositoryPackageItem,
   defaultLightwellRepositoryPackageResponse,
+  defaultPythonPredisclosureContentItem,
   defaultPythonRemediatedContentItem,
   defaultPythonRemediatedRepositoryPackageItem,
   defaultPythonValidatedContentItem,
@@ -402,6 +403,28 @@ it('renders python remediated packages with a Latest release column', async () =
   renderPackagesTable();
 
   expect(await screen.findByRole('heading', { name: 'Python Remediated' })).toBeInTheDocument();
+  expect(screen.getByRole('columnheader', { name: 'Latest release' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: '2.32.0.rhlw-0002' })).toBeInTheDocument();
+});
+
+it('renders python predisclosure packages with a Latest release column', async () => {
+  mockUseParams.mockReturnValue({
+    repoName: getRepositoryPathSlug('python', 'predisclosure'),
+  });
+  mockRepository(defaultPythonPredisclosureContentItem);
+  (useLightwellRepositoryPackagesQuery as jest.Mock).mockImplementation(() =>
+    mockPackagesQuery({
+      data: {
+        ...defaultLightwellRepositoryPackageResponse,
+        results: [defaultPythonRemediatedRepositoryPackageItem],
+        total: 1,
+      },
+    }),
+  );
+
+  renderPackagesTable();
+
+  expect(await screen.findByRole('heading', { name: 'Python Predisclosure' })).toBeInTheDocument();
   expect(screen.getByRole('columnheader', { name: 'Latest release' })).toBeInTheDocument();
   expect(await screen.findByRole('button', { name: '2.32.0.rhlw-0002' })).toBeInTheDocument();
 });

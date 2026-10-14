@@ -1,7 +1,12 @@
 import { createElement, type ReactElement } from 'react';
 import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
 import { capitalize } from 'lodash';
-import { CONTENT_TYPE_PARAMETERS, LIGHTWELL_ORIGIN, REPOSITORY_DESCRIPTIONS } from './constants';
+import {
+  CONTENT_TYPE_PARAMETERS,
+  LIGHTWELL_ORIGIN,
+  PACKAGE_DESCRIPTIONS,
+  REPOSITORY_DESCRIPTIONS,
+} from './constants';
 
 const getContentTypeParameters = (contentType?: string) => {
   const normalized = contentType?.toLowerCase();
@@ -24,6 +29,14 @@ export const getEcosystemIcon = (ecosystemOrContentType?: string): ReactElement 
   }
 };
 
+// Repositories whose packages carry Red Hat backported fixes in pinned versions.
+// Both remediated and predisclosure repos ship these fixes, so they share the same
+// package/release handling (version-suffix stripping, release derivation, fix tabs).
+export const hasBackportedFixes = (securityLevel?: string): boolean => {
+  const level = securityLevel?.toLowerCase();
+  return level === 'remediated' || level === 'predisclosure';
+};
+
 export const getRepositoryDescription = (
   contentType?: string,
   securityLevel?: string,
@@ -32,6 +45,18 @@ export const getRepositoryDescription = (
   const normalizedLevel = securityLevel?.toLowerCase();
   if (!normalizedType || !normalizedLevel) return undefined;
   return REPOSITORY_DESCRIPTIONS[normalizedType]?.[normalizedLevel];
+};
+
+// Returns the long-form "About this package" description for a package, based on the
+// security level and content type of the repository it belongs to.
+export const getPackageByRepositoryDescription = (
+  securityLevel?: string,
+  contentType?: string,
+): string | undefined => {
+  const normalizedType = contentType?.toLowerCase();
+  const normalizedLevel = securityLevel?.toLowerCase();
+  if (!normalizedType || !normalizedLevel) return undefined;
+  return PACKAGE_DESCRIPTIONS[normalizedType]?.[normalizedLevel];
 };
 
 export const formatRepositoryName = (

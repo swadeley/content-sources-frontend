@@ -63,6 +63,18 @@ const mockRepositories = [
     build_count: 18,
     version_count: 18,
   },
+  {
+    uuid: '66666666-6666-4666-8666-666666666666',
+    name: 'lightwell/python/predisclosure',
+    published_distribution_url:
+      'https://packages.stage.redhat.com/api/pulp-content/lightwell/python/predisclosure/',
+    description: getRepositoryDescription('python', 'predisclosure')!,
+    security_level: 'predisclosure',
+    content_type: 'python',
+    package_count: 9,
+    build_count: 20,
+    version_count: 20,
+  },
 ] as ContentItem[];
 
 export const getMockLightwellRepository = (uuid: string): ContentItem | undefined => {

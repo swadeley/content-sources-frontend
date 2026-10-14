@@ -14,6 +14,7 @@ import {
 import {
   defaultLightwellContentItem,
   defaultLightwellRepositoryPackageItem,
+  defaultPythonPredisclosureContentItem,
   defaultPythonRemediatedContentItem,
   defaultPythonPackageVersions,
   defaultPythonRemediatedRepositoryPackageItem,
@@ -289,6 +290,25 @@ const setupPythonRemediatedPackage = () => {
   (useLightwellRepository as jest.Mock).mockReturnValue({
     repository: defaultPythonRemediatedContentItem,
     repoUUID: defaultPythonRemediatedContentItem.uuid,
+    isLoading: false,
+    isError: false,
+    error: undefined,
+  });
+  (usePythonPackageVersionsQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    isFetching: false,
+    data: defaultPythonPackageVersions,
+  }));
+};
+
+const setupPythonPredisclosurePackage = () => {
+  mockUseParams.mockReturnValue({
+    repoName: getRepositoryPathSlug('python', 'predisclosure'),
+    packageName: defaultPythonRemediatedRepositoryPackageItem.name,
+  });
+  (useLightwellRepository as jest.Mock).mockReturnValue({
+    repository: defaultPythonPredisclosureContentItem,
+    repoUUID: defaultPythonPredisclosureContentItem.uuid,
     isLoading: false,
     isError: false,
     error: undefined,
@@ -782,6 +802,37 @@ it('shows Python remediated releases and copies the published pip version', asyn
   const olderRelease = await screen.findAllByRole('button', { name: '2.9.0+rhlw.1' });
   await userEvent.click(olderRelease[0]);
   expect(writeText).toHaveBeenCalledWith('pip install requests==2.9.0+rhlw.1');
+});
+
+it('shows Releases and Remediations tabs for a python predisclosure package with releases, matching remediated', async () => {
+  setupPythonPredisclosurePackage();
+  // Predisclosure packages carry backported fixes, so published Lightwell releases expose
+  // release details through the Releases and Remediations tabs, just like remediated.
+  (usePythonPackageVersionsQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    isFetching: false,
+    data: {
+      name: 'requests',
+      versions: [
+        {
+          ...defaultPythonPackageVersions.versions[0],
+          version: '3.0.1+rhlw.1',
+          last_updated: '2026-07-01T00:00:00Z',
+        },
+        {
+          ...defaultPythonPackageVersions.versions[0],
+          version: '3.0.1+rhlw.2',
+          last_updated: '2026-07-02T00:00:00Z',
+        },
+      ],
+    },
+  }));
+
+  renderPackageDetails();
+
+  expect(await screen.findByRole('tab', { name: 'Releases' })).toBeInTheDocument();
+  expect(await screen.findByRole('tab', { name: 'Remediations' })).toBeInTheDocument();
+  expect(screen.queryByRole('tab', { name: 'Versions' })).not.toBeInTheDocument();
 });
 
 const mockClipboard = () => {

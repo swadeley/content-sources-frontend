@@ -4,9 +4,11 @@ import {
   formatRepositoryName,
   getEcosystemFromContentType,
   getEcosystemIcon,
+  getPackageByRepositoryDescription,
   getRepositoryDescription,
   getRepositoryNameFromPathSlug,
   getRepositoryPathSlug,
+  hasBackportedFixes,
 } from './helpers';
 import {
   compareReleasesDesc,
@@ -69,6 +71,66 @@ describe('getRepositoryDescription', () => {
   it('returns a description for predisclosure security level', () => {
     expect(getRepositoryDescription('maven', 'predisclosure')).toBeDefined();
     expect(getRepositoryDescription('maven', 'predisclosure')).toBeTruthy();
+  });
+});
+
+describe('getPackageByRepositoryDescription', () => {
+  it('returns a description for known security level and content type', () => {
+    expect(getPackageByRepositoryDescription('validated', 'maven')).toBeDefined();
+    expect(getPackageByRepositoryDescription('remediated', 'python')).toBeDefined();
+  });
+
+  it('normalizes security level and content type casing', () => {
+    expect(getPackageByRepositoryDescription('REMEDIATED', 'MAVEN')).toEqual(
+      getPackageByRepositoryDescription('remediated', 'maven'),
+    );
+  });
+
+  it('returns undefined when security level or content type is missing', () => {
+    expect(getPackageByRepositoryDescription()).toBeUndefined();
+    expect(getPackageByRepositoryDescription('remediated')).toBeUndefined();
+    expect(getPackageByRepositoryDescription(undefined, 'maven')).toBeUndefined();
+  });
+
+  it('returns a description for predisclosure security level', () => {
+    expect(getPackageByRepositoryDescription('predisclosure', 'maven')).toBeTruthy();
+    expect(getPackageByRepositoryDescription('predisclosure', 'python')).toContain(
+      'not yet publicly disclosed',
+    );
+  });
+
+  it('uses the Maven release suffix for Maven backported-fix packages', () => {
+    expect(getPackageByRepositoryDescription('remediated', 'maven')).toContain('.rhlw suffix');
+    expect(getPackageByRepositoryDescription('predisclosure', 'maven')).toContain('.rhlw suffix');
+  });
+
+  it('uses the Python release suffix for Python backported-fix packages', () => {
+    expect(getPackageByRepositoryDescription('remediated', 'python')).toContain('+rhlw suffix');
+    expect(getPackageByRepositoryDescription('predisclosure', 'python')).toContain('+rhlw suffix');
+  });
+
+  it('describes validated packages as rebuilt from source without a release suffix', () => {
+    const description = getPackageByRepositoryDescription('validated', 'maven');
+    expect(description).toContain('rebuilt from source');
+    expect(description).not.toContain('rhlw suffix');
+  });
+});
+
+describe('hasBackportedFixes', () => {
+  it('is true for remediated and predisclosure repositories', () => {
+    expect(hasBackportedFixes('remediated')).toBe(true);
+    expect(hasBackportedFixes('predisclosure')).toBe(true);
+  });
+
+  it('normalizes casing', () => {
+    expect(hasBackportedFixes('Remediated')).toBe(true);
+    expect(hasBackportedFixes('PREDISCLOSURE')).toBe(true);
+  });
+
+  it('is false for validated or missing security levels', () => {
+    expect(hasBackportedFixes('validated')).toBe(false);
+    expect(hasBackportedFixes()).toBe(false);
+    expect(hasBackportedFixes('unknown')).toBe(false);
   });
 });
 

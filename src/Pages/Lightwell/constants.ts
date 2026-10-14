@@ -52,6 +52,28 @@ export const REPOSITORY_DESCRIPTIONS: Record<string, Record<string, string>> = {
   },
 };
 
+// Long-form "About this package" descriptions shown on a package's overview tab.
+// Keyed by content type then security level, mirroring REPOSITORY_DESCRIPTIONS. The
+// release-suffix note differs per ecosystem (.rhlw for Maven, +rhlw for Python).
+export const PACKAGE_DESCRIPTIONS: Record<string, Record<string, string>> = {
+  maven: {
+    validated:
+      'This package has been rebuilt from source by Red Hat with no modifications. Multiple upstream versions are available, each verified end-to-end through the Red Hat build pipeline.',
+    remediated:
+      'This package has been rebuilt by Red Hat with backported fixes for known vulnerabilities. The upstream version is pinned and Red Hat applies security patches as sequential releases (.rhlw suffix).',
+    predisclosure:
+      'This package has been rebuilt by Red Hat with backported fixes for vulnerabilities not yet publicly disclosed. The upstream version is pinned and Red Hat applies security patches as sequential releases (.rhlw suffix).',
+  },
+  python: {
+    validated:
+      'This package has been rebuilt from source by Red Hat with no modifications. Multiple upstream versions are available, each verified end-to-end through the Red Hat build pipeline.',
+    remediated:
+      'This package has been rebuilt by Red Hat with backported fixes for known vulnerabilities. The upstream version is pinned and Red Hat applies security patches as sequential releases (+rhlw suffix).',
+    predisclosure:
+      'This package has been rebuilt by Red Hat with backported fixes for vulnerabilities not yet publicly disclosed. The upstream version is pinned and Red Hat applies security patches as sequential releases (+rhlw suffix).',
+  },
+};
+
 export const LIGHTWELL_PROJECT_URL = 'https://www.redhat.com/en/lightwell';
 
 export type LightwellNotificationPrefs = {

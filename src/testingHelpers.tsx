@@ -449,6 +449,14 @@ export const defaultPythonValidatedContentItem: ContentItem = {
   security_level: 'validated',
 };
 
+export const defaultPythonPredisclosureContentItem: ContentItem = {
+  ...defaultPythonRemediatedContentItem,
+  name: 'lightwell/python/predisclosure',
+  published_distribution_url: 'https://example.com/lightwell/python/predisclosure',
+  uuid: '3875c35b-a67a-4a22-a989-21139433c175',
+  security_level: 'predisclosure',
+};
+
 export const defaultLightwellRepositoryPackageItem: RepositoryPackageItem = {
   group: 'org.json.test',
   name: 'json-test',

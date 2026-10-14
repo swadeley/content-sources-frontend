@@ -26,6 +26,7 @@ import LatestReleaseFixes from '../components/LatestReleaseFixes';
 import { fixesCardHeight, fixesCardWidth } from '../components/FixesCard';
 import { useLatestReleaseFixes } from '../hooks/useLatestReleaseFixes';
 import { getPackageCoordinate } from '../utils/format';
+import { getPackageByRepositoryDescription } from '../../helpers';
 
 type PackageOverviewTabProps = {
   isMaven: boolean;
@@ -78,6 +79,11 @@ const PackageOverviewTab = ({
   const showLatestReleaseFixes =
     hasRelease && Boolean(latestRelease) && repository?.security_level === 'remediated';
 
+  const packageDescription = getPackageByRepositoryDescription(
+    repository?.security_level,
+    repository?.content_type ?? (isMaven ? 'maven' : 'python'),
+  );
+
   const packageCoordinate = getPackageCoordinate({ name, group, isMaven });
 
   const { data: latestReleaseFixes, isLoading: isLoadingAdvisories } = useLatestReleaseFixes({
@@ -103,6 +109,7 @@ const PackageOverviewTab = ({
     <Stack hasGutter>
       {tab.snippets.map((snippet) => (
         <StackItem key={snippet.label}>
+          <Content component='p'>{snippet.label}</Content>
           <ClipboardCopy
             isReadOnly
             isCode
@@ -127,19 +134,7 @@ const PackageOverviewTab = ({
         <Content component='p' className={spacing.mb_0}>
           {summary ?? 'Package description not yet available.'}
         </Content>
-        {hasRelease ? (
-          <Content component='p'>
-            This package has been rebuilt by Red Hat with backported fixes for known
-            vulnerabilities. The upstream version is pinned and Red Hat applies security patches as
-            sequential releases {isMaven ? '(.rhlw suffix).' : '(+rhlw suffix).'}
-          </Content>
-        ) : (
-          <Content component='p'>
-            This package has been rebuilt from source by Red Hat with no modifications. Multiple
-            upstream versions are available, each verified end-to-end through the Red Hat build
-            pipeline.
-          </Content>
-        )}
+        {packageDescription && <Content component='p'>{packageDescription}</Content>}
       </Stack>
       {showLatestReleaseFixes && (
         <>
