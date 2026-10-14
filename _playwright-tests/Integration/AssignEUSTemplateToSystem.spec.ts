@@ -96,7 +96,7 @@ test.describe('Assign EUS Template to System', () => {
       await waitForRhcdActive(regClient, RHSM_RHCD_WAIT.maxAttempts, RHSM_RHCD_WAIT.delayMs);
       await refreshSubscriptionManager(regClient);
       await ensureValidToken(page, 'EUS_REPO_TOKEN.json');
-      await waitInPatch(page, hostname, true, 8 * 60 * 1000); // 8 minutes
+      await waitInPatch(page, hostname, true, 8 * 60 * 1000, 'EUS_REPO_TOKEN.json'); // 8 minutes
     });
 
     await test.step('Wait for package URLs to be served from template', async () => {
