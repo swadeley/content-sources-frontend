@@ -98,6 +98,9 @@ refuse unrelated second jobs on the same assembly. See
    user did not state it. Do not assume `spaceAround` / `spaceBetween` / `center`.
 10. **Base support or exotic?** Unit CSS states the contract — refuse situational
     `:has` / `:nth-child` policy stacks; prefer an explicit class/prop.
+11. **PF layout scope?** Is `Flex` / `FlexItem` / `Grid` being used inside the assembly
+    for its own internal arrangement? → plain HTML host + co-located CSS. PF layout
+    components are for landmark sections, not internal component structure.
 
 Do **not** promote to assembly only because the primitive adds Lightwell props
 (`isBusy`, `items`, semantic maps). That is base-unit configuration.
@@ -250,6 +253,9 @@ Before a new file, wrapper, hook, or DTO:
 | Domain **presentational** default (padding, type) | `components/components.config.css` |
 | Page-family spacer / type | `assemblies/page/page.config.css` or unit `.css` |
 | Reach for `spacing.mMd` / `pf-v6-u-*` | Stop — utility classes are last resort; write co-located CSS |
+| `Flex` / `FlexItem` / `Grid` inside an assembly's own internal tree | Plain HTML host (`div`, `span`) + co-located CSS — `flex-direction`, `gap`, `align-items` belong in `.css`, not JSX props. PF layout is for landmark sections, not internal component structure. |
+| `FlexItem` wrapping a label, icon, or single token inside a custom element | Remove. Inline the child directly; CSS on the parent handles spacing. |
+| All `FlexItem` children are identical — no per-child props on any of them | Remove all `FlexItem` wrappers. CSS flex already makes direct children flex items. The container's `gap` / `align-items` / `justify-content` governs them. A `FlexItem` with no per-child override is dead weight. |
 | Exotic `:has` / `:nth-child` layout policy | Stop — base-support CSS only; explicit class/prop for variants |
 | `@media (min-width: 1200px)` or `var(--pf-t--global--breakpoint--*)` in a query | Copy rem from `components.config.css` comment map (`75rem` = xl) |
 | Header needs Hero look | `LwPageHeader hero` — surface pre-config, same grammar |
@@ -464,6 +470,9 @@ Example — one page header, plain or hero surface:
 | Tenant token in `components.config.ts` | Move to `lightwell.config.ts` |
 | Padding / font-size in `components.config.ts` | Move to `components.config.css` or `page.config.css` |
 | Casual PF utility classes (`spacing.*`, `pf-v6-u-*`) | Co-located CSS + tokens; utilities only as last resort |
+| PF `Flex` / `FlexItem` as the host of a kit assembly | Plain `div` or PF semantic host + CSS layout — `Flex` is for landmark sections, not custom element hosts |
+| Nested `Flex` / `FlexItem` inside an assembly's own tree | Flatten. Each `FlexItem` is a DOM node with no earned job; the UA matches its modifier classes on every repaint. Move direction / gap / align to `.css`. |
+| Uniform `FlexItem` wrappers with no per-child props (all children identical) | `FlexItem` earns its place only with a per-child override: growth ratio (`flex: 1`), shrink (`flex-shrink: 0`), individual `align-self`, or `flex-basis`. Same wrapper on every sibling = the CSS rule the UA was already going to run. 5–10 CSS lines govern every instance; N `FlexItem`s scale to hundreds or thousands of modifier-class nodes. See [examples.md § FlexItem before/after](examples.md#flexitem-beforeafter--lwmetricscount) for the `LwMetricsCount` trace. |
 | Blind `width: 100%` / `height: 100%` | Only when stretch is an explicit job; else flow / flex / `min-width` |
 | Exotic situational selectors (`:has(> …:nth-child)`, `:not(:only-child)` layout policy) | Base-support rules only; explicit class/prop for variants |
 | `@media` with `px` or `var(--pf-t--global--breakpoint--*)` | Rem from `components.config.css` header map |
@@ -506,6 +515,7 @@ Structure review without smoke is incomplete.
 - [ ] Kit `@media` uses PF rem from `components.config.css` map — not `px`, not CSS vars
 - [ ] Anti-God: one visual job per assembly; page header hero is surface pre-config
 - [ ] New assembly: family + unit `ROADMAP.md` and unit `README.md` **before** code; zero overlap between family and unit roadmaps
+- [ ] No PF `Flex` / `FlexItem` / `Grid` / `GridItem` inside an assembly's own internal tree — plain HTML host + co-located CSS owns internal layout; PF layout is for landmark sections only
 - [ ] Logic passthrough: children compose **or** slot args build
 - [ ] CHECK FIRST: extended or proved absent
 - [ ] Return readable without sibling files

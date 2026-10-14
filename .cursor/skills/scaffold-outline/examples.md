@@ -347,6 +347,120 @@ Until then, domain configures `LwMenu` directly.
 
 ---
 
+## FlexItem before/after — LwMetricsCount
+
+**Problem:** `LwMetricsCount` used PF `Flex` as the assembly host with two levels of
+nested `Flex` + three `FlexItem` wrappers. None of the `FlexItem`s carried per-child
+overrides. Layout intent was encoded in JSX props scattered across component args —
+not in CSS.
+
+### Before (dead weight)
+
+```tsx
+// host: PF Flex — direction, alignItems, gap as JSX props
+<Flex
+  direction={{ default: isColumn ? 'column' : 'row' }}
+  alignItems={{ default: isColumn ? 'alignItemsCenter' : 'alignItemsBaseline' }}
+  gap={{ default: isColumn ? 'gapSm' : 'gapMd' }}
+>
+  {/* inner group: value + bar stacked — another Flex */}
+  <Flex
+    direction={{ default: 'column' }}
+    alignItems={{ default: isColumn ? 'alignItemsCenter' : 'alignItemsFlexStart' }}
+    gap={{ default: 'gapXs' }}
+  >
+    <FlexItem>                              {/* no per-child override */}
+      <Title headingLevel='h4' size='3xl'>{value}</Title>
+    </FlexItem>
+    <FlexItem>                              {/* no per-child override */}
+      <span className='lw-c-metrics-count__bar' aria-hidden='true' />
+    </FlexItem>
+  </Flex>
+  <FlexItem>                                {/* no per-child override */}
+    <Content>
+      <Flex gap={{ default: 'gapXs' }} alignItems={{ default: 'alignItemsCenter' }}>
+        <FlexItem>{label}</FlexItem>        {/* no per-child override */}
+        <FlexItem><LwTooltip>…</LwTooltip></FlexItem>  {/* no per-child override */}
+      </Flex>
+    </Content>
+  </FlexItem>
+</Flex>
+```
+
+**DOM cost per render:** 2 `Flex` hosts + 5 `FlexItem` hosts = 7 extra nodes.
+Each PF component generates modifier classes (`pf-m-flex-1`, `pf-m-align-items-center`,
+`pf-m-gap-sm`, …). The UA evaluates those classes on every layout/repaint of that
+subtree. Zero `FlexItem`s carried a per-child override — every wrapper was pure ceremony.
+
+At page scale (a coverage report with 3 `LwMetricsCount` cells): 21 extra nodes.
+At product scale (N pages, tables, repeated metric surfaces): hundreds → thousands of
+identical modifier-class-carrying nodes. 5–10 CSS lines govern all of them at once.
+
+### After (CSS owns layout)
+
+```tsx
+// host: plain div — className + style only
+<div
+  className={mergeClassNames(
+    'lw-c-metrics-count',
+    isColumn ? 'lw-m-column' : 'lw-m-row',
+    colorToken != null ? 'lw-m-has-bar' : undefined,
+    className,
+  )}
+  style={colorToken != null ? { ...style, '--lw-metrics-count-bar-color': colorToken } : style}
+>
+  <Title headingLevel='h4' size='3xl' className='lw-c-metrics-count__value'>
+    {value}
+  </Title>
+  {colorToken != null && <span className='lw-c-metrics-count__bar' aria-hidden='true' />}
+  <Content component='small' className='lw-c-metrics-count__label'>
+    {label}
+    {tooltip != null && (
+      <LwTooltip content={tooltip} position='bottom'>
+        <span className='lw-c-metrics-count__help' tabIndex={0}>
+          <OutlinedQuestionCircleIcon />
+        </span>
+      </LwTooltip>
+    )}
+  </Content>
+</div>
+```
+
+```css
+/* All layout in one place; governs every instance */
+.lw-c-metrics-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--pf-t--global--spacer--sm);
+}
+.lw-c-metrics-count.lw-m-row {
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--pf-t--global--spacer--md);
+}
+.lw-c-metrics-count__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pf-t--global--spacer--xs);
+}
+```
+
+**DOM cost per render:** 0 extra nodes. Layout intent is in CSS — readable in DevTools,
+traceable to one file, patched in one place for every consumer.
+
+### Rule
+
+> `FlexItem` earns its place **only** when a specific child needs a per-child override
+> (growth ratio, shrink, individual `align-self`, `flex-basis`). When all children get
+> the same wrapper with no per-child props, the wrapper is dead weight — remove it.
+> The UA already promotes direct children to flex items. Let CSS on the parent govern
+> uniform children.
+
+See [perspective.md § FlexItem](perspective.md#flexitem--earns-its-place-only-with-a-per-child-override).
+
+---
+
 ## Refactor workflow
 
 1. Propose scope — no edits

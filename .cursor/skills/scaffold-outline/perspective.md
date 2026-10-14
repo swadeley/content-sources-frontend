@@ -238,6 +238,57 @@ Canonical shapes:
 Flex/grid format **direct children** — extra `div`s re-parent content and break
 `flex`, `gap`, sticky, and `overflow`. Each node costs layout, paint, a11y, and memory.
 
+**PF layout components are landmark tools, not internal component layout tools.**
+
+`Flex`, `FlexItem`, `Grid`, `GridItem` — and their breakpoint-aware prop machinery — are
+designed for **page-level and large-section arrangement**: sidebars beside main content,
+multi-column page sections, chrome slot rows. They are **not** for internal structure of
+custom kit assemblies.
+
+When `Flex` / `FlexItem` appear inside an assembly's own tree:
+
+| Cost | Detail |
+| ---- | ------ |
+| **DOM nodes** | Every `FlexItem` is an extra host. Rule 0: refused unless it owns a job. |
+| **UA class matching** | PF generates modifier classes (`.pf-m-gap-sm`, `.pf-m-align-items-center`, …); the user agent evaluates each on every repaint/reflow of that subtree. |
+| **Spec opacity** | Layout intent is encoded in JSX props scattered across component args — invisible from CSS; harder to read, debug, or trace in DevTools. |
+| **Readability** | `gap={{ default: 'gapXs' }}` on a `Flex` is more characters and more indirection than `gap: var(--pf-t--global--spacer--xs)` in CSS. |
+
+**Internal layout = CSS.** The assembly host is a plain `div` (or a PF host when PF
+owns the concept). Direction, alignment, gap, and wrap belong in the co-located `.css`
+on the `lw-c-*` root and modifier classes. The JSX return shows *what* is in the
+component; CSS shows *how* it is arranged. Use PF `Flex` / `Grid` only when the **call site** wires landmark regions — never
+inside the assembly definition itself.
+
+### `FlexItem` — earns its place only with a per-child override
+
+CSS flex already promotes every direct child to a flex item — no wrapper needed.
+`FlexItem` was authored under the belief that "all components should be wrapped."
+That belief was wrong. The implicit flex item is the correct default.
+
+`FlexItem` earns its place **only** when a specific child needs properties that
+deviate from the container default for **that child alone**:
+
+| Justified | Not justified |
+| --------- | ------------- |
+| `flex: 1` (growth ratio / visual balance) | Pass-through with no props |
+| `flex-shrink: 0` | Same wrapper on every sibling |
+| Individual `align-self` override | "Structure for readability" |
+| `flex-basis` or `min-width` on one child | All siblings get an identical wrapper |
+
+**When all children get the same `FlexItem` with no per-child props, the wrapper
+is dead weight.** The flex container's `gap`, `align-items`, and `justify-content`
+already govern uniform children. Remove `FlexItem`; let CSS on the parent do its job.
+
+**Scale argument:** 5–10 lines of CSS in one place govern every instance, every
+repaint. `FlexItem` DOM nodes with 10 modifier classes each scale with the component
+tree — tens, hundreds, or thousands of elements carrying the same modifiers. The UA
+matches those classes on every layout pass. The CSS rule runs once. There is no
+performance or readability argument for uniform `FlexItem` wrappers.
+
+See [examples.md § FlexItem before/after](examples.md#flexitem-beforeafter--lwmetricscount)
+for the concrete trace.
+
 **Intrinsic size:** do not set `width: 100%` or `height: 100%` unless stretch is an
 **explicit** job (fill a known containing block). Prefer natural block flow, flex/grid
 growth, or `min-width` tokens. Forced width is the quieter twin of forced height —
