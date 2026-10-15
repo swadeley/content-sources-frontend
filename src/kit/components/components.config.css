@@ -59,4 +59,8 @@
   /* Shared control gaps */
   --lw-space--menu-group-gap: var(--pf-t--global--spacer--sm);
   --lw-space--button-group-gap: var(--pf-t--global--spacer--sm);
+
+  /* LwLoaded — min-block-size while loading so the skeleton has a visible target.
+   * Sized to a count-cell skeleton stack (3xl value + sm label + gap), not a full slab. */
+  --lw-space--loaded-min-block: 5rem;
 }

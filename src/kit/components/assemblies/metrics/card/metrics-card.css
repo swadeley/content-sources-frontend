@@ -9,13 +9,22 @@
  */
 
 .lw-c-metrics-card {
-  min-width: var(--lw-space--metrics-card-min-inline);
+  --lw-space--metrics-card-min-inline: 20rem;
+
   /* Column so header + body stack. Row flex + overflow:auto clipped the
    * body beside the header (Status Summary looked empty). */
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: var(--pf-t--global--spacer--lg);
+}
+
+/* Apply floor only when the viewport can accommodate it.
+ * Below this breakpoint the card shrinks with the layout — no forced minimum. */
+@media (min-width: 36rem) {
+  .lw-c-metrics-card {
+    min-width: var(--lw-space--metrics-card-min-inline);
+  }
 }
 
 .lw-c-metrics-card > .pf-v6-c-card__body {

@@ -35,6 +35,7 @@ import {
   LwLoaded,
   LwMetricsCard,
   LwMetricsCount,
+  LwMetricsCountSlots,
   LwMetricsStepper,
   LwPageHeader,
   PageChromeSlot,
@@ -391,10 +392,7 @@ const Beacon = () => {
                 <LwLoaded
                   isLoaded={!isLoading}
                   fallback={
-                    <Flex
-                      justifyContent={{ default: 'justifyContentCenter' }}
-                      gap={{ default: 'gapLg' }}
-                    >
+                    <LwMetricsCountSlots>
                       <Flex
                         direction={{ default: 'column' }}
                         gap={{ default: 'gapSm' }}
@@ -423,13 +421,10 @@ const Beacon = () => {
                         <LwSkeleton fontSize='3xl' width='4ch' />
                         <LwSkeleton fontSize='sm' width='5ch' />
                       </Flex>
-                    </Flex>
+                    </LwMetricsCountSlots>
                   }
                 >
-                  <Flex
-                    justifyContent={{ default: 'justifyContentCenter' }}
-                    gap={{ default: 'gapLg' }}
-                  >
+                  <LwMetricsCountSlots>
                     <LwMetricsCount
                       value={displayMeta?.count ?? filteredVulns.length}
                       label='Total'
@@ -443,7 +438,7 @@ const Beacon = () => {
                       value={displayMeta?.statusCounts?.[UNREMEDIATED_STATUS] ?? 0}
                       label={NO_REMEDIATION_LABEL}
                     />
-                  </Flex>
+                  </LwMetricsCountSlots>
                 </LwLoaded>
               </LwMetricsCard>
             </PageChromeSlot>

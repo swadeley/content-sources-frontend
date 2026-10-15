@@ -54,7 +54,7 @@ const ManifestUpload = () => {
         </PageChromeSlot>
         <PageChromeSlot>
           {showProgress ? (
-            <LwCard isPlain isGlass={false}>
+            <LwCard isGlass={false}>
               <CardBody>
                 <AnalysisProgress
                   step={step}
@@ -66,7 +66,6 @@ const ManifestUpload = () => {
             </LwCard>
           ) : (
             <LwCard
-              isPlain
               isGlass={false}
               hasHeader='Select your manifest file'
               hasAction={<ManifestFormatPopover />}

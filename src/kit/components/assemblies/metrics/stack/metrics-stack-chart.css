@@ -1,1 +1,4 @@
 /* LwMetricsStackChart — plot host for call-site resize observer. */
+.lw-c-metrics-stack-chart {
+  display: flex;
+}

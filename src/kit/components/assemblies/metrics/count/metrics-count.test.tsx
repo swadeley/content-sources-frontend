@@ -45,7 +45,7 @@ it('shows label tooltip on help icon hover', async () => {
   expect(await screen.findByText('Package not found in the catalog.')).toBeInTheDocument();
 });
 
-it('merges call-site className onto the Flex host', () => {
+it('merges call-site className onto the host root', () => {
   const { container } = render(
     <LwMetricsCount value={1} label='Total' className='lw-count-test' />,
   );

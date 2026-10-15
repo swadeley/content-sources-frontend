@@ -16,6 +16,9 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   }),
 }));
 
+jest.mock('Hooks/useNotification', () => () => ({ notify: jest.fn() }));
+jest.mock('Hooks/useErrorNotification', () => () => jest.fn());
+
 jest.mock('./hooks/useCoverageReport');
 
 jest.mock('@scalprum/react-core', () => ({
@@ -30,7 +33,7 @@ jest.mock('Hooks/Lightwell/navigation/useLightwellRootPath', () => ({
   useLightwellRootPath: jest.fn(() => '/lightwell'),
 }));
 
-// Charts (including the bar chart's screen-reader table) are tested in their own files
+// Kit chart assemblies are tested in their own files; silence them here
 jest.mock('kit/components/assemblies', () => {
   const actual = jest.requireActual('kit/components/assemblies');
   return {
@@ -100,9 +103,9 @@ describe('CoverageReport', () => {
         name: /75% of packages match the Lightwell Network catalog/,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText('60')).toBeInTheDocument();
-    expect(screen.getByText('15')).toBeInTheDocument();
-    expect(screen.getByText('25')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: '60' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: '15' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: '25' })).toBeInTheDocument();
     expect(screen.getByText('Exact match')).toBeInTheDocument();
     expect(screen.getByText('Partial match')).toBeInTheDocument();
   });
@@ -172,7 +175,9 @@ describe('CoverageReport', () => {
 
   it('displays ecosystem breakdown with package counts', () => {
     renderCoverageReport();
-    expect(screen.getByText('Packages by ecosystem')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Packages by ecosystem' }),
+    ).toBeInTheDocument();
     const paragraphs = screen.getAllByRole('paragraph');
     expect(paragraphs.some((p) => p.textContent?.includes('75 of 100 packages'))).toBe(true);
   });

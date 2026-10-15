@@ -29,6 +29,9 @@ export type { LwMetricsStepperProps, LwMetricsStep } from './metrics/stepper/met
 export { LwMetricsCount } from './metrics/count/metrics-count';
 export type { LwMetricsCountProps } from './metrics/count/metrics-count';
 
+export { LwMetricsCountSlots } from './metrics/metrics-count-slots';
+export type { LwMetricsCountSlotsProps } from './metrics/metrics-count-slots';
+
 export { LwMetricsCard } from './metrics/card/metrics-card';
 export type { LwMetricsCardProps } from './metrics/card/metrics-card';
 
