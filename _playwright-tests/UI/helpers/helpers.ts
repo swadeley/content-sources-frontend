@@ -41,13 +41,19 @@ export async function waitForValidStatus(
   message?: string,
   exact: boolean = true,
 ): Promise<Locator> {
-  const locator = await getRowByNameOrUrl(pageOrLocator, rowName!);
+  let locator = await getRowByNameOrUrl(pageOrLocator, rowName!);
   try {
     await locator.getByText('In progress', { exact }).waitFor({ state: 'visible', timeout: 3_000 });
   } catch {
     // Ignore errors.
   }
-  await expect(locator.getByText('Valid', { exact }), message).toBeVisible({ timeout });
+  try {
+    await expect(locator.getByText('Valid', { exact }), message).toBeVisible({ timeout });
+  } catch {
+    // Row may have left the first page (e.g. concurrent pagination data); re-filter and retry once.
+    locator = await getRowByNameOrUrl(pageOrLocator, rowName!, true);
+    await expect(locator.getByText('Valid', { exact }), message).toBeVisible({ timeout: 15_000 });
+  }
 
   return locator;
 }
