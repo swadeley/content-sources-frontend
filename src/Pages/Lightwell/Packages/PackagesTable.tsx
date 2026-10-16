@@ -9,6 +9,9 @@ import {
   ToolbarContent,
   ToolbarItem,
   Timestamp,
+  PageBreadcrumb,
+  Breadcrumb,
+  BreadcrumbItem,
 } from '@patternfly/react-core';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
@@ -348,6 +351,16 @@ const PackagesTable = () => {
 
   return (
     <>
+      {!appBreadcrumbsEnabled && (
+        <PageBreadcrumb isWidthLimited>
+          <Breadcrumb ouiaId='lightwell-packages-breadcrumb'>
+            <BreadcrumbItem component='button' onClick={() => navigateTo('repositories')}>
+              Lightwell Repositories
+            </BreadcrumbItem>
+            <BreadcrumbItem isActive>{breadcrumbRepoName}</BreadcrumbItem>
+          </Breadcrumb>
+        </PageBreadcrumb>
+      )}
       <LwPageHeader>
         <PageChromeSlots>
           <PageChromeSlot>

@@ -1,4 +1,6 @@
 import {
+  Breadcrumb,
+  BreadcrumbItem,
   CardBody,
   Dropdown,
   DropdownItem,
@@ -7,12 +9,14 @@ import {
   GridItem,
   Label,
   MenuToggle,
+  PageBreadcrumb,
   PageSection,
   Tab,
   TabContent,
   TabContentBody,
   Tabs,
   TabTitleText,
+  Truncate,
 } from '@patternfly/react-core';
 import { useRemoteHook } from '@scalprum/react-core';
 import { useFlag } from '@unleash/proxy-client-react';
@@ -69,6 +73,7 @@ import {
   PageTitleStack,
 } from 'kit/components/assemblies';
 import { LwAlert, LwButton, LwCard } from 'kit/components/primitives';
+import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellNavigateTo';
 
 const useStyles = createUseStyles({
   detailCard: {
@@ -80,6 +85,7 @@ const DROP_LAST_CHROME_SEGMENT_OPTIONS = { dropLastChromeSegment: true };
 
 const PackageDetails = () => {
   const classes = useStyles();
+  const { navigateTo } = useLightwellNavigateTo();
   const rootPath = useLightwellRootPath();
 
   const {
@@ -389,6 +395,24 @@ const PackageDetails = () => {
         packageVersion: activeVersion,
       }}
     >
+      {!appBreadcrumbsEnabled && (
+        <PageBreadcrumb isWidthLimited>
+          <Breadcrumb ouiaId='lightwell-package-details-breadcrumb'>
+            <BreadcrumbItem component='button' onClick={() => navigateTo('repositories')}>
+              Lightwell Repositories
+            </BreadcrumbItem>
+            <BreadcrumbItem
+              component='button'
+              onClick={() => navigateTo('repositoryPackages', { repoSlug })}
+            >
+              {breadcrumbRepoName}
+            </BreadcrumbItem>
+            <BreadcrumbItem isActive>
+              <Truncate content={packageCoordinate || '—'} />
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </PageBreadcrumb>
+      )}
       <LwPageHeader>
         <PageChromeSlots>
           <PageChromeSlot>
