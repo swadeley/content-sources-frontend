@@ -24,6 +24,7 @@ import { lightwellConfig } from 'kit/lightwell.config';
 import { useAppContext } from './middleware/AppContext';
 import CoverageReport from 'Pages/Lightwell/Lens/CoverageReport';
 import ManifestUpload from 'Pages/Lightwell/Lens/ManifestUpload';
+import TermsGuard from 'Pages/Lightwell/components/TermsGuard';
 
 export default function LightwellApp() {
   const pageSafe = usePageSafe();
@@ -126,32 +127,34 @@ export default function LightwellApp() {
       {isFetchingPermissions ? (
         <Loader />
       ) : (
-        <Routes>
-          {/* Demo routes keep their own layout — no live subnav */}
-          <Route path='demo' element={<LightwellDemoLayout />}>
-            <Route index element={<RepositoriesTable />} />
-            <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
-            <Route path=':repoName/:packageName' element={<PackageDetails />} />
-            <Route path=':repoName' element={<PackagesTable />} />
-          </Route>
-          {/* Live routes share LightwellLayout which renders the subnav inside pf-v6-c-page__main */}
-          <Route element={<LightwellLayout />}>
-            <Route index element={<RepositoriesTable />} />
-            {features?.lightwellbeacon?.enabled && features?.lightwellbeacon?.accessible ? (
-              <Route path='beacon' element={<Beacon />} />
-            ) : null}
-            {features?.lightwelllens?.enabled && features?.lightwelllens?.accessible ? (
-              <>
-                <Route path='lens' element={<ManifestUpload />} />
-                <Route path='lens/:reportUUID' element={<CoverageReport />} />
-              </>
-            ) : null}
-            <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
-            <Route path=':repoName/:packageName' element={<PackageDetails />} />
-            <Route path=':repoName' element={<PackagesTable />} />
-            <Route path='*' element={<LightwellNotFound />} />
-          </Route>
-        </Routes>
+        <TermsGuard>
+          <Routes>
+            {/* Demo routes keep their own layout — no live subnav */}
+            <Route path='demo' element={<LightwellDemoLayout />}>
+              <Route index element={<RepositoriesTable />} />
+              <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
+              <Route path=':repoName/:packageName' element={<PackageDetails />} />
+              <Route path=':repoName' element={<PackagesTable />} />
+            </Route>
+            {/* Live routes share LightwellLayout which renders the subnav inside pf-v6-c-page__main */}
+            <Route element={<LightwellLayout />}>
+              <Route index element={<RepositoriesTable />} />
+              {features?.lightwellbeacon?.enabled && features?.lightwellbeacon?.accessible ? (
+                <Route path='beacon' element={<Beacon />} />
+              ) : null}
+              {features?.lightwelllens?.enabled && features?.lightwelllens?.accessible ? (
+                <>
+                  <Route path='lens' element={<ManifestUpload />} />
+                  <Route path='lens/:reportUUID' element={<CoverageReport />} />
+                </>
+              ) : null}
+              <Route path=':repoName/:group/:packageName' element={<PackageDetails />} />
+              <Route path=':repoName/:packageName' element={<PackageDetails />} />
+              <Route path=':repoName' element={<PackagesTable />} />
+              <Route path='*' element={<LightwellNotFound />} />
+            </Route>
+          </Routes>
+        </TermsGuard>
       )}
     </ErrorPage>
   );
