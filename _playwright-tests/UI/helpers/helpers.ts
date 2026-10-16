@@ -41,7 +41,7 @@ export async function waitForValidStatus(
   message?: string,
   exact: boolean = true,
 ): Promise<Locator> {
-  const locator = await getRowByNameOrUrl(pageOrLocator, rowName!);
+  const locator = await getRowByNameOrUrl(pageOrLocator, rowName!, true);
   try {
     await locator.getByText('In progress', { exact }).waitFor({ state: 'visible', timeout: 3_000 });
   } catch {
