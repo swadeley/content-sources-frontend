@@ -3,7 +3,7 @@ import { getConnectSnippetTabs } from './connectSnippets';
 it.each(['validated', 'remediated'])(
   'uses the existing Python URL behavior for %s repositories',
   (securityLevel) => {
-    const distributionUrl = `https://packages.redhat.com/lightwell/python/${securityLevel}/`;
+    const indexUrl = `https://packages.redhat.com/lightwell/python/${securityLevel}/simple`;
     const tabs = getConnectSnippetTabs({
       name: `lightwell/python/${securityLevel}`,
       content_type: 'python',
@@ -11,13 +11,13 @@ it.each(['validated', 'remediated'])(
     });
 
     expect(tabs.find((tab) => tab.eventKey === 'pip')?.snippets[1].code).toBe(
-      `pip config set global.index-url ${distributionUrl}simple`,
+      `pip config set global.index-url ${indexUrl}`,
     );
     expect(tabs.find((tab) => tab.eventKey === 'pipenv')?.snippets[1].code).toBe(
-      `pipenv install --index ${distributionUrl}simple`,
+      `pipenv install --index ${indexUrl}`,
     );
     expect(tabs.find((tab) => tab.eventKey === 'poetry')?.snippets[1].code).toBe(
-      `poetry source add --priority=default lightwell ${distributionUrl}`,
+      `poetry source add --priority=default lightwell ${indexUrl}`,
     );
     expect(tabs.find((tab) => tab.eventKey === 'uv')?.snippets[0].code).toBe(
       'machine packages.redhat.com login <service_account_username> password <service_account_token>',
@@ -27,7 +27,7 @@ it.each(['validated', 'remediated'])(
 
 [[index]]
 name = "lightwell"
-url = "${distributionUrl}simple"
+url = "${indexUrl}"
 default = true`,
     );
   },

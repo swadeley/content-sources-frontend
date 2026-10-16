@@ -301,7 +301,7 @@ describe('PackageOverviewTab', () => {
     const requirementsPanel = screen.getByRole('tabpanel');
     expect(
       within(requirementsPanel).getByText(
-        /--index-url https:\/\/example.com\/python-repo\s+requests==/,
+        /--index-url https:\/\/example.com\/python-repo\/simple\s+requests==/,
       ),
     ).toBeInTheDocument();
 

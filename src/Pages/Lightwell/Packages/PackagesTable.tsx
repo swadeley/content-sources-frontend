@@ -41,6 +41,7 @@ import { RepositoryPackageItem } from 'services/Content/ContentApi';
 import { getMockLightwellPackages } from '../mockPackages';
 import {
   formatDistributionUrl,
+  formatPythonDisplayUrl,
   formatRepositoryName,
   getEcosystemIcon,
   getRepositoryDescription,
@@ -390,7 +391,9 @@ const PackagesTable = () => {
                   </LwButton>
                 </ConnectRepositoryModal>
                 <LwClipboardCopy isCode>
-                  {formatDistributionUrl(repository.published_distribution_url || '')}
+                  {repository.content_type === 'python'
+                    ? formatPythonDisplayUrl(repository.published_distribution_url || '')
+                    : formatDistributionUrl(repository.published_distribution_url || '')}
                 </LwClipboardCopy>
               </LwButtonGroup>
               {(isRemediated || isPredisclosure) && <LwAlert />}

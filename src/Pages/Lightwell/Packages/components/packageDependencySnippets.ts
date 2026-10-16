@@ -1,3 +1,4 @@
+import { formatDistributionUrl, formatPythonIndexUrl } from '../../helpers';
 import { ConnectSnippetTab } from '../../Repositories/components/connectSnippets';
 import { getPackageCoordinate } from '../utils/format';
 
@@ -16,54 +17,59 @@ interface PythonPackageVersion {
 
 export const getPythonPackageUsageSnippetTabs = (
   pkg: PythonPackageVersion,
-): ConnectSnippetTab[] => [
-  {
-    eventKey: 'pip',
-    title: 'pip',
-    snippets: [
-      {
-        label: 'Install directly:',
-        code: `# Source: ${pkg.sourceUrl}
-pip install --index-url ${pkg.sourceUrl.replace(/\/+$/, '')}/simple ${pkg.name}==${pkg.release}`,
-      },
-    ],
-  },
-  {
-    eventKey: 'uv',
-    title: 'uv',
-    snippets: [
-      {
-        label: 'Install with uv:',
-        code: `# Source: ${pkg.sourceUrl}
-uv pip install --system-certs --index-url ${pkg.sourceUrl.replace(/\/+$/, '')}/simple ${pkg.name}==${pkg.release}`,
-      },
-    ],
-  },
-  {
-    eventKey: 'requirements.txt',
-    title: 'requirements.txt',
-    snippets: [
-      {
-        label: 'Add to your requirements.txt:',
-        code: `# Source: ${pkg.sourceUrl}
---index-url ${pkg.sourceUrl}
+): ConnectSnippetTab[] => {
+  const sourceUrl = formatDistributionUrl(pkg.sourceUrl);
+  const indexUrl = formatPythonIndexUrl(pkg.sourceUrl);
+
+  return [
+    {
+      eventKey: 'pip',
+      title: 'pip',
+      snippets: [
+        {
+          label: 'Install directly:',
+          code: `# Source: ${sourceUrl}
+pip install --index-url ${indexUrl} ${pkg.name}==${pkg.release}`,
+        },
+      ],
+    },
+    {
+      eventKey: 'uv',
+      title: 'uv',
+      snippets: [
+        {
+          label: 'Install with uv:',
+          code: `# Source: ${sourceUrl}
+uv pip install --system-certs --index-url ${indexUrl} ${pkg.name}==${pkg.release}`,
+        },
+      ],
+    },
+    {
+      eventKey: 'requirements.txt',
+      title: 'requirements.txt',
+      snippets: [
+        {
+          label: 'Add to your requirements.txt:',
+          code: `# Source: ${sourceUrl}
+--index-url ${indexUrl}
 ${pkg.name}==${pkg.release}`,
-      },
-    ],
-  },
-  {
-    eventKey: 'pip.conf',
-    title: 'pip.conf',
-    snippets: [
-      {
-        label: 'Add to your pip.conf for permanent use:',
-        code: `# ~/.config/pip/pip.conf
+        },
+      ],
+    },
+    {
+      eventKey: 'pip.conf',
+      title: 'pip.conf',
+      snippets: [
+        {
+          label: 'Add to your pip.conf for permanent use:',
+          code: `# ~/.config/pip/pip.conf
 [global]
-index-url = ${pkg.sourceUrl}`,
-      },
-    ],
-  },
-];
+index-url = ${indexUrl}`,
+        },
+      ],
+    },
+  ];
+};
 
 export const getMavenPackageUsageSnippetTabs = (
   pkg: MavenPackageSnippetInput,

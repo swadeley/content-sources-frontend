@@ -107,14 +107,41 @@ export const getRepositoryNameFromPathSlug = (slug: string): string => {
 
 /**
  * Transforms published distribution URL by replacing /api/pulp-content/lightwell with /lightwell
+ * When a pulp path is rewritten, the result is normalized to end with /.
+ * URLs without a pulp path are returned unchanged.
  *
  * Example:
  * https://packages.redhat.com/api/pulp-content/lightwell/java/validated
- * -> https://packages.redhat.com/lightwell/java/validated
+ * -> https://packages.redhat.com/lightwell/java/validated/
  * https://packages.redhat.com/api/pulp-content/public-lightwell-demo/python/validated/simple
- * -> https://packages.redhat.com/lightwell/public-lightwell-demo/python/validated/simple
+ * -> https://packages.redhat.com/lightwell/public-lightwell-demo/python/validated/simple/
  */
-export const formatDistributionUrl = (url: string): string =>
-  url
+export const formatDistributionUrl = (url: string): string => {
+  if (!url) return '';
+  const transformed = url
     .replace('/api/pulp-content/public-lightwell-demo', '/lightwell/public-lightwell-demo')
     .replace('/api/pulp-content/lightwell', '/lightwell');
+  if (transformed === url) {
+    return url;
+  }
+  return transformed.endsWith('/') ? transformed : `${transformed}/`;
+};
+
+const stripPythonSimpleSuffix = (url: string): string =>
+  formatDistributionUrl(url)
+    .replace(/\/+$/, '')
+    .replace(/\/simple$/, '');
+
+/**
+ * Python index URL for pip / pipenv / poetry / requirements / pip.conf (.../simple).
+ * Call only for python repositories (the caller decides via content_type).
+ */
+export const formatPythonIndexUrl = (url: string): string =>
+  `${stripPythonSimpleSuffix(url)}/simple`;
+
+/**
+ * Python display URL for the packages table header (.../simple/).
+ * Call only for python repositories (the caller decides via content_type).
+ */
+export const formatPythonDisplayUrl = (url: string): string =>
+  `${stripPythonSimpleSuffix(url)}/simple/`;

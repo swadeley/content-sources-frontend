@@ -26,6 +26,7 @@ import type {
   CompletedCoverageReport,
   CoverageReportPackage,
 } from 'services/Lightwell/CoverageReportsApi';
+import { formatDistributionUrl, formatPythonIndexUrl } from './Pages/Lightwell/helpers';
 
 const queryClient = new QueryClient({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -559,47 +560,63 @@ export const javaRemediatedCopyCommand = `${defaultLightwellRepositoryPackageIte
 export const otherJavaRemediatedCopyCommand = `${defaultLightwellRepositoryPackageItem.group}:${defaultLightwellRepositoryPackageItem.name}:2.12.0.rhlw-00002`;
 export const javaValidatedCopyCommand = `${defaultLightwellRepositoryPackageItem.group}:${defaultLightwellRepositoryPackageItem.name}:2.21.2`;
 
-export const mavenRemediatedDependencySnippet = `<!-- Source: ${defaultLightwellContentItem.published_distribution_url} -->
+const javaDistributionUrl = formatDistributionUrl(
+  defaultLightwellContentItem.published_distribution_url || '',
+);
+const pythonRemediatedDistributionUrl = formatDistributionUrl(
+  defaultPythonRemediatedContentItem.published_distribution_url || '',
+);
+const pythonRemediatedIndexUrl = formatPythonIndexUrl(
+  defaultPythonRemediatedContentItem.published_distribution_url || '',
+);
+const pythonValidatedDistributionUrl = formatDistributionUrl(
+  defaultPythonValidatedContentItem.published_distribution_url || '',
+);
+const pythonValidatedIndexUrl = formatPythonIndexUrl(
+  defaultPythonValidatedContentItem.published_distribution_url || '',
+);
+
+export const mavenRemediatedDependencySnippet = `<!-- Source: ${javaDistributionUrl} -->
 <dependency>
   <groupId>${defaultLightwellRepositoryPackageItem.group}</groupId>
   <artifactId>${defaultLightwellRepositoryPackageItem.name}</artifactId>
   <version>3.14.0.rhlw-00001</version>
 </dependency>`;
 
-export const gradleRemediatedDependencySnippet = `// Source: ${defaultLightwellContentItem.published_distribution_url}
+export const gradleRemediatedDependencySnippet = `// Source: ${javaDistributionUrl}
 implementation("${defaultLightwellRepositoryPackageItem.group}:${defaultLightwellRepositoryPackageItem.name}:3.14.0.rhlw-00001")`;
 
-export const mavenValidatedDependencySnippet = `<!-- Source: ${defaultLightwellContentItem.published_distribution_url} -->
+export const mavenValidatedDependencySnippet = `<!-- Source: ${javaDistributionUrl} -->
 <dependency>
   <groupId>${defaultLightwellRepositoryPackageItem.group}</groupId>
   <artifactId>${defaultLightwellRepositoryPackageItem.name}</artifactId>
   <version>2.21.2</version>
 </dependency>`;
 
-export const gradleValidatedDependencySnippet = `// Source: ${defaultLightwellContentItem.published_distribution_url}
+export const gradleValidatedDependencySnippet = `// Source: ${javaDistributionUrl}
 implementation("${defaultLightwellRepositoryPackageItem.group}:${defaultLightwellRepositoryPackageItem.name}:2.21.2")`;
 
-export const pipRemediatedInstallSnippet = `# Source: ${defaultPythonRemediatedContentItem.published_distribution_url}
-pip install --index-url ${defaultPythonRemediatedContentItem.published_distribution_url}/simple ${defaultPythonRemediatedRepositoryPackageItem.name}==2.32.0.rhlw-0002`;
+export const pipRemediatedInstallSnippet = `# Source: ${pythonRemediatedDistributionUrl}
+pip install --index-url ${pythonRemediatedIndexUrl} ${defaultPythonRemediatedRepositoryPackageItem.name}==2.32.0.rhlw-0002`;
 
-export const requirementsRemediatedInstallSnippet = `# Source: ${defaultPythonRemediatedContentItem.published_distribution_url}
---index-url ${defaultPythonRemediatedContentItem.published_distribution_url}
+export const requirementsRemediatedInstallSnippet = `# Source: ${pythonRemediatedDistributionUrl}
+--index-url ${pythonRemediatedIndexUrl}
 ${defaultPythonRemediatedRepositoryPackageItem.name}==2.32.0.rhlw-0002`;
 
 export const pipConfRemediatedInstallSnippet = `# ~/.config/pip/pip.conf
 [global]
-index-url = ${defaultPythonRemediatedContentItem.published_distribution_url}`;
+index-url = ${pythonRemediatedIndexUrl}`;
 
-export const pipValidatedInstallSnippet = `# Source: ${defaultPythonValidatedContentItem.published_distribution_url}
-pip install --index-url ${defaultPythonValidatedContentItem.published_distribution_url}/simple ${defaultPythonValidatedPackageItem.name}==2.21.2`;
+export const pipValidatedInstallSnippet = `# Source: ${pythonValidatedDistributionUrl}
+pip install --index-url ${pythonValidatedIndexUrl} ${defaultPythonValidatedPackageItem.name}==2.21.2`;
 
-export const requirementsValidatedInstallSnippet = `# Source: ${defaultPythonValidatedContentItem.published_distribution_url}
---index-url ${defaultPythonValidatedContentItem.published_distribution_url}
+export const requirementsValidatedInstallSnippet = `# Source: ${pythonValidatedDistributionUrl}
+--index-url ${pythonValidatedIndexUrl}
 ${defaultPythonValidatedPackageItem.name}==2.21.2`;
 
 export const pipConfValidatedInstallSnippet = `# ~/.config/pip/pip.conf
 [global]
-index-url = ${defaultPythonValidatedContentItem.published_distribution_url}`;
+index-url = ${pythonValidatedIndexUrl}`;
 
 export const defaultTemplateItem: TemplateItem = {
   uuid: '50412eda-7df5-4fac-8556-278f45e2ef9b',

@@ -1,5 +1,5 @@
 import { ContentItem } from 'services/Content/ContentApi';
-import { formatDistributionUrl } from '../../helpers';
+import { formatDistributionUrl, formatPythonIndexUrl } from '../../helpers';
 
 export interface ConnectCodeSnippet {
   label: string;
@@ -137,6 +137,7 @@ const getMavenSnippetTabs = (repository: RepositoryContext): ConnectSnippetTab[]
 const getPythonSnippetTabs = (repository: RepositoryContext): ConnectSnippetTab[] => {
   const rawUrl = repository.published_distribution_url || '';
   const distributionUrl = formatDistributionUrl(rawUrl);
+  const indexUrl = formatPythonIndexUrl(rawUrl);
 
   return [
     {
@@ -152,7 +153,7 @@ const getPythonSnippetTabs = (repository: RepositoryContext): ConnectSnippetTab[
         },
         {
           label: 'Set as default index:',
-          code: `pip config set global.index-url ${distributionUrl.replace(/\/+$/, '')}/simple`,
+          code: `pip config set global.index-url ${indexUrl}`,
         },
       ],
     },
@@ -169,7 +170,7 @@ const getPythonSnippetTabs = (repository: RepositoryContext): ConnectSnippetTab[
         },
         {
           label: 'Install from the repository:',
-          code: `pipenv install --index ${distributionUrl.replace(/\/+$/, '')}/simple`,
+          code: `pipenv install --index ${indexUrl}`,
         },
       ],
     },
@@ -186,7 +187,7 @@ const getPythonSnippetTabs = (repository: RepositoryContext): ConnectSnippetTab[
         },
         {
           label: 'Add as default source:',
-          code: `poetry source add --priority=default lightwell ${distributionUrl}`,
+          code: `poetry source add --priority=default lightwell ${indexUrl}`,
         },
       ],
     },
@@ -205,7 +206,7 @@ const getPythonSnippetTabs = (repository: RepositoryContext): ConnectSnippetTab[
 
 [[index]]
 name = "lightwell"
-url = "${distributionUrl.replace(/\/+$/, '')}/simple"
+url = "${indexUrl}"
 default = true`,
           description: 'Add to ~/.config/uv/uv.toml',
         },

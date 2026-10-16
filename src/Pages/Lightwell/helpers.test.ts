@@ -1,6 +1,8 @@
 import { CodeIcon, JavaIcon, PythonIcon } from '@patternfly/react-icons';
 import {
   formatDistributionUrl,
+  formatPythonDisplayUrl,
+  formatPythonIndexUrl,
   formatRepositoryName,
   getEcosystemFromContentType,
   getEcosystemIcon,
@@ -287,7 +289,7 @@ describe('formatDistributionUrl', () => {
       formatDistributionUrl(
         'https://packages.redhat.com/api/pulp-content/lightwell/java/validated',
       ),
-    ).toBe('https://packages.redhat.com/lightwell/java/validated');
+    ).toBe('https://packages.redhat.com/lightwell/java/validated/');
   });
 
   it('transforms Pulp API URL to Lightwell URL for stage', () => {
@@ -298,12 +300,12 @@ describe('formatDistributionUrl', () => {
     ).toBe('https://packages.stage.redhat.com/lightwell/python/remediated/');
   });
 
-  it('handles URLs without trailing slash', () => {
+  it('normalizes URLs without trailing slash', () => {
     expect(
       formatDistributionUrl(
         'https://packages.redhat.com/api/pulp-content/lightwell/python/validated',
       ),
-    ).toBe('https://packages.redhat.com/lightwell/python/validated');
+    ).toBe('https://packages.redhat.com/lightwell/python/validated/');
   });
 
   it('returns empty string unchanged', () => {
@@ -315,7 +317,7 @@ describe('formatDistributionUrl', () => {
       formatDistributionUrl(
         'https://packages.redhat.com/api/pulp-content/public-lightwell-demo/python/validated/simple',
       ),
-    ).toBe('https://packages.redhat.com/lightwell/public-lightwell-demo/python/validated/simple');
+    ).toBe('https://packages.redhat.com/lightwell/public-lightwell-demo/python/validated/simple/');
   });
 
   it('transforms demo Pulp API URL to Lightwell URL with trailing slash', () => {
@@ -330,5 +332,43 @@ describe('formatDistributionUrl', () => {
     expect(formatDistributionUrl('https://example.com/some/other/path')).toBe(
       'https://example.com/some/other/path',
     );
+  });
+});
+
+describe('formatPythonIndexUrl', () => {
+  it('appends /simple without a trailing slash', () => {
+    expect(
+      formatPythonIndexUrl(
+        'https://packages.redhat.com/api/pulp-content/lightwell/python/validated',
+      ),
+    ).toBe('https://packages.redhat.com/lightwell/python/validated/simple');
+  });
+
+  it('is idempotent when /simple or /simple/ is already present', () => {
+    expect(
+      formatPythonIndexUrl('https://packages.redhat.com/lightwell/python/validated/simple'),
+    ).toBe('https://packages.redhat.com/lightwell/python/validated/simple');
+    expect(
+      formatPythonIndexUrl('https://packages.redhat.com/lightwell/python/validated/simple/'),
+    ).toBe('https://packages.redhat.com/lightwell/python/validated/simple');
+  });
+});
+
+describe('formatPythonDisplayUrl', () => {
+  it('appends /simple with a trailing slash', () => {
+    expect(
+      formatPythonDisplayUrl(
+        'https://packages.redhat.com/api/pulp-content/lightwell/python/validated',
+      ),
+    ).toBe('https://packages.redhat.com/lightwell/python/validated/simple/');
+  });
+
+  it('is idempotent when /simple or /simple/ is already present', () => {
+    expect(
+      formatPythonDisplayUrl('https://packages.redhat.com/lightwell/python/validated/simple'),
+    ).toBe('https://packages.redhat.com/lightwell/python/validated/simple/');
+    expect(
+      formatPythonDisplayUrl('https://packages.redhat.com/lightwell/python/validated/simple/'),
+    ).toBe('https://packages.redhat.com/lightwell/python/validated/simple/');
   });
 });
