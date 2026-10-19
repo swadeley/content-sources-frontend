@@ -53,7 +53,6 @@ import PackageRemediationsTab from './tabs/PackageRemediationsTab';
 import PackageSidebar from './components/PackageSidebar';
 import PackageVersionsTab from './tabs/PackageVersionsTab';
 import AdvisoryDetailsDrawer from './AdvisoryDetailsDrawer';
-import RemediatedDataWarning from '../RemediatedDataWarning';
 import { formatReleaseCopyText, getPackageCoordinate, pluralize } from './utils/format';
 import { usePackageRemediations } from './hooks/usePackageRemediations';
 import {
@@ -491,7 +490,6 @@ const PackageDetails = () => {
 
       {showEmpty || hasDetail ? (
         <PageSection hasBodyWrapper={false} aria-label='Package details'>
-          {hasBackportedFixes(repository.security_level) && <RemediatedDataWarning />}
           {showEmpty ? (
             <LightwellEmptyState
               variant='empty'
