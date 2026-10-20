@@ -9,7 +9,7 @@
 # the PR head, so untrusted PR fork code cannot run with Jira credentials.
 #
 # Required repository configuration:
-#   vars.JIRA_BASE_URL         https://api.atlassian.com/ex/jira/<cloudId>
+#   secrets.JIRA_BASE_URL      https://api.atlassian.com/ex/jira/<cloudId>
 #   vars.JIRA_BROWSE_URL       site URL for PR comments, e.g. https://redhat.atlassian.net
 #   secrets.JIRA_CLIENT_ID     OAuth 2.0 client ID (service account credential)
 #   secrets.JIRA_CLIENT_SECRET OAuth 2.0 client secret
@@ -42,7 +42,7 @@ jobs:
 
       - name: Sync PR with Jira
         env:
-          JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_BROWSE_URL: ${{ vars.JIRA_BROWSE_URL }}
           JIRA_CLIENT_ID: ${{ secrets.JIRA_CLIENT_ID }}
           JIRA_CLIENT_SECRET: ${{ secrets.JIRA_CLIENT_SECRET }}
