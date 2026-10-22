@@ -11,8 +11,10 @@
 }
 
 // LightwellLayout moves the Chrome subnav into page__main. Hide the empty
-// wrapper while navigation is unavailable so it does not add a flex gap.
-.pf-v6-c-page.pf-m-plain .pf-v6-c-page__main > .chr-c-page-subnav:empty {
+// wrapper while navigation is unavailable so it does not add a flex gap. Use
+// the Lightwell page class instead of pf-m-plain because local/dev Chrome may
+// add that modifier only after LightwellLayout has already moved the subnav.
+.pf-v6-c-page.chr-c-page--lightwell .pf-v6-c-page__main > .chr-c-page-subnav:empty {
   display: none;
 }
 
