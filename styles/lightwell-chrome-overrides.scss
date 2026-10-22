@@ -10,6 +10,12 @@
   display: none;
 }
 
+// LightwellLayout moves the Chrome subnav into page__main. Hide the empty
+// wrapper while navigation is unavailable so it does not add a flex gap.
+.pf-v6-c-page.pf-m-plain .pf-v6-c-page__main > .chr-c-page-subnav:empty {
+  display: none;
+}
+
 .chr-c-link-service-toggle {
   margin-right: 0;
 }
