@@ -433,7 +433,7 @@ const Beacon = () => {
                   filters={queryFilters}
                   visibleColumns={getVisibleVulnerabilityColumns(columns)}
                   itemCount={displayMeta?.count ?? 0}
-                  lastUpdated={lastUpdated}
+                  lastUpdated={lastUpdated ?? undefined}
                 />
               </LwButtonGroup>
             </StackItem>

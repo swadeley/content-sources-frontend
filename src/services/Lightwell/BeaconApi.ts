@@ -249,14 +249,14 @@ export type LightwellBeaconStatusResponse = {
   last_processed_at?: string;
 };
 
-export const getBeaconStatus = async (): Promise<string | undefined> => {
+export const getBeaconStatus = async (): Promise<string | null> => {
   if (LIGHTWELL_BEACON_USE_MOCK) {
     return formatDateTime(new Date().toISOString());
   }
 
   const { data } = await axios.get<LightwellBeaconStatusResponse>(STATUS_PATH);
   if (!data.last_processed_at) {
-    return undefined;
+    return null;
   }
 
   return formatDateTime(data.last_processed_at);

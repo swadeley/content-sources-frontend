@@ -113,10 +113,10 @@ describe('getBeaconStatus', () => {
     get.mockRestore();
   });
 
-  it('returns undefined until the first successful sync', async () => {
+  it('returns null until the first successful sync', async () => {
     const get = jest.spyOn(axios, 'get').mockResolvedValue({ data: {} });
 
-    await expect(getBeaconStatus()).resolves.toBeUndefined();
+    await expect(getBeaconStatus()).resolves.toBeNull();
 
     get.mockRestore();
   });
