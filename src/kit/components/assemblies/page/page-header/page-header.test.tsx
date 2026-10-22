@@ -106,11 +106,3 @@ it('hero passthrough composes PageChromeSlots children', () => {
   expect(screen.getByText('Status summary')).toBeInTheDocument();
   expect(screen.getByText('Pipeline metrics')).toBeInTheDocument();
 });
-
-it('applies kit background srcs when hero backgroundImage is true', () => {
-  const { container } = render(<LwPageHeader hero title={title} backgroundImage />);
-  const root = container.querySelector('.pf-v6-c-hero') as HTMLElement;
-
-  expect(root.style.getPropertyValue('--pf-v6-c-hero--BackgroundImage--light')).toMatch(/^url\(/);
-  expect(root.style.getPropertyValue('--pf-v6-c-hero--BackgroundImage--dark')).toMatch(/^url\(/);
-});

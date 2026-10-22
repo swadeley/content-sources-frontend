@@ -46,7 +46,7 @@ storage keys), not a second PF integration.
 </LwPageHeader>
 
 // Hero surface pre-config on the one page header
-<LwPageHeader hero title="…" backgroundImage />
+<LwPageHeader hero title="…" />
 ```
 
 Shared padding from `assemblies/page/page.config.css`. Prop defaults

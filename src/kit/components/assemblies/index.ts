@@ -1,8 +1,5 @@
 export { LwPageHeader } from './page/page-header/page-header';
-export type {
-  LwPageHeaderProps,
-  LwPageHeaderBackgroundImage,
-} from './page/page-header/page-header';
+export type { LwPageHeaderProps } from './page/page-header/page-header';
 
 export {
   PageChromeSlot,

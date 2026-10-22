@@ -1,8 +1,6 @@
 import { Flex, Hero, type FlexProps, type HeroProps } from '@patternfly/react-core';
 import type { ReactNode } from 'react';
 
-import backgroundSrcDarkDefault from '../../../../assets/background-16-9__dark.png';
-import backgroundSrcLightDefault from '../../../../assets/background-16-9__light.png';
 import {
   getLwPageHeaderDefaults,
   getLwPageHeaderHeroDefaults,
@@ -16,14 +14,6 @@ import {
   PageTitleStack,
 } from '../page-chrome-slots';
 import './page-header.css';
-
-/** Enable kit 16:9 artwork, or pass custom light/dark image URLs (hero surface). */
-export type LwPageHeaderBackgroundImage =
-  | true
-  | {
-      light: string;
-      dark: string;
-    };
 
 type LwPageHeaderOwnedProps = {
   /**
@@ -41,41 +31,12 @@ type LwPageHeaderOwnedProps = {
    * When set, owned slots (`title` / `description` / `actions`) are not rendered.
    */
   children?: ReactNode;
-  /**
-   * Opt-in Hero artwork (hero surface only). Off by default.
-   * `true` → kit 16:9 assets; `{ light, dark }` → custom URLs.
-   * Explicit `backgroundSrcLight` / `backgroundSrcDark` still win.
-   */
-  backgroundImage?: LwPageHeaderBackgroundImage;
 };
 
 /** Owned slots + plain Flex / Hero passthrough (host depends on `hero`). */
 export type LwPageHeaderProps = LwPageHeaderOwnedProps &
   Omit<FlexProps, 'children' | 'title' | 'ref'> &
   Omit<HeroProps, 'children' | 'content' | 'title'>;
-
-const resolveBackgroundSrcs = (
-  backgroundImage: LwPageHeaderBackgroundImage | undefined,
-  backgroundSrcLight: string | undefined,
-  backgroundSrcDark: string | undefined,
-): Pick<HeroProps, 'backgroundSrcLight' | 'backgroundSrcDark'> => {
-  if (backgroundSrcLight || backgroundSrcDark) {
-    return { backgroundSrcLight, backgroundSrcDark };
-  }
-  if (!backgroundImage) {
-    return {};
-  }
-  if (backgroundImage === true) {
-    return {
-      backgroundSrcLight: backgroundSrcLightDefault,
-      backgroundSrcDark: backgroundSrcDarkDefault,
-    };
-  }
-  return {
-    backgroundSrcLight: backgroundImage.light,
-    backgroundSrcDark: backgroundImage.dark,
-  };
-};
 
 /**
  * Kit **assembly** — one page header.
@@ -90,9 +51,6 @@ export function LwPageHeader({
   actions,
   ouiaId,
   children,
-  backgroundImage,
-  backgroundSrcLight,
-  backgroundSrcDark,
   className,
   ...rest
 }: LwPageHeaderProps) {
@@ -111,7 +69,6 @@ export function LwPageHeader({
   if (hero) {
     const heroProps = mergeComponentProps(getLwPageHeaderHeroDefaults(), {
       ...(rest as Omit<HeroProps, 'children' | 'content' | 'title'>),
-      ...resolveBackgroundSrcs(backgroundImage, backgroundSrcLight, backgroundSrcDark),
       className: mergeClassNames('lw-c-page-header', 'lw-c-page-hero', className),
     });
 

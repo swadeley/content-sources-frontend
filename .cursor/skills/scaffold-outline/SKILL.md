@@ -418,7 +418,7 @@ Name the layout job (`ButtonGroup`), not the first consumer (`BeaconControls`).
 | Config vs unit | `*.config.css` = shared defaults/tokens; co-located unit CSS = unit-only rules |
 | Host first | Prefer PF host when it owns the job (`Hero` → `LwPageHeader hero`); kit invents plain header host when PF has no equivalent |
 | Theme | Use host's light/dark API when present (`Hero` → `backgroundSrcLight` / `backgroundSrcDark`); otherwise `&.pf-v6-theme-dark` under the scope wrapper |
-| Assets | Under `src/kit/assets/`; optional props enable kit defaults; call-site PF props win |
+| Assets | Under `src/kit/assets/`; Lightwell page background images are owned by insights-chrome |
 | **Intrinsic size** | Do **not** set `width: 100%` (or `height: 100%`) unless the layout job is **explicit** — stretch to fill a known containing block. Prefer natural block flow, flex/grid item growth (`flex`, `min-width`), or tokens. Blind `100%` fights parent sizing the same way forced height does, usually with less visible damage but still layout debt. |
 | **Utility classes** | **Last resort.** Do not use PF utility classes (`spacing.*`, `pf-v6-u-*`, etc.) casually for layout or polish. Prefer co-located CSS + design tokens (`--pf-t--global--spacer--*`). Utilities only when a one-off cannot earn a kit rule and you have checked first. |
 | **Base support** | Unit CSS states the contract: host padding, flex direction, gap, align. Easy to read, easy to debug. See [perspective.md § Base support](perspective.md#base-support-not-exotic-selectors). |
@@ -440,8 +440,7 @@ Example — one page header, plain or hero surface:
 
 ```tsx
 <LwPageHeader title="…" description="…" actions={…} />
-<LwPageHeader hero title="…" backgroundImage />
-<LwPageHeader hero title="…" backgroundImage={{ light: '…', dark: '…' }} />
+<LwPageHeader hero title="…" />
 <LwPageHeader hero>{/* full composition — caller owns interior */}</LwPageHeader>
 ```
 
