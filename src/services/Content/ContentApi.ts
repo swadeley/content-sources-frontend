@@ -777,7 +777,7 @@ export const getMavenPackageDetail: (
   version: string,
 ) => Promise<PackageDetailResponse> = async (uuid, group, name, version) => {
   const { data } = await axios.get(
-    `/api/content-sources/v1/repositories/${uuid}/maven_packages/${group}/${name}/${version}`,
+    `/api/content-sources/v1/repositories/${uuid}/java_packages/${group}/${name}/${version}`,
   );
   return data;
 };
@@ -809,7 +809,7 @@ export const getMavenPackageVersionsList: (
   name: string,
 ) => Promise<MavenPackageVersionsListResponse> = async (uuid, group, name) => {
   const { data } = await axios.get(
-    `/api/content-sources/v1/repositories/${uuid}/maven_packages/${group}/${name}`,
+    `/api/content-sources/v1/repositories/${uuid}/java_packages/${group}/${name}`,
   );
   return data;
 };
