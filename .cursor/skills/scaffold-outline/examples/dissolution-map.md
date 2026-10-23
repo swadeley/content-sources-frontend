@@ -44,10 +44,6 @@ checklist for the dissolve sweep.
 | `src/Pages/Lightwell/Beacon/components/PipelineView.tsx` | `LwMetricsStepper` on Beacon | No remaining page imports |
 | `src/Pages/Lightwell/Beacon/components/StatusCard.tsx` | `LwMetricsStepper` step cells | Only referenced by unused `PipelineView` |
 | `src/Pages/Lightwell/Beacon/components/CustomerIdSelect.tsx` | Beacon page: `LwMenu` + `LwSkeleton` + fetch | No special behavior; page owns composition |
-| `styles/lightwell-beacon.scss` → `.lightwell-help-btn` | Circle plain `LwButton` / `LwTooltip` | Orphan CSS |
-| `styles/lightwell-beacon.scss` → `.lightwell-pipeline`, `.lightwell-pipeline-arrow` | Metrics stepper layout | Orphan CSS |
-| `styles/lightwell-beacon.scss` → `.lightwell-status-card*` | Metrics stepper / count chrome | Orphan CSS |
-| `styles/lightwell-beacon.scss` → `.lightwell-stat-number`, `.lightwell-stat--critical` | `LwMetricsCount` | Orphan CSS |
 
 ### Not on this map (still live)
 
