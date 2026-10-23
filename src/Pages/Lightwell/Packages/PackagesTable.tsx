@@ -242,6 +242,7 @@ const PackagesTable = () => {
     data: packagesData,
     isLoading: isPackagesLoading,
     isFetching: isPackagesFetching,
+    isPlaceholderData,
   } = apiPackagesQuery;
 
   const isPythonWithFixes =
@@ -286,9 +287,12 @@ const PackagesTable = () => {
     args: appBreadcrumbsEnabled ? [breadcrumbs, DROP_LAST_CHROME_SEGMENT_OPTIONS] : [[]],
   });
 
-  const fetchingOrLoading = useMock ? false : isPackagesLoading || isPackagesFetching;
   const countIsZero = packageCount === 0;
   const showPagination = packages.length > 0;
+  // First load, or a refetch with nothing to keep on screen. Search and page changes
+  // that already have rows stay mounted so the page does not jump.
+  const showSkeleton =
+    !useMock && (isPackagesLoading || (isPackagesFetching && isPlaceholderData && countIsZero));
 
   if (isResolvingRepository) {
     return <Loader />;
@@ -302,7 +306,7 @@ const PackagesTable = () => {
 
   if (!useMock && apiPackagesQuery.isError) throw apiPackagesQuery.error;
 
-  const showEmptyState = countIsZero && !fetchingOrLoading;
+  const showEmptyState = countIsZero && !showSkeleton;
 
   const onPerPageSelect = (_, newPerPage: number, newPage: number) => {
     localStorage.setItem(lightwellPkgsPerPageKey, newPerPage.toString());
@@ -428,7 +432,7 @@ const PackagesTable = () => {
           </ToolbarContent>
         </Toolbar>
 
-        <Hide hide={!fetchingOrLoading}>
+        <Hide hide={!showSkeleton}>
           <SkeletonTable
             rows={perPage}
             columnsCount={columnHeaders.length}
@@ -436,7 +440,7 @@ const PackagesTable = () => {
           />
         </Hide>
 
-        <Hide hide={fetchingOrLoading}>
+        <Hide hide={showSkeleton}>
           <Hide hide={countIsZero}>
             <Stack>
               <LwCard className={`${spacing.ptLg} ${spacing.pbXl} ${spacing.pxLg}`}>

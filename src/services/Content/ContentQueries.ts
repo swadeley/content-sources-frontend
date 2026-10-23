@@ -713,7 +713,9 @@ export const useLightwellRepositoryPackagesQuery = (
   useQuery({
     queryKey: [LIGHTWELL_REPOSITORY_PACKAGES_KEY, uuid, page, limit, search],
     queryFn: () => getLightwellRepositoryPackages(uuid, page, limit, search),
-    placeholderData: keepPreviousData,
+    // Keep rows across search and page changes. Another repository must not show those rows.
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey[1] === uuid ? previousData : undefined,
     staleTime: 60000,
     enabled: enabled && !!uuid,
     meta: {

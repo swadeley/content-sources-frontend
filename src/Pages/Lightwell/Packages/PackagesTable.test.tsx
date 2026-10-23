@@ -189,15 +189,46 @@ it('renders with a single package', async () => {
   expect(document.querySelector('time[datetime="2026-07-01T00:00:00.000Z"]')).toBeInTheDocument();
 });
 
-it('shows a loading skeleton while packages are fetching', () => {
+it('shows a loading skeleton while packages are loading for the first time', () => {
   (useLightwellRepositoryPackagesQuery as jest.Mock).mockImplementation(() =>
-    mockPackagesQuery({ isFetching: true }),
+    mockPackagesQuery({ isLoading: true, data: undefined }),
   );
 
   renderPackagesTable();
 
   expect(screen.getByLabelText('Filter by name or group ID')).toBeInTheDocument();
-  expect(screen.queryByRole('table', { name: 'Lightwell packages table' })).not.toBeInTheDocument();
+  expect(screen.getByRole('grid', { name: 'Loading' })).toBeInTheDocument();
+  expect(screen.queryByRole('grid', { name: 'Lightwell packages table' })).not.toBeInTheDocument();
+});
+
+it('keeps the packages table mounted while a refetch still has rows', async () => {
+  (useLightwellRepositoryPackagesQuery as jest.Mock).mockImplementation(() =>
+    mockPackagesQuery({ isFetching: true, isPlaceholderData: true }),
+  );
+
+  renderPackagesTable();
+
+  expect(screen.getByLabelText('Filter by name or group ID')).toBeInTheDocument();
+  expect(await screen.findByRole('grid', { name: 'Lightwell packages table' })).toBeInTheDocument();
+  expect(screen.queryByRole('grid', { name: 'Loading' })).not.toBeInTheDocument();
+});
+
+it('shows a loading skeleton instead of the empty state while a search refetch has no rows', () => {
+  (useLightwellRepositoryPackagesQuery as jest.Mock).mockImplementation(() =>
+    mockPackagesQuery({
+      isFetching: true,
+      isPlaceholderData: true,
+      data: { ...defaultLightwellRepositoryPackageResponse, results: [], total: 0 },
+    }),
+  );
+
+  renderPackagesTable();
+
+  expect(screen.getByRole('grid', { name: 'Loading' })).toBeInTheDocument();
+  expect(
+    screen.queryByText('No packages available yet in this repository.'),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByText('No packages match the filter criteria')).not.toBeInTheDocument();
 });
 
 it('shows loader while the repository is resolving', () => {
