@@ -295,6 +295,9 @@ export interface PythonDistribution {
 export interface PythonPackageDetailResponse {
   name: string;
   version: string;
+  // Absent or empty while the backend still returns one row per stored version.
+  // A non-empty list matches Java: one row per upstream version, releases in `builds`.
+  builds?: RepositoryPackageReleaseInfo[];
   summary: string;
   description: string;
   last_updated: string;

@@ -771,16 +771,19 @@ it('shows Python remediated releases and copies the published pip version', asyn
           ...defaultPythonPackageVersions.versions[0],
           version: '3.0.1+rhlw.1',
           last_updated: '2026-07-01T00:00:00Z',
+          builds: [],
         },
         {
           ...defaultPythonPackageVersions.versions[0],
           version: '3.0.1+rhlw.2',
           last_updated: '2026-07-02T00:00:00Z',
+          builds: [],
         },
         {
           ...defaultPythonPackageVersions.versions[0],
           version: '2.9.0+rhlw.1',
           last_updated: '2026-06-01T00:00:00Z',
+          builds: [],
         },
       ],
     },
@@ -804,6 +807,79 @@ it('shows Python remediated releases and copies the published pip version', asyn
   expect(writeText).toHaveBeenCalledWith('pip install requests==2.9.0+rhlw.1');
 });
 
+it('reads Python releases from builds grouped by upstream version', async () => {
+  setupPythonRemediatedPackage();
+  (usePythonPackageVersionsQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    isFetching: false,
+    data: {
+      name: 'requests',
+      versions: [
+        {
+          ...defaultPythonPackageVersions.versions[0],
+          version: '3.0.1',
+          last_updated: '2020-01-01T00:00:00Z',
+          builds: [
+            { version: '3.0.1', release: 'rhlw.1', created_at: '2026-07-01T00:00:00Z' },
+            { version: '3.0.1', release: 'rhlw.2', created_at: '2026-07-02T00:00:00Z' },
+          ],
+        },
+      ],
+    },
+  }));
+  const writeText = mockClipboard();
+
+  renderPackageDetails();
+
+  expect(await screen.findByRole('tab', { name: 'Releases' })).toBeInTheDocument();
+  expect(screen.queryByRole('tab', { name: 'Versions' })).not.toBeInTheDocument();
+  expect(await screen.findByText('Python HTTP library')).toBeInTheDocument();
+  expect(await screen.findByText('Apache 2.0')).toBeInTheDocument();
+  expect(await screen.findByText('Google')).toBeInTheDocument();
+  expect(await screen.findByRole('link', { name: 'Source' })).toHaveAttribute(
+    'href',
+    'https://requests.readthedocs.io',
+  );
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Copy' }));
+  expect(writeText).toHaveBeenCalledWith(expect.stringContaining('requests==3.0.1+rhlw.2'));
+
+  await userEvent.click(screen.getByRole('tab', { name: 'Releases' }));
+  expect(await screen.findByText('2 Jul 2026')).toBeInTheDocument();
+  expect(screen.getByText('1 Jul 2026')).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '3.0.1.rhlw.2' })).not.toBeInTheDocument();
+  const latestRelease = await screen.findAllByRole('button', { name: '3.0.1+rhlw.2' });
+  await userEvent.click(latestRelease[0]);
+  expect(writeText).toHaveBeenCalledWith('pip install requests==3.0.1+rhlw.2');
+  expect(screen.getAllByRole('button', { name: '3.0.1+rhlw.1' }).length).toBeGreaterThan(0);
+});
+
+it('uses the newest Python build date for last updated, including a build without a release', async () => {
+  setupPythonRemediatedPackage();
+  (usePythonPackageVersionsQuery as jest.Mock).mockImplementation(() => ({
+    isLoading: false,
+    isFetching: false,
+    data: {
+      name: 'requests',
+      versions: [
+        {
+          ...defaultPythonPackageVersions.versions[0],
+          version: '3.0.1',
+          builds: [
+            { version: '3.0.1', release: 'rhlw.2', created_at: '2026-07-02T00:00:00Z' },
+            { version: '3.0.1', release: '', created_at: '2026-08-03T00:00:00Z' },
+          ],
+        },
+      ],
+    },
+  }));
+
+  renderPackageDetails();
+
+  expect(await screen.findByText('Last updated')).toBeInTheDocument();
+  expect(document.querySelector('time[datetime="2026-08-03T00:00:00.000Z"]')).toBeInTheDocument();
+});
+
 it('shows Releases and Remediations tabs for a python predisclosure package with releases, matching remediated', async () => {
   setupPythonPredisclosurePackage();
   // Predisclosure packages carry backported fixes, so published Lightwell releases expose
@@ -818,11 +894,13 @@ it('shows Releases and Remediations tabs for a python predisclosure package with
           ...defaultPythonPackageVersions.versions[0],
           version: '3.0.1+rhlw.1',
           last_updated: '2026-07-01T00:00:00Z',
+          builds: [],
         },
         {
           ...defaultPythonPackageVersions.versions[0],
           version: '3.0.1+rhlw.2',
           last_updated: '2026-07-02T00:00:00Z',
+          builds: [],
         },
       ],
     },
