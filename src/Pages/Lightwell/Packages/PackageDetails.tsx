@@ -38,6 +38,7 @@ import {
   formatDistributionUrl,
   formatRepositoryName,
   getEcosystemIcon,
+  getRepositoryNameFromPathSlug,
   hasBackportedFixes,
 } from '../helpers';
 import {
@@ -266,11 +267,17 @@ const PackageDetails = () => {
           (release) => release.version === activeVersion && !!release.release,
         );
 
+  // Content list lookups keep the previous repository while the next one loads.
+  // Advisory data is only for the route's repository, and only when it is remediated.
+  const repositoryMatchesRoute = repository?.name === getRepositoryNameFromPathSlug(repoSlug);
+  const showRemediationsTab =
+    repositoryMatchesRoute && hasRelease && repository?.security_level === 'remediated';
+
   useLayoutEffect(() => {
-    if (!hasRelease && activeTabKey === 2) {
+    if (!showRemediationsTab && activeTabKey === 2) {
       setActiveTabKey(0);
     }
-  }, [hasRelease, activeTabKey]);
+  }, [showRemediationsTab, activeTabKey]);
 
   const mavenBuilds = useMemo(() => {
     if (!isMaven || !hasRelease || !mavenVersionsData?.versions) return [];
@@ -335,13 +342,14 @@ const PackageDetails = () => {
   const remediationsParams = {
     name: packageName,
     version: activeVersion,
-    repository: repository?.name ?? '',
+    repository: repositoryMatchesRoute ? (repository?.name ?? '') : '',
     group: packageGroup,
     isPython,
     latestPackageRelease: latestRelease,
   };
 
   const remediationsQueryEnabled = Boolean(
+    showRemediationsTab &&
     !isResolvingRepository &&
     !isError &&
     repository &&
@@ -372,7 +380,7 @@ const PackageDetails = () => {
   const fixes = summaryUnavailable ? 0 : remediationSummary.fixes;
   const releases = summaryUnavailable ? 0 : releaseBuilds.filter((build) => !!build.release).length;
 
-  if (isResolvingRepository) {
+  if (isResolvingRepository || (repository && !repositoryMatchesRoute)) {
     return <Loader />;
   }
 
@@ -576,7 +584,7 @@ const PackageDetails = () => {
                           ouiaId='lightwell-package-versions-tab'
                         />
                       )}
-                      {hasRelease && (
+                      {showRemediationsTab && (
                         <Tab
                           eventKey={2}
                           title={<TabTitleText>Remediations</TabTitleText>}
@@ -656,7 +664,7 @@ const PackageDetails = () => {
                           </TabContentBody>
                         </TabContent>
                       )}
-                      {hasRelease && (
+                      {showRemediationsTab && (
                         <TabContent
                           eventKey={2}
                           id='lightwell-package-remediations-panel'

@@ -35,8 +35,8 @@ export const usePackageRemediations = (
   );
 
   const data = useMemo(
-    () => toPackageRemediations(query.data?.data ?? [], latestPackageRelease),
-    [query.data, latestPackageRelease],
+    () => (enabled ? toPackageRemediations(query.data?.data ?? [], latestPackageRelease) : []),
+    [enabled, query.data, latestPackageRelease],
   );
 
   const summary = useMemo(() => summarizePackageRemediations(data), [data]);
@@ -61,5 +61,14 @@ export const usePackageRemediations = (
     };
   }
 
-  return { ...query, data, summary, hasData: query.data !== undefined };
+  return {
+    ...query,
+    data,
+    summary,
+    hasData: enabled && query.data !== undefined,
+    isLoading: enabled && query.isLoading,
+    isFetching: enabled && query.isFetching,
+    isPlaceholderData: enabled && query.isPlaceholderData,
+    isError: enabled && query.isError,
+  };
 };

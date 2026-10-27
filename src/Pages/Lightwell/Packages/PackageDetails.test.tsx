@@ -342,12 +342,13 @@ it('renders package detail content with builds', async () => {
   ).toBeInTheDocument();
   expect(await screen.findByText('Overview')).toBeInTheDocument();
   expect(await screen.findByRole('tab', { name: 'Releases' })).toBeInTheDocument();
-  expect(await screen.findByRole('tab', { name: 'Remediations' })).toBeInTheDocument();
+  expect(screen.queryByRole('tab', { name: 'Remediations' })).not.toBeInTheDocument();
   expect(await screen.findByText('About this package')).toBeInTheDocument();
   expect(await screen.findByText('How to use')).toBeInTheDocument();
 });
 
 it('shows an empty state when the package has no remediations', async () => {
+  setupRepository('remediated');
   mockPackageAdvisoriesQuery([]);
   renderPackageDetails();
 
@@ -362,12 +363,14 @@ it('shows an empty state when the package has no remediations', async () => {
 });
 
 it('keeps the remediations tab enabled when remediations fail to load', async () => {
+  setupRepository('remediated');
   mockPackageAdvisoriesQuery(undefined, { isError: true });
   renderPackageDetails();
   expect(await screen.findByRole('tab', { name: 'Remediations' })).not.toBeDisabled();
 });
 
 it('opens the vulnerability details drawer from the remediations tab', async () => {
+  setupRepository('remediated');
   mockPackageAdvisoriesQuery([latestReleaseAdvisory]);
   renderPackageDetails();
 
@@ -509,6 +512,7 @@ const setupMultiVersionReleasePackage = (
 };
 
 it('shows unique fixes across all releases for the selected package version', async () => {
+  setupRepository('remediated');
   const packageAdvisoriesForRemediationSummary = {
     '3.14.0': [
       {
@@ -570,6 +574,7 @@ it.each([
   ['while loading', { isLoading: true }],
   ['after an error', { isError: true }],
 ])('hides zero summary counts %s', async (_scenario, queryState) => {
+  setupRepository('remediated');
   mockPackageAdvisoriesQuery(undefined, queryState);
 
   renderPackageDetails();
@@ -581,6 +586,7 @@ it.each([
 });
 
 it('hides remediations for a selected version without a release', async () => {
+  setupRepository('remediated');
   setupMultiVersionReleasePackage('');
   renderPackageDetails();
 
@@ -593,9 +599,7 @@ it('hides remediations for a selected version without a release', async () => {
   await waitFor(() =>
     expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true'),
   );
-  expect(
-    screen.getByText(/rebuilt from source by Red Hat with no modifications/),
-  ).toBeInTheDocument();
+  expect(screen.getByText(/backported fixes for known vulnerabilities/)).toBeInTheDocument();
 
   await userEvent.click(screen.getByRole('button', { name: '2.12.0' }));
   await userEvent.click(await screen.findByRole('menuitem', { name: '3.14.0' }));
@@ -728,7 +732,45 @@ it('hides latest release fixes for a predisclosure repository', async () => {
 
   expect(await screen.findByRole('heading', { name: 'About this package' })).toBeInTheDocument();
   expect(screen.queryByText(/new backported fixes in this release/)).not.toBeInTheDocument();
-  expect(usePackageAdvisoriesQuery).toHaveBeenCalledWith(expect.any(Object), { enabled: false });
+  expect(screen.queryByRole('tab', { name: 'Remediations' })).not.toBeInTheDocument();
+  expect(usePackageAdvisoriesQuery).not.toHaveBeenCalledWith(
+    expect.any(Object),
+    expect.objectContaining({ enabled: true }),
+  );
+
+  const summary = screen.getByTestId('lightwell-package-fix-summary');
+  expect(summary).toHaveStyle({ visibility: 'hidden' });
+  expect(summary).toHaveTextContent('0 fixes across 1 Lightwell release');
+});
+
+it('keeps loading while the repository lookup still has the previous repository', async () => {
+  mockUseParams.mockReturnValue({
+    repoName: getRepositoryPathSlug('maven', 'predisclosure'),
+    group: defaultLightwellRepositoryPackageItem.group,
+    packageName,
+  });
+  (useLightwellRepository as jest.Mock).mockReturnValue({
+    repository: {
+      ...defaultLightwellContentItem,
+      name: 'lightwell/java/remediated',
+      security_level: 'remediated',
+    },
+    repoUUID: defaultLightwellContentItem.uuid,
+    isLoading: false,
+    isError: false,
+    error: undefined,
+  });
+  mockPackageAdvisoriesQuery([latestReleaseAdvisory]);
+
+  renderPackageDetails();
+
+  expect(await screen.findByRole('progressbar')).toBeInTheDocument();
+  expect(screen.queryByRole('tab', { name: 'Remediations' })).not.toBeInTheDocument();
+  expect(screen.queryByTestId('lightwell-package-fix-summary')).not.toBeInTheDocument();
+  expect(usePackageAdvisoriesQuery).not.toHaveBeenCalledWith(
+    expect.any(Object),
+    expect.objectContaining({ enabled: true }),
+  );
 });
 
 it('shows version dropdown for multi-version release packages', async () => {
@@ -881,10 +923,10 @@ it('uses the newest Python build date for last updated, including a build withou
   expect(document.querySelector('time[datetime="2026-08-03T00:00:00.000Z"]')).toBeInTheDocument();
 });
 
-it('shows Releases and Remediations tabs for a python predisclosure package with releases, matching remediated', async () => {
+it('shows the Releases tab and hides Remediations for a python predisclosure package', async () => {
   setupPythonPredisclosurePackage();
-  // Predisclosure packages carry backported fixes, so published Lightwell releases expose
-  // release details through the Releases and Remediations tabs, just like remediated.
+  // Predisclosure packages still publish Lightwell releases, but advisory remediations
+  // stay hidden until that data is shown for these repositories.
   (usePythonPackageVersionsQuery as jest.Mock).mockImplementation(() => ({
     isLoading: false,
     isFetching: false,
@@ -910,7 +952,7 @@ it('shows Releases and Remediations tabs for a python predisclosure package with
   renderPackageDetails();
 
   expect(await screen.findByRole('tab', { name: 'Releases' })).toBeInTheDocument();
-  expect(await screen.findByRole('tab', { name: 'Remediations' })).toBeInTheDocument();
+  expect(screen.queryByRole('tab', { name: 'Remediations' })).not.toBeInTheDocument();
   expect(screen.queryByRole('tab', { name: 'Versions' })).not.toBeInTheDocument();
 });
 
