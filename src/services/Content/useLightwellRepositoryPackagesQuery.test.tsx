@@ -31,16 +31,24 @@ const deferred = () => {
   return { promise, resolve };
 };
 
+type PackagesQueryProps = {
+  uuid: string;
+  page: number;
+  search: string;
+  sortBy?: string;
+};
+
 const renderPackagesQuery = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>{children}</QueryClientProvider>
   );
+  const initialProps: PackagesQueryProps = { uuid: 'repo-a', page: 1, search: '' };
 
   return renderHook(
-    ({ uuid, page, search }: { uuid: string; page: number; search: string }) =>
-      useLightwellRepositoryPackagesQuery(uuid, page, 20, search),
-    { wrapper, initialProps: { uuid: 'repo-a', page: 1, search: '' } },
+    ({ uuid, page, search, sortBy }: PackagesQueryProps) =>
+      useLightwellRepositoryPackagesQuery(uuid, page, 20, search, sortBy),
+    { wrapper, initialProps },
   );
 };
 
@@ -86,4 +94,21 @@ it('does not keep packages from another repository', async () => {
   await waitFor(() => expect(result.current.isFetching).toBe(true));
   expect(result.current.isLoading).toBe(true);
   expect(result.current.data).toBeUndefined();
+});
+
+it('sends sort_by and keeps rows while a sort refetch is in flight', async () => {
+  const { result, rerender } = renderPackagesQuery();
+
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  expect(getPackages).toHaveBeenCalledWith('repo-a', 1, 20, '', undefined);
+
+  const pending = deferred();
+  getPackages.mockReturnValue(pending.promise);
+  rerender({ uuid: 'repo-a', page: 1, search: '', sortBy: 'last_updated:desc' });
+
+  await waitFor(() => expect(result.current.isFetching).toBe(true));
+  expect(result.current.isLoading).toBe(false);
+  expect(result.current.isPlaceholderData).toBe(true);
+  expect(result.current.data?.results[0]?.name).toBe('json-test');
+  expect(getPackages).toHaveBeenCalledWith('repo-a', 1, 20, '', 'last_updated:desc');
 });

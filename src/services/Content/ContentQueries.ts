@@ -708,12 +708,13 @@ export const useLightwellRepositoryPackagesQuery = (
   page: number,
   limit: number,
   search = '',
+  sortBy?: string,
   enabled = true,
 ) =>
   useQuery({
-    queryKey: [LIGHTWELL_REPOSITORY_PACKAGES_KEY, uuid, page, limit, search],
-    queryFn: () => getLightwellRepositoryPackages(uuid, page, limit, search),
-    // Keep rows across search and page changes. Another repository must not show those rows.
+    queryKey: [LIGHTWELL_REPOSITORY_PACKAGES_KEY, uuid, page, limit, search, sortBy],
+    queryFn: () => getLightwellRepositoryPackages(uuid, page, limit, search, sortBy),
+    // Keep rows across search, sort, and page changes. Another repository must not show those rows.
     placeholderData: (previousData, previousQuery) =>
       previousQuery?.queryKey[1] === uuid ? previousData : undefined,
     staleTime: 60000,

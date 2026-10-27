@@ -46,6 +46,27 @@ describe('useLightwellNavigateTo', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/root/repo-slug/org.group/package-name');
   });
 
+  it('keeps the packages sort in the details URL', () => {
+    const { result } = renderHook(() => useLightwellNavigateTo());
+
+    act(() =>
+      result.current.navigateTo('packageDetails', {
+        repoSlug: 'repo-slug',
+        packageName: 'package-name',
+        packagesParams: {
+          search: 'json',
+          page: 2,
+          sortBy: 'name',
+          sortDirection: 'asc',
+        },
+      }),
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/root/repo-slug/package-name?search=json&sort_by=name%3Aasc&page=2',
+    );
+  });
+
   it('navigates to package details without group ID', () => {
     const { result } = renderHook(() => useLightwellNavigateTo());
 

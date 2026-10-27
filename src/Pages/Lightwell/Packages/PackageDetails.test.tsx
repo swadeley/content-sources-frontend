@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { useFlag } from '@unleash/proxy-client-react';
 
 import PackageDetails from './PackageDetails';
 import {
@@ -1077,6 +1078,47 @@ it('registers breadcrumbs with Chrome via useRemoteHook', async () => {
           title: `${defaultLightwellRepositoryPackageItem.group}:${packageName}`,
         },
       ],
+      { dropLastChromeSegment: true },
+    ],
+  });
+});
+
+it('returns to the packages list with the selected sort', async () => {
+  (useFlag as jest.Mock).mockReturnValue(false);
+  renderPackageDetails('?search=json&sort_by=name:asc&page=2');
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Java Validated' }));
+
+  expect(mockNavigateTo).toHaveBeenCalledWith('repositoryPackages', {
+    repoSlug: defaultRepoSlug,
+    packagesParams: {
+      search: 'json',
+      page: 2,
+      sortBy: 'name',
+      sortDirection: 'asc',
+    },
+  });
+
+  (useFlag as jest.Mock).mockReturnValue(true);
+});
+
+it('keeps the selected sort on the repository breadcrumb', async () => {
+  renderPackageDetails('?sort_by=name:asc&page=2');
+
+  await screen.findByRole('heading', {
+    name: `${defaultLightwellRepositoryPackageItem.group}:${packageName}`,
+  });
+
+  expect(mockUseRemoteHook).toHaveBeenCalledWith({
+    scope: 'chrome',
+    module: './breadcrumbs/useReplaceBreadcrumbs',
+    args: [
+      expect.arrayContaining([
+        {
+          pathname: `/lightwell/${defaultRepoSlug}?sort_by=name%3Aasc&page=2`,
+          title: 'Java Validated',
+        },
+      ]),
       { dropLastChromeSegment: true },
     ],
   });

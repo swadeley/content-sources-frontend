@@ -1,4 +1,8 @@
-import { appendSearchParams, type LightwellPackagesParams } from '../lightwellPackagesParams';
+import {
+  appendSearchParams,
+  DEFAULT_PACKAGES_PARAMS,
+  type LightwellPackagesParams,
+} from '../lightwellPackagesParams';
 
 export type LightwellDestinationKey = 'repositories' | 'repositoryPackages' | 'packageDetails';
 
@@ -27,13 +31,13 @@ type BuildLightwellPath = (params: LightwellNavigationParams) => string;
 export const lightwellNavigationPaths: Record<LightwellDestinationKey, BuildLightwellPath> = {
   repositories: ({ rootPath }) => rootPath,
   repositoryPackages: ({ rootPath, repoSlug, packagesParams }) =>
-    appendSearchParams(`${rootPath}/${repoSlug}`, packagesParams ?? { search: '', page: 1 }),
+    appendSearchParams(`${rootPath}/${repoSlug}`, packagesParams ?? DEFAULT_PACKAGES_PARAMS),
   packageDetails: ({ rootPath, repoSlug, packageName, groupId, packagesParams }) => {
     const path = groupId
       ? `${rootPath}/${repoSlug}/${encodeURIComponent(groupId)}/${encodeURIComponent(packageName!)}`
       : `${rootPath}/${repoSlug}/${encodeURIComponent(packageName!)}`;
 
-    return appendSearchParams(path, packagesParams ?? { search: '', page: 1 });
+    return appendSearchParams(path, packagesParams ?? DEFAULT_PACKAGES_PARAMS);
   },
 };
 

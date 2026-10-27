@@ -603,12 +603,14 @@ export const getLightwellRepositoryPackages: (
   page: number,
   limit: number,
   search?: string,
-) => Promise<RepositoryPackagesResponse> = async (uuid, page, limit, search = '') => {
+  sortBy?: string,
+) => Promise<RepositoryPackagesResponse> = async (uuid, page, limit, search = '', sortBy) => {
   const { data } = await axios.get(
     `/api/content-sources/v1/repositories/${uuid}/packages?${objectToUrlParams({
       offset: ((page - 1) * limit).toString(),
       limit: limit.toString(),
       search,
+      sort_by: sortBy,
     })}`,
   );
   return data;

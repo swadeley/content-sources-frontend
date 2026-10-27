@@ -24,7 +24,7 @@ import { CodeIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { createUseStyles } from 'react-jss';
 import { createRef, useLayoutEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import Loader from 'components/Loader';
 import LightwellEmptyState from '../components/LightwellEmptyState';
@@ -73,6 +73,7 @@ import {
 } from 'kit/components/assemblies';
 import { LwAlert, LwButton, LwCard } from 'kit/components/primitives';
 import { useLightwellNavigateTo } from 'Hooks/Lightwell/navigation/useLightwellNavigateTo';
+import { appendSearchParams, parseSearchParams } from 'Hooks/Lightwell/lightwellPackagesParams';
 
 const useStyles = createUseStyles({
   detailCard: {
@@ -90,6 +91,8 @@ const PackageDetails = () => {
   const classes = useStyles();
   const { navigateTo } = useLightwellNavigateTo();
   const rootPath = useLightwellRootPath();
+  const [searchParams] = useSearchParams();
+  const packagesParams = useMemo(() => parseSearchParams(searchParams), [searchParams]);
 
   const {
     repoName: repoSlug = '',
@@ -145,10 +148,20 @@ const PackageDetails = () => {
   const breadcrumbs = useMemo(
     () => [
       { pathname: rootPath, title: 'Lightwell Repositories' },
-      { pathname: `${rootPath}/${repoSlug}`, title: breadcrumbRepoName },
+      {
+        pathname: appendSearchParams(`${rootPath}/${repoSlug}`, packagesParams),
+        title: breadcrumbRepoName,
+      },
       { pathname: breadcrumbPackagePath, title: breadcrumbPackageName },
     ],
-    [rootPath, repoSlug, breadcrumbRepoName, breadcrumbPackagePath, breadcrumbPackageName],
+    [
+      rootPath,
+      repoSlug,
+      breadcrumbRepoName,
+      breadcrumbPackagePath,
+      breadcrumbPackageName,
+      packagesParams,
+    ],
   );
 
   useRemoteHook({
@@ -434,7 +447,7 @@ const PackageDetails = () => {
             </BreadcrumbItem>
             <BreadcrumbItem
               component='button'
-              onClick={() => navigateTo('repositoryPackages', { repoSlug })}
+              onClick={() => navigateTo('repositoryPackages', { repoSlug, packagesParams })}
             >
               {breadcrumbRepoName}
             </BreadcrumbItem>

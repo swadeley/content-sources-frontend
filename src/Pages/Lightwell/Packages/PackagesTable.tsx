@@ -34,6 +34,7 @@ import {
   Th,
   Tbody,
   type BaseCellProps,
+  type ThProps,
 } from '@patternfly/react-table';
 
 import { useLightwellRepositoryPackagesQuery } from 'services/Content/ContentQueries';
@@ -68,6 +69,10 @@ import { useLightwellNavigateTo } from '../../../Hooks/Lightwell/navigation/useL
 import { useLightwellRootPath } from '../../../Hooks/Lightwell/navigation/useLightwellRootPath';
 import { useLightwellPackagesParams } from '../../../Hooks/Lightwell/useLightwellPackagesParams';
 import {
+  lightwellPackagesSortQuery,
+  type LightwellPackagesSortBy,
+} from '../../../Hooks/Lightwell/lightwellPackagesParams';
+import {
   LwButtonGroup,
   LwPageHeader,
   PageChromeSlot,
@@ -97,6 +102,12 @@ type MappedPackage = {
   versions: string[];
   latest_releases: MappedRelease[];
   last_updated: string;
+};
+
+type PackageColumnHeader = {
+  title: string;
+  width?: BaseCellProps['width'];
+  sortBy?: LightwellPackagesSortBy;
 };
 
 const mapRepositoryPackage = (
@@ -213,8 +224,18 @@ const PackagesTable = () => {
 
   const { repoName: repoSlug = '' } = useParams();
   const { navigateTo } = useLightwellNavigateTo();
-  const { searchQuery, setSearchQuery, debouncedSearch, page, setPage, onSetPage, packagesParams } =
-    useLightwellPackagesParams();
+  const {
+    searchQuery,
+    setSearchQuery,
+    debouncedSearch,
+    page,
+    setPage,
+    onSetPage,
+    packagesParams,
+    sortBy,
+    sortDirection,
+    onSort,
+  } = useLightwellPackagesParams();
 
   const storedPerPage = Number(localStorage.getItem(lightwellPkgsPerPageKey)) || 20;
   const [perPage, setPerPage] = useState(storedPerPage);
@@ -235,6 +256,7 @@ const PackagesTable = () => {
     page,
     perPage,
     debouncedSearch,
+    lightwellPackagesSortQuery(sortBy, sortDirection),
     !!repoUUID && !useMock,
   );
 
@@ -345,14 +367,34 @@ const PackagesTable = () => {
   const isMaven = repository.content_type === 'maven';
   const isPython = repository.content_type === 'python';
 
-  const columnHeaders: { title: string; width?: BaseCellProps['width'] }[] = [
-    { title: 'Package', width: 25 },
+  const columnHeaders: PackageColumnHeader[] = [
+    { title: 'Package', width: 25, sortBy: 'name' },
     { title: 'Version', width: 15 },
     ...(showReleaseColumn
       ? [{ title: 'Latest release', width: 20 as BaseCellProps['width'] }]
       : []),
-    { title: 'Last updated', width: 15 },
+    { title: 'Last updated', width: 15, sortBy: 'last_updated' },
   ];
+
+  const activeSortIndex = columnHeaders.findIndex((column) => column.sortBy === sortBy);
+
+  const sortParams = (columnIndex: number): ThProps['sort'] | undefined => {
+    if (!columnHeaders[columnIndex]?.sortBy) return undefined;
+
+    return {
+      sortBy: {
+        index: activeSortIndex,
+        direction: sortDirection,
+        defaultDirection: columnHeaders[columnIndex]?.sortBy === 'last_updated' ? 'desc' : 'asc',
+      },
+      onSort: (_event, index, direction) => {
+        const nextSortBy = columnHeaders[index]?.sortBy;
+        if (!nextSortBy) return;
+        onSort(nextSortBy, direction);
+      },
+      columnIndex,
+    };
+  };
 
   return (
     <>
@@ -452,8 +494,13 @@ const PackagesTable = () => {
                   >
                     <Thead>
                       <Tr>
-                        {columnHeaders.map(({ title, width }) => (
-                          <Th key={title + 'column'} width={width} modifier='wrap'>
+                        {columnHeaders.map(({ title, width }, index) => (
+                          <Th
+                            key={title + 'column'}
+                            width={width}
+                            modifier='wrap'
+                            sort={sortParams(index)}
+                          >
                             {title}
                           </Th>
                         ))}

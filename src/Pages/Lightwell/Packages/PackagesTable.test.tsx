@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import PackagesTable from './PackagesTable';
@@ -136,6 +136,7 @@ const javaValidatedTableCopyCommand = `${defaultLightwellRepositoryPackageItem.g
 beforeEach(() => {
   searchParams = new URLSearchParams();
   mockSetSearchParams.mockClear();
+  mockNavigateTo.mockClear();
   (useLightwellNavigateTo as jest.Mock).mockReturnValue({
     navigateTo: mockNavigateTo,
   });
@@ -272,7 +273,7 @@ it('navigates to package details when a package name is clicked', async () => {
     ),
     packageName: 'json-test',
     groupId: defaultLightwellRepositoryPackageItem.group,
-    packagesParams: { search: '', page: 1 },
+    packagesParams: { search: '', page: 1, sortBy: 'last_updated', sortDirection: 'desc' },
   });
 });
 
@@ -561,4 +562,96 @@ it('displays sensitive data warning for predisclosure repositories', async () =>
   await screen.findByRole('heading', { name: 'Java Predisclosure' });
 
   expect(screen.getByText(/sensitive/i)).toBeInTheDocument();
+});
+
+const expectPackagesQuerySort = (
+  sortBy: string | undefined,
+  page = 1,
+  uuid = defaultLightwellContentItem.uuid,
+) => {
+  expect(useLightwellRepositoryPackagesQuery).toHaveBeenLastCalledWith(
+    uuid,
+    page,
+    expect.any(Number),
+    expect.any(String),
+    sortBy,
+    true,
+  );
+};
+
+it('sorts package name and last updated from the column headers', async () => {
+  renderPackagesTable();
+
+  const updatedHeader = await screen.findByRole('columnheader', { name: 'Last updated' });
+  expect(updatedHeader).toHaveAttribute('aria-sort', 'descending');
+  expect(screen.getByRole('columnheader', { name: 'Package' })).not.toHaveAttribute('aria-sort');
+  expect(
+    within(screen.getByRole('columnheader', { name: 'Version' })).queryByRole('button'),
+  ).not.toBeInTheDocument();
+  expectPackagesQuerySort(undefined);
+
+  await userEvent.click(screen.getByRole('button', { name: 'Package' }));
+
+  await waitFor(() => expectPackagesQuerySort('name:asc'));
+  expect(screen.getByRole('columnheader', { name: 'Package' })).toHaveAttribute(
+    'aria-sort',
+    'ascending',
+  );
+  expect(mockSetSearchParams).toHaveBeenCalledWith(new URLSearchParams('sort_by=name:asc'), {
+    replace: true,
+  });
+
+  await userEvent.click(within(updatedHeader).getByRole('button', { name: 'Last updated' }));
+
+  await waitFor(() => expectPackagesQuerySort(undefined));
+  expect(screen.getByRole('columnheader', { name: 'Last updated' })).toHaveAttribute(
+    'aria-sort',
+    'descending',
+  );
+  expect(screen.getByRole('columnheader', { name: 'Package' })).not.toHaveAttribute('aria-sort');
+  expect(mockSetSearchParams).toHaveBeenLastCalledWith(new URLSearchParams(), { replace: true });
+
+  await userEvent.click(await screen.findByRole('button', { name: 'org.json.test:json-test' }));
+
+  expect(mockNavigateTo).toHaveBeenCalledWith('packageDetails', {
+    repoSlug: getRepositoryPathSlug(
+      defaultLightwellContentItem.content_type,
+      defaultLightwellContentItem.security_level,
+    ),
+    packageName: 'json-test',
+    groupId: defaultLightwellRepositoryPackageItem.group,
+    packagesParams: { search: '', page: 1, sortBy: 'last_updated', sortDirection: 'desc' },
+  });
+});
+
+it('sorts last updated when the latest release column is present and resets the page', async () => {
+  searchParams = new URLSearchParams('search=json&page=3');
+  mockUseParams.mockReturnValue({
+    repoName: getRepositoryPathSlug('maven', 'remediated'),
+  });
+  mockRepository(javaRemediatedContentItem);
+
+  renderPackagesTable();
+
+  const releaseHeader = await screen.findByRole('columnheader', { name: 'Latest release' });
+  expect(within(releaseHeader).queryByRole('button')).not.toBeInTheDocument();
+  expect(screen.getByRole('columnheader', { name: 'Last updated' })).toHaveAttribute(
+    'aria-sort',
+    'descending',
+  );
+  expectPackagesQuerySort(undefined, 3, javaRemediatedContentItem.uuid);
+
+  await userEvent.click(screen.getByRole('button', { name: 'Last updated' }));
+
+  await waitFor(() =>
+    expectPackagesQuerySort('last_updated:asc', 1, javaRemediatedContentItem.uuid),
+  );
+  expect(screen.getByRole('columnheader', { name: 'Last updated' })).toHaveAttribute(
+    'aria-sort',
+    'ascending',
+  );
+  expect(mockSetSearchParams).toHaveBeenCalledWith(
+    new URLSearchParams('search=json&sort_by=last_updated:asc'),
+    { replace: true },
+  );
 });
