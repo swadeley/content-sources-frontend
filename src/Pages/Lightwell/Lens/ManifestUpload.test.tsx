@@ -133,7 +133,7 @@ describe('ManifestUpload', () => {
 
   it('shows upload instructions and supported formats when no report exists', () => {
     renderManifestUpload();
-    expect(screen.getByText('Lightwell Lens')).toBeInTheDocument();
+    expect(screen.getByText('Lens')).toBeInTheDocument();
     expect(
       screen.getByText(
         'Upload your SBOM or package manifest to assess your stack against the Lightwell Network catalog.',

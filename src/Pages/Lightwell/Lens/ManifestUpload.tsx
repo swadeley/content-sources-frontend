@@ -47,7 +47,7 @@ const ManifestUpload = () => {
       <PageChromeSlots>
         <PageChromeSlot>
           <PageTitleStack
-            title='Lightwell Lens'
+            title='Lens'
             description='Upload your SBOM or package manifest to assess your stack against the Lightwell Network catalog.'
             ouiaId='lightwell-coverage-header'
           />
