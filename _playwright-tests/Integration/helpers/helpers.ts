@@ -91,12 +91,26 @@ export const installAndVerifyPackage = async ({
     1,
   );
 
-  await runCmd(
-    `Install ${packageName}`,
-    ['yum', 'install', '-y', packageName],
-    regClient,
-    installTimeout,
+  console.log(
+    `Installing ${packageName} with timeout ${installTimeout}ms (${(installTimeout / 1000).toFixed(0)}s)`,
   );
+  const installStartedAt = Date.now();
+  try {
+    await runCmd(
+      `Install ${packageName}`,
+      ['yum', 'install', '-y', packageName],
+      regClient,
+      installTimeout,
+    );
+  } finally {
+    const elapsedMs = Date.now() - installStartedAt;
+    const remainingMs = installTimeout - elapsedMs;
+    const pctOfLimit = ((elapsedMs / installTimeout) * 100).toFixed(1);
+    console.log(
+      `Install ${packageName} timing: elapsed=${elapsedMs}ms (${(elapsedMs / 1000).toFixed(1)}s), ` +
+        `timeout=${installTimeout}ms, remaining=${remainingMs}ms, used=${pctOfLimit}% of limit`,
+    );
+  }
 
   await runCmd(`${packageName} should be installed`, ['rpm', '-q', packageName], regClient);
 };
