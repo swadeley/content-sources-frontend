@@ -17,7 +17,7 @@ export const SNAPSHOT_DIALOG_TIMEOUT_MS = 60_000;
 /** Command execution timeouts (dnf, yum, container exec) */
 export const DNF_COMMAND_TIMEOUT_MS = 120_000; // 2 min for package queries/installs
 export const DNF_UPDATEINFO_TIMEOUT_MS = 10 * 60 * 1000; // 10 min for updateinfo list
-export const YUM_INSTALL_TIMEOUT_MS = 120_000;
+export const YUM_INSTALL_TIMEOUT_MS = 150_000;
 export const YUM_INSTALL_QUICK_TIMEOUT_MS = 60_000; // Faster installs (small packages with no deps)
 export const SHORT_EXEC_TIMEOUT_MS = 10_000; // cat, ls, hostname, etc.
 export const MEDIUM_EXEC_TIMEOUT_MS = 60_000;
