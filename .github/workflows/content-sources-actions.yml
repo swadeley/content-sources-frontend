@@ -55,6 +55,12 @@ jobs:
           comment-summary-in-pr: on-failure
           vulnerability-check: true
           license-check: false
+          # No 6.x patch exists; fixed only in react-router 7.18.0+.
+          # insights-chrome still ships react-router-dom ^6.30.x as a Module
+          # Federation singleton (import: false), so this remote cannot move to v7.
+          # GHSA-337j-9hxr-rhxg is SSR/Framework Mode only — we use Declarative Mode.
+          # Revisit when chrome publishes a patched shared router.
+          allow-ghsas: GHSA-wrjc-x8rr-h8h6, GHSA-337j-9hxr-rhxg
 
   lint:
     needs: [malware-scan, vulnerability-review]
