@@ -178,7 +178,7 @@ module.exports = {
           singleton: true,
           import: false,
           version: dependencies['react-router-dom'],
-          requiredVersion: '>=6.0.0 <7.0.0',
+          requiredVersion: '>=6.30.6 <7.0.0',
         },
       },
       {
